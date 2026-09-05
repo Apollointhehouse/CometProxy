@@ -8,13 +8,15 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.io.IOException
 import org.apache.logging.log4j.kotlin.logger
+import kotlin.uuid.Uuid
 
 private val log = logger("NetContext")
 
-data class NetContext(
+data class ConnectionContext(
     val serverOut: ByteWriteChannel,
     val clientOut: ByteWriteChannel,
-    val session: PlayerSession
+    val session: PlayerSession,
+    val id: Uuid = Uuid.random()
 ) : AutoCloseable {
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 

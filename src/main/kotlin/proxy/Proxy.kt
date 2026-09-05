@@ -15,7 +15,7 @@ import java.net.InetAddress
 class Proxy {
     val log = logger()
 
-    suspend fun runProxy(
+    suspend fun start(
         targetServer: String,
         targetPort: Int
     ) = withContext(Dispatchers.IO) {
@@ -39,7 +39,7 @@ class Proxy {
         serverSocketPool.init()
 
         try {
-            broadcast(mitmSocket, serverSocketPool)
+            acceptConnections(mitmSocket, serverSocketPool)
         } finally {
             withContext(NonCancellable) {
                 mitmSocket.close()
@@ -50,7 +50,7 @@ class Proxy {
         }
     }
 
-    private suspend fun broadcast(
+    private suspend fun acceptConnections(
         mitmSocket: ServerSocket,
         serverSocketPool: SocketPool
     ) = withContext(Dispatchers.IO) {

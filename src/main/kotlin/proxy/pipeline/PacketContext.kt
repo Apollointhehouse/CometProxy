@@ -5,12 +5,12 @@ import dev.apollointhehouse.packet.Packet
 
 class PacketContext(
     val direction: Direction,
-    val netContext: NetContext,
+    val connection: ConnectionContext,
 ) {
-    val session: PlayerSession = netContext.session
+    val session: PlayerSession = connection.session
 
     enum class Direction { CLIENT_TO_SERVER, SERVER_TO_CLIENT }
 
-    fun sendToClient(packet: Packet) = netContext.sendToClient(packet)
-    fun sendToServer(packet: Packet) = netContext.sendToServer(packet)
+    fun sendToClient(packet: Packet) = connection.sendToClient(packet)
+    fun sendToServer(packet: Packet) = connection.sendToServer(packet)
 }

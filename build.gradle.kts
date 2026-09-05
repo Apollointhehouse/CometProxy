@@ -10,13 +10,16 @@ group = "dev.apollointhehouse"
 version = "1.0.0-SNAPSHOT"
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain(21)
 }
 
 compose.desktop {
     application {
         mainClass = "dev.apollointhehouse.MainKt"
+
         nativeDistributions {
+            includeAllModules = true
+
             targetFormats(
                 org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
                 org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe,
@@ -44,8 +47,9 @@ dependencies {
         exclude(group = "org.jetbrains.compose.material")
     }
 
-    implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.39.1-262.9437.29")
-    implementation("org.jetbrains.jewel:jewel-int-ui-decorated-window:0.39.1-262.9437.29")
+    implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.35.0-261.23567.198")
+//    implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.39.1-262.9437.29")
+//    implementation("org.jetbrains.jewel:jewel-int-ui-decorated-window:0.39.1-262.9437.29")
 
     implementation(compose.desktop.currentOs)
 
