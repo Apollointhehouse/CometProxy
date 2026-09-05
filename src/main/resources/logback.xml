@@ -1,0 +1,16 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%highlight(%d{HH:mm:ss} [%thread] %-5level %logger{0} - %msg)\n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="GUI" class="dev.apollointhehouse.utils.GuiAppender" />
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="GUI" />
+    </root>
+    <logger name="org.eclipse.jetty" level="INFO"/>
+    <logger name="io.netty" level="INFO"/>
+</configuration>
