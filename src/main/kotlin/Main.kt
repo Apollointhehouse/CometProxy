@@ -172,7 +172,10 @@ private fun ConsoleLog(logLines: SnapshotStateList<String>) {
             if (logLines.isNotEmpty()) listState.animateScrollToItem(logLines.lastIndex)
         }
 
-        VerticallyScrollableContainer(scrollState = rememberScrollState()) {
+        VerticallyScrollableContainer(
+            modifier = Modifier.fillMaxSize(),
+            scrollState = rememberScrollState()
+        ) {
             Column {
                 logLines.forEach { line ->
                     Text(
