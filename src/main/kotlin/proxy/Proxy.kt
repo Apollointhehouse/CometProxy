@@ -9,18 +9,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.apache.logging.log4j.kotlin.KotlinLogger
 import org.apache.logging.log4j.kotlin.logger
 import java.net.InetAddress
 
 class Proxy {
+    val log = logger()
+
     suspend fun runProxy(
         targetServer: String,
         targetPort: Int
     ) = withContext(Dispatchers.IO) {
         val port = 25565
-        val log = logger("Server")
-
         val resolvedIp = runCatching { InetAddress.getByName(targetServer) }
             .onFailure { log.error(it.toString()) }
             .getOrNull()?.hostAddress ?: return@withContext
@@ -40,20 +39,19 @@ class Proxy {
         serverSocketPool.init()
 
         try {
-            broadcast(mitmSocket, log, serverSocketPool)
+            broadcast(mitmSocket, serverSocketPool)
         } finally {
             withContext(NonCancellable) {
                 mitmSocket.close()
                 serverSocketPool.close()
                 selectorManager.close()
-                logger.info("Proxy Stopped")
+                log.info("Proxy Stopped")
             }
         }
     }
 
     private suspend fun broadcast(
         mitmSocket: ServerSocket,
-        log: KotlinLogger,
         serverSocketPool: SocketPool
     ) = withContext(Dispatchers.IO) {
         while (true) {

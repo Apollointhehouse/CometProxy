@@ -2,6 +2,7 @@ package dev.apollointhehouse.proxy
 
 import dev.apollointhehouse.Global.proxyKeyPair
 import dev.apollointhehouse.packet.Packet
+import dev.apollointhehouse.proxy.handlers.ChatMessageHandler
 import dev.apollointhehouse.proxy.handlers.ProxyAesKeyHandler
 import dev.apollointhehouse.proxy.handlers.ProxyLoginHandler
 import dev.apollointhehouse.proxy.pipeline.NetContext
@@ -43,6 +44,7 @@ class Bridge(
                     while (true) {
                         val packet = Packet.readPacket(clientIn) ?: break
                         val result = pipeline.process(c2sContext, packet)
+
                         if (result != null) netContext.sendToServer(result)
                     }
                 }
@@ -58,6 +60,7 @@ class Bridge(
                     while (true) {
                         val packet = Packet.readPacket(serverIn) ?: break
                         val result = pipeline.process(s2cContext, packet)
+
                         if (result != null) netContext.sendToClient(result)
                     }
                 } catch (e: CancellationException) {
@@ -86,6 +89,7 @@ class Bridge(
 
         pipeline += ProxyLoginHandler(proxyKeyPair)
         pipeline += ProxyAesKeyHandler(proxyKeyPair)
+        pipeline += ChatMessageHandler()
 
         return pipeline
     }

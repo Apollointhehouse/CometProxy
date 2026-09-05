@@ -21,7 +21,7 @@ class GuiAppender : AppenderBase<ILoggingEvent>() {
     override fun start() {
         layout = PatternLayout().apply {
             context = this@GuiAppender.context
-            pattern = "%d{HH:mm:ss} [%thread] %level %logger{0} - %msg%n"
+            pattern = "%d{HH:mm:ss} [%level] %logger{0} - %msg%n"
             start()
         }
         super.start()

@@ -162,7 +162,7 @@ private fun ConsoleLog(logLines: SnapshotStateList<String>) {
     Box(
         Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(3.dp))
             .background(Color(0xFF1E1F22))
             .padding(12.dp)
     ) {
