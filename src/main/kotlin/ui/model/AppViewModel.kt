@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
 import dev.apollointhehouse.net.API
+import dev.apollointhehouse.net.packet.PacketMessage
 import dev.apollointhehouse.net.proxy.ConnectionRegistry
 import dev.apollointhehouse.net.proxy.ProxyManager
 import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
@@ -35,7 +36,7 @@ class AppViewModel(private val scope: CoroutineScope) {
 
     private val loadingUuids = ConcurrentHashMap.newKeySet<Uuid>()
 
-    fun selectConnection(connection: ConnectionContext) {
+    fun selectConnection(connection: ConnectionContext?) {
         selectedConnection = connection
     }
 
@@ -60,6 +61,18 @@ class AppViewModel(private val scope: CoroutineScope) {
         if (newValue.text.all { it.isDigit() }) {
             targetPort = newValue
         }
+    }
+
+    fun sendMessageToClient(ctx: ConnectionContext, message: String) {
+        val packet = PacketMessage(message = message)
+
+        ctx.sendToClient(packet)
+    }
+
+    fun sendMessageToServer(ctx: ConnectionContext, message: String) {
+        val packet = PacketMessage(message = message)
+
+        ctx.sendToServer(packet)
     }
 
     fun getHead(uuid: Uuid): ImageBitmap? {

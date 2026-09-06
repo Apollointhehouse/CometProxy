@@ -52,8 +52,7 @@ dependencies {
     }
 
     implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.35.0-261.23567.198")
-//    implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.39.1-262.9437.29")
-//    implementation("org.jetbrains.jewel:jewel-int-ui-decorated-window:0.39.1-262.9437.29")
+    implementation("org.jetbrains.jewel:jewel-ui:0.35.0-261.23567.198")
 
     implementation(compose.desktop.currentOs)
 
