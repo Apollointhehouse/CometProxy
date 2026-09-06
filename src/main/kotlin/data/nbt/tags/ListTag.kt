@@ -3,7 +3,6 @@ package dev.apollointhehouse.data.nbt.tags
 import dev.apollointhehouse.data.nbt.UnknownTagException
 import java.io.DataInput
 import java.io.DataOutput
-import java.lang.IllegalArgumentException
 
 class ListTag(name: String?, array: MutableList<Tag<*>> = mutableListOf<Tag<*>>()) :
     Tag<MutableList<Tag<*>>>(name, array) {

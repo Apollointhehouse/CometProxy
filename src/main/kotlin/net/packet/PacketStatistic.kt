@@ -1,0 +1,28 @@
+package dev.apollointhehouse.net.packet
+
+import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
+import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import io.ktor.utils.io.*
+
+class PacketStatistic(
+    val statID: String = "",
+    val valueChange: Byte = 0,
+) : Packet {
+    override suspend fun write(channel: ByteWriteChannel) {
+        channel.writeJavaStringUTF8(statID)
+        channel.writeByte(valueChange)
+    }
+
+    override val estimatedSize: Int
+        get() = 6
+
+    companion object : PacketFactory<PacketStatistic> {
+		override val packetID = 200
+        override suspend fun create(channel: ByteReadChannel): PacketStatistic {
+            val statID = channel.readJavaStringUTF8(Integer.MAX_VALUE)
+            val valueChange = channel.readByte()
+
+            return PacketStatistic(statID = statID, valueChange = valueChange)
+        }
+    }
+}

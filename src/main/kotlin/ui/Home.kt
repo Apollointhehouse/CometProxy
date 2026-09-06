@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalJewelApi::class)
 package dev.apollointhehouse.ui
 
 import androidx.compose.foundation.background
@@ -14,43 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.apollointhehouse.proxy.ConnectionRegistry
-import dev.apollointhehouse.proxy.Proxy
-import dev.apollointhehouse.proxy.pipeline.ConnectionContext
+import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
+import dev.apollointhehouse.ui.model.AppViewModel
 import dev.apollointhehouse.utils.GuiLogBus
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.launch
 import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
 import org.jetbrains.jewel.ui.component.*
 import org.jetbrains.jewel.ui.typography
 
-@OptIn(ExperimentalJewelApi::class)
 @Composable
-fun App() {
-    val scope = rememberCoroutineScope()
-    var running by remember { mutableStateOf(false) }
-    var proxyJob by remember { mutableStateOf<Job?>(null) }
-
-    var targetHost by remember { mutableStateOf(TextFieldValue("example.com")) }
-    var targetPort by remember { mutableStateOf(TextFieldValue("25565")) }
-
+fun App(viewModel: AppViewModel) {
+    val connections by viewModel.connections.collectAsState()
     val logLines = remember { mutableStateListOf<String>() }
-
-    val connections by ConnectionRegistry.connections.collectAsState()
-    var selectedConnection by remember { mutableStateOf<ConnectionContext?>(null) }
-
-//    LaunchedEffect(connections) {
-//        if (selectedConnection != null && connections.none { it.id == selectedConnection?.id }) {
-//            selectedConnection = null
-//        }
-//    }
 
     LaunchedEffect(Unit) {
         GuiLogBus.events.collect { line ->
@@ -66,7 +45,7 @@ fun App() {
             .padding(20.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            StatusDot(running)
+            StatusDot(viewModel.running)
             Spacer(Modifier.width(8.dp))
             Text(
                 text = "Comet-Proxy",
@@ -74,8 +53,8 @@ fun App() {
             )
             Spacer(Modifier.weight(1f))
             Text(
-                text = if (running) "Running" else "Stopped",
-                color = if (running) Color(0xFF6BC46D) else JewelTheme.globalColors.text.disabled,
+                text = if (viewModel.running) "Running" else "Stopped",
+                color = if (viewModel.running) Color(0xFF6BC46D) else JewelTheme.globalColors.text.disabled,
                 style = JewelTheme.typography.medium,
             )
         }
@@ -84,58 +63,21 @@ fun App() {
         Divider(orientation = Orientation.Horizontal)
         Spacer(Modifier.height(16.dp))
 
-        GroupHeader("Target Server")
-        Spacer(Modifier.height(8.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            TextField(
-                value = targetHost,
-                onValueChange = { targetHost = it },
-                enabled = !running,
-                placeholder = { Text("Host IP/address") },
-                modifier = Modifier.weight(1f),
-            )
-            TextField(
-                value = targetPort,
-                onValueChange = { if (it.text.all(Char::isDigit)) targetPort = it },
-                enabled = !running,
-                placeholder = { Text("Port") },
-                modifier = Modifier.width(100.dp),
-            )
-        }
+        TargetInput(viewModel)
 
         Spacer(Modifier.height(16.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DefaultButton(
-                onClick = {
-                    running = true
-                    proxyJob = scope.launch(Dispatchers.IO) {
-                        val proxy = Proxy()
-
-                        proxy.start(
-                            targetServer = targetHost.text,
-                            targetPort = targetPort.text.toIntOrNull() ?: 25565
-                        )
-                    }
-                },
-                enabled = !running && targetHost.text.isNotBlank() && targetPort.text.isNotBlank(),
+                onClick = { viewModel.startProxy() },
+                enabled = !viewModel.running && viewModel.targetHost.text.isNotBlank() && viewModel.targetPort.text.isNotBlank(),
             ) {
                 Text("Start Proxy")
             }
 
             OutlinedButton(
-                onClick = {
-                    scope.launch {
-                        proxyJob?.cancelAndJoin()
-                        proxyJob = null
-                        running = false
-                    }
-                },
-                enabled = running,
+                onClick = { viewModel.stopProxy() },
+                enabled = viewModel.running,
             ) {
                 Text("Stop")
             }
@@ -153,8 +95,8 @@ fun App() {
 
         ConnectionsPanel(
             connections = connections,
-            selected = selectedConnection,
-            onSelect = { selectedConnection = it },
+            selected = viewModel.selectedConnection,
+            onSelect = { viewModel.selectConnection(it) },
         )
 
         Spacer(Modifier.height(20.dp))
@@ -162,6 +104,32 @@ fun App() {
         Spacer(Modifier.height(12.dp))
 
         ConsoleLog(logLines)
+    }
+}
+
+@Composable
+private fun TargetInput(viewModel: AppViewModel) {
+    GroupHeader("Target Server")
+    Spacer(Modifier.height(8.dp))
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        TextField(
+            value = viewModel.targetHost,
+            onValueChange = { viewModel.targetHost = it },
+            enabled = !viewModel.running,
+            placeholder = { Text("Host IP/address") },
+            modifier = Modifier.weight(1f),
+        )
+        TextField(
+            value = viewModel.targetPort,
+            onValueChange = { if (it.text.all(Char::isDigit)) viewModel.updatePort(it) },
+            enabled = !viewModel.running,
+            placeholder = { Text("Port") },
+            modifier = Modifier.width(100.dp),
+        )
     }
 }
 
@@ -215,7 +183,7 @@ private fun ConnectionRow(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val name = ctx.session.username ?: "Unknown"
+    val name = ctx.session?.username ?: "Unknown"
 
     Row(
         modifier = Modifier
@@ -249,8 +217,8 @@ private fun ConnectionRow(
                 style = JewelTheme.typography.medium,
             )
             Text(
-                text = "entity id: ${ctx.session.entityId}",
-                color = JewelTheme.globalColors.text.disabled,
+                text = "entity id: ${ctx.session?.entityId}",
+                color = if (!isSelected) JewelTheme.globalColors.text.disabled else JewelTheme.globalColors.text.normal,
                 style = JewelTheme.typography.small,
             )
         }
