@@ -205,7 +205,6 @@ private fun ConnectionRow(
         Box(
             modifier = Modifier
                 .size(28.dp)
-                .clip(CircleShape)
                 .background(avatarColor(name)),
             contentAlignment = Alignment.Center,
         ) {

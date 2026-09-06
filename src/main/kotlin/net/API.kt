@@ -20,16 +20,10 @@ object API {
 
     private val heads: MutableMap<Uuid, ImageBitmap> = mutableMapOf()
 
-    suspend fun fetchHead(uuid: Uuid): ImageBitmap {
-        if (uuid in heads) {
-            return heads[uuid]!!
-        }
-
+    suspend fun fetchHead(uuid: Uuid): ImageBitmap = heads.getOrPut(uuid) {
         val imgBytes = client.get("https://mc-heads.net/avatar/${uuid.toHexString()}").body<ByteArray>()
         val img = Image.makeFromEncoded(imgBytes).toComposeImageBitmap()
 
-        heads[uuid] = img
-
-        return img
+        img
     }
 }
