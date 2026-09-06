@@ -3,17 +3,6 @@ package dev.apollointhehouse.utils
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
 import ch.qos.logback.classic.PatternLayout
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-
-object GuiLogBus {
-    private val _events = MutableSharedFlow<String>(replay = 200, extraBufferCapacity = 500)
-    val events = _events.asSharedFlow()
-
-    fun publish(line: String) {
-        _events.tryEmit(line)
-    }
-}
 
 class GuiAppender : AppenderBase<ILoggingEvent>() {
     private lateinit var layout: PatternLayout

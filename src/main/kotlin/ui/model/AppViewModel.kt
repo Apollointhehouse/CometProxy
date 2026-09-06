@@ -1,15 +1,21 @@
 package dev.apollointhehouse.ui.model
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
+import dev.apollointhehouse.net.API
 import dev.apollointhehouse.net.proxy.ConnectionRegistry
 import dev.apollointhehouse.net.proxy.ProxyManager
 import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.apache.logging.log4j.kotlin.logger
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.uuid.Uuid
 
 class AppViewModel(private val scope: CoroutineScope) {
     private val proxyManager = ProxyManager()
@@ -24,6 +30,10 @@ class AppViewModel(private val scope: CoroutineScope) {
 
     var selectedConnection by mutableStateOf<ConnectionContext?>(null)
         private set
+
+    val heads = mutableStateMapOf<Uuid, ImageBitmap>()
+
+    private val loadingUuids = ConcurrentHashMap.newKeySet<Uuid>()
 
     fun selectConnection(connection: ConnectionContext) {
         selectedConnection = connection
@@ -50,5 +60,24 @@ class AppViewModel(private val scope: CoroutineScope) {
         if (newValue.text.all { it.isDigit() }) {
             targetPort = newValue
         }
+    }
+
+    fun getHead(uuid: Uuid): ImageBitmap? {
+        val cached = heads[uuid]
+        if (cached != null) return cached
+
+        if (loadingUuids.add(uuid)) {
+            scope.launch {
+                try {
+                    val img = API.fetchHead(uuid)
+                    heads[uuid] = img
+                } catch (e: Exception) {
+                    logger.error(e) { "Failed to fetch head" }
+                } finally {
+                    loadingUuids.remove(uuid)
+                }
+            }
+        }
+        return null
     }
 }

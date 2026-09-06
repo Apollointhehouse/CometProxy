@@ -1,11 +1,11 @@
 package dev.apollointhehouse.net.proxy.session
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import kotlin.uuid.Uuid
 
-class PlayerSession {
-    var chat: ChatSession = ChatSession()
-    var entityId: Int? by mutableStateOf(null)
-    var username: String? by mutableStateOf(null)
+class PlayerSession(
+    var chat: ChatSession = ChatSession(),
+    var username: String,
+    var uuid: Uuid
+) {
+    var entityId: Int? = null
 }

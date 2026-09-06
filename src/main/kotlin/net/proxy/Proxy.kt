@@ -1,7 +1,5 @@
 package dev.apollointhehouse.net.proxy
 
-import dev.apollointhehouse.Global.proxyKeyPair
-import dev.apollointhehouse.SocketPool
 import dev.apollointhehouse.utils.crypt.RSA
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
@@ -11,6 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.logging.log4j.kotlin.logger
 import java.net.InetAddress
+import java.security.KeyPair
 
 class Proxy {
     val log = logger()
@@ -26,7 +25,7 @@ class Proxy {
 
         val targetAddress = InetSocketAddress(resolvedIp, targetPort)
 
-        proxyKeyPair = RSA.generateKeyPair()
+        val proxyKeyPair = RSA.generateKeyPair()
 
         val selectorManager = ActorSelectorManager(Dispatchers.IO)
 
@@ -39,7 +38,7 @@ class Proxy {
         serverSocketPool.init()
 
         try {
-            acceptConnections(mitmSocket, serverSocketPool)
+            acceptConnections(proxyKeyPair, mitmSocket, serverSocketPool)
         } finally {
             withContext(NonCancellable) {
                 mitmSocket.close()
@@ -51,6 +50,7 @@ class Proxy {
     }
 
     private suspend fun acceptConnections(
+        proxyKeyPair: KeyPair,
         mitmSocket: ServerSocket,
         serverSocketPool: SocketPool
     ) = withContext(Dispatchers.IO) {
@@ -62,7 +62,7 @@ class Proxy {
                 val serverSocket = serverSocketPool.getSocket() ?: return@launch
 
                 try {
-                    Bridge(clientSocket, serverSocket).run()
+                    Bridge(proxyKeyPair, clientSocket, serverSocket).run()
                 } catch (e: Exception) {
                     log.error("Error bridging connection", e)
                 } finally {

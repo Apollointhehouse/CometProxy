@@ -1,4 +1,4 @@
-package dev.apollointhehouse
+package dev.apollointhehouse.net.proxy
 
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*

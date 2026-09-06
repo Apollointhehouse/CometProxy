@@ -37,7 +37,11 @@ dependencies {
     implementation(ktorLibs.server.contentNegotiation)
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
+    implementation(ktorLibs.client.core)
+    implementation(ktorLibs.client.contentNegotiation)
+    implementation(ktorLibs.client.cio)
     implementation(libs.logback.classic)
+
     implementation("org.apache.logging.log4j:log4j-api:2.26.1")
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.5.0")
     implementation("org.apache.logging.log4j:log4j-to-slf4j:2.26.1")

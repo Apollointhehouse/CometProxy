@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalJewelApi::class)
 package dev.apollointhehouse.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -94,6 +95,7 @@ fun App(viewModel: AppViewModel) {
         Spacer(Modifier.height(12.dp))
 
         ConnectionsPanel(
+            viewModel = viewModel,
             connections = connections,
             selected = viewModel.selectedConnection,
             onSelect = { viewModel.selectConnection(it) },
@@ -135,6 +137,7 @@ private fun TargetInput(viewModel: AppViewModel) {
 
 @Composable
 private fun ConnectionsPanel(
+    viewModel: AppViewModel,
     connections: List<ConnectionContext>,
     selected: ConnectionContext?,
     onSelect: (ConnectionContext) -> Unit,
@@ -167,6 +170,7 @@ private fun ConnectionsPanel(
             Column {
                 for (ctx in connections) {
                     ConnectionRow(
+                        viewModel = viewModel,
                         ctx = ctx,
                         isSelected = ctx.id == selected?.id,
                         onClick = { onSelect(ctx) },
@@ -179,11 +183,15 @@ private fun ConnectionsPanel(
 
 @Composable
 private fun ConnectionRow(
+    viewModel: AppViewModel,
     ctx: ConnectionContext,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val name = ctx.session?.username ?: "Unknown"
+    val session = ctx.session ?: return
+    val name = session.username
+    val uuid = session.uuid
+    val headImg = viewModel.getHead(uuid)
 
     Row(
         modifier = Modifier
@@ -201,11 +209,15 @@ private fun ConnectionRow(
                 .background(avatarColor(name)),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = name.firstOrNull()?.uppercase() ?: "?",
-                color = Color.White,
-                style = JewelTheme.typography.medium,
-            )
+            if (headImg != null) {
+                Image(bitmap = headImg, contentDescription = null)
+            } else {
+                Text(
+                    text = name.firstOrNull()?.uppercase() ?: "?",
+                    color = Color.White,
+                    style = JewelTheme.typography.medium,
+                )
+            }
         }
 
         Spacer(Modifier.width(10.dp))
@@ -217,7 +229,12 @@ private fun ConnectionRow(
                 style = JewelTheme.typography.medium,
             )
             Text(
-                text = "entity id: ${ctx.session?.entityId}",
+                text = "Entity ID: ${session.entityId}",
+                color = if (!isSelected) JewelTheme.globalColors.text.disabled else JewelTheme.globalColors.text.normal,
+                style = JewelTheme.typography.small,
+            )
+            Text(
+                text = "UUID: ${session.uuid}",
                 color = if (!isSelected) JewelTheme.globalColors.text.disabled else JewelTheme.globalColors.text.normal,
                 style = JewelTheme.typography.small,
             )

@@ -1,6 +1,5 @@
 package dev.apollointhehouse.net.proxy
 
-import dev.apollointhehouse.Global.proxyKeyPair
 import dev.apollointhehouse.net.packet.Packet
 import dev.apollointhehouse.net.proxy.handlers.ChatMessageHandler
 import dev.apollointhehouse.net.proxy.handlers.ProxyAesKeyHandler
@@ -8,7 +7,6 @@ import dev.apollointhehouse.net.proxy.handlers.ProxyLoginHandler
 import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
 import dev.apollointhehouse.net.proxy.pipeline.PacketContext
 import dev.apollointhehouse.net.proxy.pipeline.PacketPipeline
-import dev.apollointhehouse.net.proxy.session.PlayerSession
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +14,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withContext
 import org.apache.logging.log4j.kotlin.logger
+import java.security.KeyPair
 
 class Bridge(
+    val proxyKeypair: KeyPair,
     val clientSocket: Socket,
     val serverSocket: Socket
 ) {
@@ -29,10 +29,8 @@ class Bridge(
 
         val serverIn = serverSocket.openReadChannel()
         val serverOut = serverSocket.openWriteChannel()
-        val session = PlayerSession()
 
-        val ctx =
-            ConnectionContext(serverOut, clientOut, session)
+        val ctx = ConnectionContext(serverOut, clientOut)
 
         val pipeline = buildPipeline()
 
@@ -95,8 +93,8 @@ class Bridge(
     private fun buildPipeline(): PacketPipeline {
         val pipeline = PacketPipeline()
 
-        pipeline += ProxyLoginHandler(proxyKeyPair)
-        pipeline += ProxyAesKeyHandler(proxyKeyPair)
+        pipeline += ProxyLoginHandler(proxyKeypair)
+        pipeline += ProxyAesKeyHandler(proxyKeypair)
         pipeline += ChatMessageHandler()
 
         return pipeline
