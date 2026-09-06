@@ -1,4 +1,4 @@
-package dev.apollointhehouse.ui
+package dev.apollointhehouse.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,7 +12,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
-import dev.apollointhehouse.ui.components.PopoverAnchor
 import dev.apollointhehouse.ui.model.AppViewModel
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text

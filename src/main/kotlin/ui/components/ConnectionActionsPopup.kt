@@ -1,13 +1,12 @@
 @file:OptIn(ExperimentalJewelApi::class)
-package dev.apollointhehouse.ui
+
+package dev.apollointhehouse.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
-import dev.apollointhehouse.ui.components.ActionSection
-import dev.apollointhehouse.ui.components.PopoverPanel
 import dev.apollointhehouse.ui.model.AppViewModel
 import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.ui.component.DefaultButton

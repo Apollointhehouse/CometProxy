@@ -7,6 +7,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.apollointhehouse.ui.components.ConnectionsPanel
+import dev.apollointhehouse.ui.components.ProxyActions
+import dev.apollointhehouse.ui.components.ProxyLog
+import dev.apollointhehouse.ui.components.ProxyTargetInput
 import dev.apollointhehouse.ui.model.AppViewModel
 import dev.apollointhehouse.utils.GuiLogBus
 import org.jetbrains.jewel.foundation.theme.JewelTheme
@@ -16,7 +20,7 @@ import org.jetbrains.jewel.ui.component.Text
 import org.jetbrains.jewel.ui.typography
 
 @Composable
-fun App(viewModel: AppViewModel) {
+fun Home(viewModel: AppViewModel) {
     val connections by viewModel.connections.collectAsState()
     val logLines = remember { mutableStateListOf<String>() }
 
@@ -35,7 +39,7 @@ fun App(viewModel: AppViewModel) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "Comet-Proxy",
+                text = "CometProxy",
                 style = JewelTheme.typography.h2TextStyle,
             )
             Spacer(Modifier.weight(1f))

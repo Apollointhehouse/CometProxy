@@ -1,3 +1,7 @@
-# Comet-Proxy
+# CometProxy
 
-Proxy for BTA servers
+A proxy server for BTA!
+
+## License
+
+This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for details.
