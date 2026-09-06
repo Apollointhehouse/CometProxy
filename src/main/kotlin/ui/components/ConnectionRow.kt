@@ -22,6 +22,7 @@ fun ConnectionRow(
     viewModel: AppViewModel,
     ctx: ConnectionContext,
     isSelected: Boolean,
+    onDismissRequest: () -> Unit,
     onClick: () -> Unit,
 ) {
     val session = ctx.session ?: return
@@ -31,7 +32,7 @@ fun ConnectionRow(
 
     PopoverAnchor(
         expanded = isSelected,
-        onDismissRequest = { },
+        onDismissRequest = onDismissRequest,
         modifier = Modifier.fillMaxWidth(),
         alignment = Alignment.TopStart,
         verticalOffset = 46.dp,

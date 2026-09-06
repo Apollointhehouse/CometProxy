@@ -1,13 +1,7 @@
 package dev.apollointhehouse.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -29,6 +23,7 @@ fun ConnectionsPanel(
     viewModel: AppViewModel,
     connections: List<ConnectionContext>,
     selected: ConnectionContext?,
+    onDismissRequest: () -> Unit,
     onSelect: (ConnectionContext?) -> Unit,
 ) {
     GroupHeader("Connections")
@@ -40,7 +35,6 @@ fun ConnectionsPanel(
             .height(120.dp)
             .clip(RoundedCornerShape(3.dp))
             .background(Color(0xFF1E1F22))
-            .clickable { onSelect(null) },
     ) {
         if (connections.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -55,8 +49,7 @@ fun ConnectionsPanel(
 
         VerticallyScrollableContainer(
             modifier = Modifier
-                .fillMaxSize()
-                .clickable { onSelect(null) },
+                .fillMaxSize(),
             scrollState = rememberScrollState(),
         ) {
             Column {
@@ -65,6 +58,7 @@ fun ConnectionsPanel(
                         viewModel = viewModel,
                         ctx = ctx,
                         isSelected = ctx.id == selected?.id,
+                        onDismissRequest = onDismissRequest,
                         onClick = { onSelect(ctx) },
                     )
                 }

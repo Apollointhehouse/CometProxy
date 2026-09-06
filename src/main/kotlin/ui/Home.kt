@@ -68,6 +68,7 @@ fun Home(viewModel: AppViewModel) {
             viewModel = viewModel,
             connections = connections,
             selected = viewModel.selectedConnection,
+            onDismissRequest = { viewModel.selectConnection(null) },
             onSelect = { viewModel.selectConnection(it) },
         )
 
