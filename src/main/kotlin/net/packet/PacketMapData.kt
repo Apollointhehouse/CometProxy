@@ -19,7 +19,7 @@ class PacketMapData(
         channel.writeByte(waypoints.size.toByte())
 
         for (i in waypoints.indices) {
-            waypoints[i].writeToOutputStream(channel)
+            waypoints[i].write(channel)
         }
 
         channel.writeByte(mapData.size.toByte())
@@ -40,9 +40,7 @@ class PacketMapData(
             val waypoints = mutableListOf<MapWaypoint>()
 
             repeat(wayPointAmount.toInt()) {
-                val waypoint = MapWaypoint()
-                waypoint.readInputStream(channel)
-
+                val waypoint = MapWaypoint.create(channel)
                 waypoints.add(waypoint)
             }
 

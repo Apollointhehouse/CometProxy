@@ -9,7 +9,7 @@ class ByteArrayTag(name: String?, array: ByteArray = ByteArray(0)) : Tag<ByteArr
         dos.write(value)
     }
 
-    override val id get() = TagID.TAG_BYTE_ARRAY.id
+    override val type = TagType.ByteArray
 
     companion object : TagFactory<ByteArrayTag> {
         override fun create(name: String?, dis: DataInput): ByteArrayTag {

@@ -13,7 +13,7 @@ class LongArrayTag(name: String?, array: LongArray = LongArray(0)) : Tag<LongArr
         dos.write(bytes)
     }
 
-    override val id get() = TagID.TAG_LONG_ARRAY.id
+    override val type = TagType.LongArray
 
     companion object : TagFactory<LongArrayTag> {
         override fun create(name: String?, dis: DataInput): LongArrayTag {

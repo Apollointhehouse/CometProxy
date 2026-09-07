@@ -1,6 +1,6 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.data.nbt.NbtIo
+import dev.apollointhehouse.data.nbt.NbtIO
 import dev.apollointhehouse.data.nbt.tags.CompoundTag
 import io.ktor.utils.io.*
 import kotlinx.io.EOFException
@@ -10,25 +10,12 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.*
-import kotlin.reflect.full.memberProperties
 
 interface Packet {
     val packetID: Int get() = classToPacketID.getValue(this::class.java)
     val estimatedSize: Int
 
     suspend fun write(channel: ByteWriteChannel)
-
-    fun describe(): String {
-        val fields = this::class.memberProperties.joinToString(", ") { prop ->
-            val value = try {
-                prop.getter.call(this)
-            } catch (_: Exception) {
-                "<uninitialized>"
-            }
-            "${prop.name}=$value"
-        }
-        return "${this::class.simpleName}($fields)"
-    }
 
     companion object {
         private val packetIDToFactory: MutableMap<Int, PacketFactory<*>> = mutableMapOf()
@@ -203,7 +190,7 @@ interface Packet {
             if (tag == null) return
 
             val baos = ByteArrayOutputStream()
-            NbtIo.writeCompressed(tag, baos)
+            NbtIO.writeCompressed(tag, baos)
             val buffer = baos.toByteArray()
             writeShort(buffer.size.toShort())
             writeFully(buffer)
@@ -216,7 +203,7 @@ interface Packet {
             } else {
                 val data = ByteArray(length)
                 readFully(data)
-                return NbtIo.readCompressed(ByteArrayInputStream(data))
+                return NbtIO.readCompressed(ByteArrayInputStream(data))
             }
         }
 

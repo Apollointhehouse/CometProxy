@@ -8,7 +8,7 @@ class ByteTag(name: String?, value: Byte = 0.toByte()) : Tag<Byte>(name, value) 
         dos.writeByte(value.toInt())
     }
 
-    override val id get() = TagID.TAG_BYTE.id
+    override val type = TagType.Byte
 
     companion object : TagFactory<ByteTag> {
         override fun create(name: String?, dis: DataInput): ByteTag {

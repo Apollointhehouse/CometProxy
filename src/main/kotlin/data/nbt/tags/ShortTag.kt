@@ -8,7 +8,7 @@ class ShortTag(name: String?, value: Short = 0) : Tag<Short>(name, value) {
         dos.writeShort(value.toInt())
     }
 
-    override val id get() =  TagID.TAG_SHORT.id
+    override val type = TagType.Short
 
     companion object : TagFactory<ShortTag> {
         override fun create(name: String?, dis: DataInput): ShortTag {

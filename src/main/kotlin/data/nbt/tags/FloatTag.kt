@@ -8,7 +8,7 @@ class FloatTag(name: String?, value: Float = 0.0f) : Tag<Float>(name, value) {
         dos.writeFloat(value)
     }
 
-    override val id get() = TagID.TAG_FLOAT.id
+    override val type = TagType.Float
 
     companion object : TagFactory<FloatTag> {
         override fun create(name: String?, dis: DataInput): FloatTag {

@@ -8,7 +8,7 @@ class LongTag(name: String?, value: Long = 0L) : Tag<Long>(name, value) {
         dos.writeLong(value)
     }
 
-    override val id get() = TagID.TAG_LONG.id
+    override val type = TagType.Long
 
     companion object : TagFactory<LongTag> {
         override fun create(name: String?, dis: DataInput): LongTag {

@@ -8,7 +8,7 @@ class DoubleTag(name: String?, value: Double = 0.0) : Tag<Double>(name, value) {
         dos.writeDouble(value)
     }
 
-    override val id get() = TagID.TAG_DOUBLE.id
+    override val type = TagType.Double
 
     companion object : TagFactory<DoubleTag> {
         override fun create(name: String?, dis: DataInput): DoubleTag {

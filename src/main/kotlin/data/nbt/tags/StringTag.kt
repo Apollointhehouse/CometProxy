@@ -8,7 +8,7 @@ class StringTag(name: String?, value: String = "") : Tag<String>(name, value) {
         dos.writeUTF(value)
     }
 
-    override val id get() = TagID.TAG_STRING.id
+    override val type = TagType.String
 
     companion object : TagFactory<StringTag> {
         override fun create(name: String?, dis: DataInput): StringTag {

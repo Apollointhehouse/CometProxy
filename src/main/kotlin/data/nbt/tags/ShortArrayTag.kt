@@ -14,7 +14,7 @@ class ShortArrayTag(name: String?, array: ShortArray = ShortArray(0)) : Tag<Shor
         dos.write(bytes)
     }
 
-    override val id get() = TagID.TAG_SHORT_ARRAY.id
+    override val type = TagType.ShortArray
 
     companion object : TagFactory<ShortArrayTag> {
         override fun create(name: String?, dis: DataInput): ShortArrayTag {

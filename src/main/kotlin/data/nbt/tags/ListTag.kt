@@ -6,24 +6,24 @@ import java.io.DataOutput
 
 class ListTag(name: String?, array: MutableList<Tag<*>> = mutableListOf<Tag<*>>()) :
     Tag<MutableList<Tag<*>>>(name, array) {
-    private var tagType: Byte = 0
+    private var tagType: TagType = TagType.End
 
     override fun write(dos: DataOutput) {
-        if (value.isNotEmpty()) {
-            this.tagType = value[0].id
+        tagType = if (value.isNotEmpty()) {
+            value[0].type
         } else {
-            this.tagType = 1
+            TagType.Byte
         }
 
-        dos.writeByte(this.tagType.toInt())
+        dos.writeByte(tagType.value.toInt())
         dos.writeInt(value.size)
 
-        for (i in value.indices) {
-            value[i].write(dos)
+        for (value in value) {
+            value.write(dos)
         }
     }
 
-    override val id get() = TagID.TAG_LIST.id
+    override val type = TagType.List
 
     companion object : TagFactory<ListTag> {
         override fun create(name: String?, dis: DataInput): ListTag {
@@ -33,7 +33,7 @@ class ListTag(name: String?, array: MutableList<Tag<*>> = mutableListOf<Tag<*>>(
 
             repeat(length) {
                 try {
-                    val tagFactory: TagFactory<*> = TagID(tagType).factory
+                    val tagFactory: TagFactory<*> = TagType(tagType).factory
 
                     val tag = tagFactory.create(null, dis)
                     value.add(tag)

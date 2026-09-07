@@ -13,7 +13,7 @@ class DoubleArrayTag(name: String?, array: DoubleArray = DoubleArray(0)) : Tag<D
         dos.write(bytes)
     }
 
-    override val id get() = TagID.TAG_DOUBLE_ARRAY.id
+    override val type = TagType.DoubleArray
 
     companion object : TagFactory<DoubleArrayTag> {
         override fun create(name: String?, dis: DataInput): DoubleArrayTag {

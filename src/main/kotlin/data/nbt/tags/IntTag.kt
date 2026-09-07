@@ -8,7 +8,7 @@ class IntTag(name: String?, value: Int = 0) : Tag<Int>(name, value) {
         dos.writeInt(value)
     }
 
-    override val id get() = TagID.TAG_INT.id
+    override val type = TagType.Int
 
     companion object : TagFactory<IntTag> {
         override fun create(name: String?, dis: DataInput): IntTag {
