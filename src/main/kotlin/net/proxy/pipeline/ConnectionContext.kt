@@ -49,7 +49,7 @@ data class ConnectionContext(
                     Packet.writePacket(channel, firstPacket)
                     channel.flush()
                 } catch (_: ClosedWriteChannelException) {
-                    log.debug { "Dropped packet stream — $target channel already closed" }
+                    log.debug { "Dropped packet stream: $target channel already closed" }
                     break
                 } catch (e: IOException) {
                     log.warn(e) { "Failed to write batch to $target" }
