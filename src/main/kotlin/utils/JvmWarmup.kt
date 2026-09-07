@@ -2,6 +2,7 @@ package dev.apollointhehouse.utils
 
 import dev.apollointhehouse.net.packet.Packet
 import dev.apollointhehouse.net.packet.PacketPingHandshake
+import dev.apollointhehouse.net.packet.PacketRegistry
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 
@@ -12,7 +13,7 @@ object JvmWarmup {
         val classes: MutableList<Class<*>> = mutableListOf()
         val ids: MutableList<Int> = mutableListOf()
 
-        for ((clazz, id) in Packet.classToPacketID) {
+        for ((clazz, id) in PacketRegistry.classToPacketID) {
             classes.add(clazz)
             ids.add(id)
             sum += id + clazz.hashCode()

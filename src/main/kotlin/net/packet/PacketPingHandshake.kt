@@ -5,7 +5,7 @@ import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 import java.nio.charset.StandardCharsets
 
-class PacketPingHandshake(
+data class PacketPingHandshake(
     val payload: UByte = 0u,
     val identifier: UByte = 0u,
     val pingHostString: String = "",
