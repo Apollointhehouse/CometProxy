@@ -15,7 +15,7 @@ object JvmWarmup {
         for ((clazz, id) in Packet.classToPacketID) {
             classes.add(clazz)
             ids.add(id)
-            sum += id
+            sum += id + clazz.hashCode()
         }
 
         val packet = PacketPingHandshake()
