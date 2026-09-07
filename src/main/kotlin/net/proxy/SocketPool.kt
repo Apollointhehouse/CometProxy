@@ -15,8 +15,8 @@ class SocketPool(
     private val channel: Channel<Socket> = Channel(Channel.UNLIMITED)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    suspend fun init() {
-        repeat(size) { replenish() }
+    suspend fun init() = coroutineScope {
+        (1..size).map { async { replenish() } }.awaitAll()
     }
 
     fun getSocket(): Socket? {
@@ -27,7 +27,9 @@ class SocketPool(
 
     private suspend fun createSocket(): Socket? {
         try {
-            return aSocket(selectorManager).tcp().connect(address)
+            return aSocket(selectorManager).tcp().connect(address) {
+                keepAlive = true
+            }
         } catch (e: Exception) {
             log.error(e) { "Failed to connect to $address" }
             return null

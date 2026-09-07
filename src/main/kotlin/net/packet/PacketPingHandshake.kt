@@ -35,7 +35,8 @@ class PacketPingHandshake(
             val hostname = channel.readJavaStringUTF16BE(255)
             val port = channel.readInt()
 
-            return PacketPingHandshake(                payload = payload,
+            return PacketPingHandshake(
+                payload = payload,
                 identifier = identifier,
                 pingHostString = pingHostString,
                 protocolVersion = protocolVersion,

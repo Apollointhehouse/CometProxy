@@ -34,7 +34,7 @@ class Proxy {
         }
         log.info("Comet-Proxy listening at ${mitmSocket.localAddress}")
 
-        val serverSocketPool = SocketPool(targetAddress, 3, selectorManager)
+        val serverSocketPool = SocketPool(targetAddress, 5, selectorManager)
         serverSocketPool.init()
 
         try {

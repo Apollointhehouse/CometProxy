@@ -13,7 +13,7 @@ interface Packet {
 
     companion object {
         private val packetIDToFactory: MutableMap<Int, PacketFactory<*>> = mutableMapOf()
-        private val classToPacketID: MutableMap<Class<out Packet>, Int> = mutableMapOf()
+        val classToPacketID: Map<Class<out Packet>, Int> field = mutableMapOf<Class<out Packet>, Int>()
 
         init {
             register(0, PacketKeepAlive)
