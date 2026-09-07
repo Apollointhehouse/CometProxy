@@ -17,8 +17,7 @@ class PacketContainerAck(
         get() = 4
 
     companion object : PacketFactory<PacketContainerAck> {
-		override val packetID = 106
-        override suspend fun create(channel: ByteReadChannel): PacketContainerAck {
+		override suspend fun create(channel: ByteReadChannel): PacketContainerAck {
             val windowId = channel.readByte()
             val shortWindowId = channel.readShort()
             val accepted = channel.readByte().toInt() != 0

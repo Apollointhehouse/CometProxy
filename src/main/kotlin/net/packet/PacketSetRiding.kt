@@ -26,8 +26,7 @@ class PacketSetRiding(
         get() = 8
 
     companion object : PacketFactory<PacketSetRiding> {
-		override val packetID = 39
-        override suspend fun create(channel: ByteReadChannel): PacketSetRiding {
+		override suspend fun create(channel: ByteReadChannel): PacketSetRiding {
             val passengerId = channel.readInt()
             val isTileEntity = channel.readByte().toInt() != 0
 

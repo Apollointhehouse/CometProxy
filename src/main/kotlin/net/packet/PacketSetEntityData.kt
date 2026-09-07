@@ -16,8 +16,7 @@ class PacketSetEntityData(
         get() = 5
 
     companion object : PacketFactory<PacketSetEntityData> {
-		override val packetID = 40
-        override suspend fun create(channel: ByteReadChannel): PacketSetEntityData {
+		override suspend fun create(channel: ByteReadChannel): PacketSetEntityData {
             val entityId = channel.readInt()
             val packedItems = SyncedEntityData.unpack(channel)
 

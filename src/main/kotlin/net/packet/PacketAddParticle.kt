@@ -1,9 +1,9 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readBoolean
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeBoolean
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readBoolean
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeBoolean
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
 class PacketAddParticle(
@@ -51,8 +51,7 @@ class PacketAddParticle(
         get() = 40
 
     companion object : PacketFactory<PacketAddParticle> {
-		override val packetID = 63
-        override suspend fun create(channel: ByteReadChannel): PacketAddParticle {
+		override suspend fun create(channel: ByteReadChannel): PacketAddParticle {
             val particleKey = channel.readJavaStringUTF8(100)
             val x = channel.readDouble()
             val y = channel.readDouble()

@@ -43,8 +43,7 @@ class PacketBlockRegionUpdate(
         get() = 17 + this.chunk.size
 
     companion object : PacketFactory<PacketBlockRegionUpdate> {
-		override val packetID = 51
-        const val BYTES_PER_CELL = 8
+		        const val BYTES_PER_CELL = 8
 
         override suspend fun create(channel: ByteReadChannel): PacketBlockRegionUpdate {
             val xPosition = channel.readInt()

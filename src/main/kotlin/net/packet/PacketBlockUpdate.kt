@@ -23,8 +23,7 @@ class PacketBlockUpdate(
         get() = 11
 
     companion object : PacketFactory<PacketBlockUpdate> {
-		override val packetID = 53
-        override suspend fun create(channel: ByteReadChannel): PacketBlockUpdate {
+		override suspend fun create(channel: ByteReadChannel): PacketBlockUpdate {
             val xPosition = channel.readInt()
             val yPosition = channel.readShort()
             val zPosition = channel.readInt()

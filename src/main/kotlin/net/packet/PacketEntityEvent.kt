@@ -17,8 +17,7 @@ class PacketEntityEvent(
         get() = 9
 
     companion object : PacketFactory<PacketEntityEvent> {
-		override val packetID = 38
-        override suspend fun create(channel: ByteReadChannel): PacketEntityEvent {
+		override suspend fun create(channel: ByteReadChannel): PacketEntityEvent {
             val entityId = channel.readInt()
             val entityStatus = channel.readByte()
             val attackedAtYaw = channel.readFloat()

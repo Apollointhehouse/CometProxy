@@ -13,8 +13,7 @@ class PacketSetCarriedItem(
         get() = 2
 
     companion object : PacketFactory<PacketSetCarriedItem> {
-		override val packetID = 16
-        override suspend fun create(channel: ByteReadChannel): PacketSetCarriedItem {
+		override suspend fun create(channel: ByteReadChannel): PacketSetCarriedItem {
             val id = channel.readShort()
 
             return PacketSetCarriedItem(id = id)

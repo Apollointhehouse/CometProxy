@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
 class PacketAESSendKey(
@@ -15,8 +15,7 @@ class PacketAESSendKey(
         get() = 128
 
     companion object : PacketFactory<PacketAESSendKey> {
-		override val packetID = 136
-        override suspend fun create(channel: ByteReadChannel): PacketAESSendKey {
+		override suspend fun create(channel: ByteReadChannel): PacketAESSendKey {
             val key = channel.readJavaStringUTF8(392)
 
             return PacketAESSendKey(key = key)

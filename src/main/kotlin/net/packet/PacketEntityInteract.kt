@@ -17,8 +17,7 @@ class PacketEntityInteract(
         get() = 9
 
     companion object : PacketFactory<PacketEntityInteract> {
-		override val packetID = 7
-        override suspend fun create(channel: ByteReadChannel): PacketEntityInteract {
+		override suspend fun create(channel: ByteReadChannel): PacketEntityInteract {
             val sourceEntityID = channel.readInt()
             val targetEntityID = channel.readInt()
             val action = channel.readByte()

@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readBoolean
-import dev.apollointhehouse.net.packet.Packet.Companion.writeBoolean
+import dev.apollointhehouse.utils.extensions.readBoolean
+import dev.apollointhehouse.utils.extensions.writeBoolean
 import io.ktor.utils.io.*
 
 open class PacketMovePlayer(
@@ -41,8 +41,7 @@ open class PacketMovePlayer(
             get() = 33
 
         companion object : PacketFactory<Pos> {
-		    override val packetID = 11
-
+		    
             override suspend fun create(channel: ByteReadChannel): Pos {
                 val x = channel.readDouble()
                 val y = channel.readDouble()
@@ -82,8 +81,7 @@ open class PacketMovePlayer(
             get() = 41
 
         companion object : PacketFactory<PosRot> {
-		    override val packetID = 13
-
+		    
             override suspend fun create(channel: ByteReadChannel): PosRot {
                 val x = channel.readDouble()
                 val y = channel.readDouble()
@@ -116,7 +114,6 @@ open class PacketMovePlayer(
             get() = 9
 
         companion object : PacketFactory<Rot> {
-		    override val packetID = 12
             override suspend fun create(channel: ByteReadChannel): Rot {
                 val yaw = channel.readFloat()
                 val pitch = channel.readFloat()
@@ -128,7 +125,6 @@ open class PacketMovePlayer(
     }
 
     companion object : PacketFactory<PacketMovePlayer> {
-		override val packetID = 10
-        override suspend fun create(channel: ByteReadChannel): PacketMovePlayer = PacketMovePlayer(onGround = channel.readBoolean())
+		override suspend fun create(channel: ByteReadChannel): PacketMovePlayer = PacketMovePlayer(onGround = channel.readBoolean())
     }
 }

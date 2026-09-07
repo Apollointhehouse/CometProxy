@@ -21,8 +21,7 @@ class PacketWeatherEffect(
         get() = 17
 
     companion object : PacketFactory<PacketWeatherEffect> {
-		override val packetID = 71
-        override suspend fun create(channel: ByteReadChannel): PacketWeatherEffect {
+		override suspend fun create(channel: ByteReadChannel): PacketWeatherEffect {
             val id = channel.readInt()
             val effectId = channel.readByte()
             val x = channel.readInt()

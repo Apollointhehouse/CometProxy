@@ -13,8 +13,7 @@ class PacketSetHotbarOffset(
         get() = 0
 
     companion object : PacketFactory<PacketSetHotbarOffset> {
-		override val packetID = 108
-        override suspend fun create(channel: ByteReadChannel): PacketSetHotbarOffset {
+		override suspend fun create(channel: ByteReadChannel): PacketSetHotbarOffset {
             val hotbarOffset = channel.readByte()
 
             return PacketSetHotbarOffset(hotbarOffset = hotbarOffset)

@@ -38,8 +38,7 @@ class PacketUseOrPlaceItemStack(
         get() = 20
 
     companion object : PacketFactory<PacketUseOrPlaceItemStack> {
-		override val packetID = 15
-        override suspend fun create(channel: ByteReadChannel): PacketUseOrPlaceItemStack {
+		override suspend fun create(channel: ByteReadChannel): PacketUseOrPlaceItemStack {
             val xPosition = channel.readInt()
             val yPosition = channel.readByte().toUByte().toInt()
             val zPosition = channel.readInt()

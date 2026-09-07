@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF16BE
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
 class PacketSignUpdate(
@@ -29,8 +29,7 @@ class PacketSignUpdate(
         get() = signLines.size*16 + 4
 
     companion object : PacketFactory<PacketSignUpdate> {
-		override val packetID = 130
-        override suspend fun create(channel: ByteReadChannel): PacketSignUpdate {
+		override suspend fun create(channel: ByteReadChannel): PacketSignUpdate {
             val xPosition = channel.readInt()
             val yPosition = channel.readShort()
             val zPosition = channel.readInt()

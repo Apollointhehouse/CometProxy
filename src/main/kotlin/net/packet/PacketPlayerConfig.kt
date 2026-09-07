@@ -15,8 +15,7 @@ class PacketPlayerConfig(
         get() = 5
 
     companion object : PacketFactory<PacketPlayerConfig> {
-		override val packetID = 36
-        override suspend fun create(channel: ByteReadChannel): PacketPlayerConfig {
+		override suspend fun create(channel: ByteReadChannel): PacketPlayerConfig {
             val entityId = channel.readInt()
             val config = channel.readShort()
 

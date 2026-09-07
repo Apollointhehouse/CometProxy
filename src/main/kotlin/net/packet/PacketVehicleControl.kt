@@ -23,8 +23,7 @@ class PacketVehicleControl(
         get() = 36
 
     companion object : PacketFactory<PacketVehicleControl> {
-        override val packetID = 26
-
+        
         override suspend fun create(channel: ByteReadChannel): PacketVehicleControl {
             val entityId = channel.readInt()
             val targetXD = channel.readDouble()

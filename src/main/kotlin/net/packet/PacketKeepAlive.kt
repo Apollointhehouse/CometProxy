@@ -9,7 +9,6 @@ class PacketKeepAlive : Packet {
         get() = 0
 
     companion object : PacketFactory<PacketKeepAlive> {
-		override val packetID = 0
         override suspend fun create(channel: ByteReadChannel): PacketKeepAlive = PacketKeepAlive()
     }
 }

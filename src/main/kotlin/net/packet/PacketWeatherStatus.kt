@@ -23,8 +23,7 @@ class PacketWeatherStatus(
         get() = 28
 
     companion object : PacketFactory<PacketWeatherStatus> {
-		override val packetID = 73
-        override suspend fun create(channel: ByteReadChannel): PacketWeatherStatus {
+		override suspend fun create(channel: ByteReadChannel): PacketWeatherStatus {
             val dimId = channel.readInt()
             val id = channel.readInt()
             val newId = channel.readInt()

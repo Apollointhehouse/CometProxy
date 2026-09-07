@@ -1,8 +1,8 @@
 package dev.apollointhehouse.net.packet
 
 import dev.apollointhehouse.data.nbt.tags.CompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.readCompressedCompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.writeCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
 class PacketAddItemEntity(
@@ -36,8 +36,7 @@ class PacketAddItemEntity(
         get() = 24
 
     companion object : PacketFactory<PacketAddItemEntity> {
-		override val packetID = 21
-        override suspend fun create(channel: ByteReadChannel): PacketAddItemEntity {
+		override suspend fun create(channel: ByteReadChannel): PacketAddItemEntity {
             val entityId = channel.readInt()
             val itemID = channel.readShort()
             val count = channel.readByte()

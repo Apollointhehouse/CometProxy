@@ -1,9 +1,9 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readBoolean
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeBoolean
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readBoolean
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeBoolean
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 import kotlin.experimental.or
 
@@ -27,8 +27,6 @@ class PacketMessage(
         get() = message.length + 1
 
     companion object : PacketFactory<PacketMessage> {
-		override val packetID = 3
-
         override suspend fun create(channel: ByteReadChannel): PacketMessage {
             var type = channel.readByte()
             val formatted = (type.toInt() and -128) != 0

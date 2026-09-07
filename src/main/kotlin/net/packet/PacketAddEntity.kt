@@ -2,8 +2,8 @@ package dev.apollointhehouse.net.packet
 
 import dev.apollointhehouse.data.SyncedEntityData
 import dev.apollointhehouse.data.nbt.tags.CompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.readCompressedCompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.writeCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
 class PacketAddEntity(
@@ -57,8 +57,7 @@ class PacketAddEntity(
         get() = if (21 + ownerId <= 0) 0 else 6
 
     companion object : PacketFactory<PacketAddEntity> {
-		override val packetID = 23
-        fun hasOwner(value: Byte): Boolean {
+		        fun hasOwner(value: Byte): Boolean {
             return (value.toInt() and 1) != 0
         }
 

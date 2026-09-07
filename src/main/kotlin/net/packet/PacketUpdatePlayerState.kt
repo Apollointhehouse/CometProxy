@@ -13,8 +13,7 @@ class PacketUpdatePlayerState(
         get() = 1
 
     companion object : PacketFactory<PacketUpdatePlayerState> {
-		override val packetID = 19
-        override suspend fun create(channel: ByteReadChannel): PacketUpdatePlayerState {
+		override suspend fun create(channel: ByteReadChannel): PacketUpdatePlayerState {
             val state = channel.readByte()
 
             return PacketUpdatePlayerState(state = state)

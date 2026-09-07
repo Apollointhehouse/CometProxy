@@ -19,8 +19,7 @@ class PacketFlagOpen(
         get() = 11
 
     companion object : PacketFactory<PacketFlagOpen> {
-		override val packetID = 142
-        override suspend fun create(channel: ByteReadChannel): PacketFlagOpen {
+		override suspend fun create(channel: ByteReadChannel): PacketFlagOpen {
             val windowId = channel.readByte()
             val x = channel.readInt()
             val y = channel.readShort()

@@ -2,8 +2,8 @@ package dev.apollointhehouse.net.packet
 
 import dev.apollointhehouse.data.ItemStack
 import dev.apollointhehouse.data.nbt.tags.CompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.readCompressedCompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.writeCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
 class PacketContainerSetSlot(
@@ -32,8 +32,7 @@ class PacketContainerSetSlot(
         get() = 12
 
     companion object : PacketFactory<PacketContainerSetSlot> {
-		override val packetID = 103
-        override suspend fun create(channel: ByteReadChannel): PacketContainerSetSlot {
+		override suspend fun create(channel: ByteReadChannel): PacketContainerSetSlot {
             val windowId = channel.readByte()
             val stateId = channel.readInt()
             val itemSlot = channel.readShort()

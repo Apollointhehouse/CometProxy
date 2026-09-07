@@ -14,8 +14,7 @@ class PacketServerIcon(
         get() = this.image.size + 4
 
     companion object : PacketFactory<PacketServerIcon> {
-		override val packetID = 253
-        override suspend fun create(channel: ByteReadChannel): PacketServerIcon {
+		override suspend fun create(channel: ByteReadChannel): PacketServerIcon {
             val size = channel.readInt()
             val image = ByteArray(size)
 

@@ -15,8 +15,7 @@ class PacketTakeItemEntity(
         get() = 8
 
     companion object : PacketFactory<PacketTakeItemEntity> {
-		override val packetID = 22
-        override suspend fun create(channel: ByteReadChannel): PacketTakeItemEntity {
+		override suspend fun create(channel: ByteReadChannel): PacketTakeItemEntity {
             val collectedEntityId = channel.readInt()
             val collectorEntityId = channel.readInt()
 

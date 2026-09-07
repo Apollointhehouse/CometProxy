@@ -13,7 +13,6 @@ class PacketSetTime(
         get() = 8
 
     companion object : PacketFactory<PacketSetTime> {
-		override val packetID = 4
         override suspend fun create(channel: ByteReadChannel): PacketSetTime {
             val time = channel.readLong()
 

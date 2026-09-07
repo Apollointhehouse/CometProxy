@@ -1,14 +1,7 @@
 package dev.apollointhehouse.net.packet
 
 import dev.apollointhehouse.data.nbt.tags.CompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.readCompressedCompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF16BE
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.readUUID
-import dev.apollointhehouse.net.packet.Packet.Companion.writeCompressedCompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF16BE
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeUUID
+import dev.apollointhehouse.utils.extensions.*
 import io.ktor.utils.io.*
 import java.util.*
 
@@ -58,8 +51,7 @@ class PacketAddPlayer(
         get() = 29
 
     companion object : PacketFactory<PacketAddPlayer> {
-		override val packetID = 20
-        override suspend fun create(channel: ByteReadChannel): PacketAddPlayer {
+		override suspend fun create(channel: ByteReadChannel): PacketAddPlayer {
             val entityId = channel.readInt()
             val name = channel.readJavaStringUTF8(16)
             val uuid = channel.readUUID()

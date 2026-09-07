@@ -39,8 +39,7 @@ open class PacketMoveEntity(
             get() = 7
 
         companion object : PacketFactory<Pos> {
-		    override val packetID = 31
-
+		    
             override suspend fun create(channel: ByteReadChannel): Pos = Pos(
                 id = channel.readInt(),
                 x = channel.readByte(),
@@ -71,8 +70,6 @@ open class PacketMoveEntity(
             get() = 9
 
         companion object : PacketFactory<PosRot> {
-		    override val packetID = 33
-
             override suspend fun create(channel: ByteReadChannel): PosRot = PosRot(
                 id = channel.readInt(),
                 x = channel.readByte(),
@@ -103,8 +100,6 @@ open class PacketMoveEntity(
             get() = 6
 
         companion object : PacketFactory<Rot> {
-		    override val packetID = 32
-
             override suspend fun create(channel: ByteReadChannel): Rot = Rot(
                 id = channel.readInt(),
                 yaw = channel.readByte(),
@@ -114,7 +109,6 @@ open class PacketMoveEntity(
     }
 
     companion object : PacketFactory<PacketMoveEntity> {
-		override val packetID = 30
-        override suspend fun create(channel: ByteReadChannel): PacketMoveEntity = PacketMoveEntity(id = channel.readInt())
+		override suspend fun create(channel: ByteReadChannel): PacketMoveEntity = PacketMoveEntity(id = channel.readInt())
     }
 }

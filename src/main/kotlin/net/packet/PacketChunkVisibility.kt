@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readBoolean
-import dev.apollointhehouse.net.packet.Packet.Companion.writeBoolean
+import dev.apollointhehouse.utils.extensions.readBoolean
+import dev.apollointhehouse.utils.extensions.writeBoolean
 import io.ktor.utils.io.*
 
 class PacketChunkVisibility(
@@ -21,8 +21,7 @@ class PacketChunkVisibility(
         get() = 9
 
     companion object : PacketFactory<PacketChunkVisibility> {
-		override val packetID = 50
-        override suspend fun create(channel: ByteReadChannel): PacketChunkVisibility {
+		override suspend fun create(channel: ByteReadChannel): PacketChunkVisibility {
             val chunkX = channel.readInt()
             val chunkZ = channel.readInt()
             val playerAdded = channel.readBoolean()

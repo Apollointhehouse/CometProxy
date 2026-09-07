@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF16BE
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
 class PacketPlayerList(
@@ -34,8 +34,7 @@ class PacketPlayerList(
         }
 
     companion object : PacketFactory<PacketPlayerList> {
-		override val packetID = 138
-        override suspend fun create(channel: ByteReadChannel): PacketPlayerList {
+		override suspend fun create(channel: ByteReadChannel): PacketPlayerList {
             val count = channel.readInt()
 
             val (players, scores) = (0..<count)

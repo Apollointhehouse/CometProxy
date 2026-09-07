@@ -1,8 +1,8 @@
 package dev.apollointhehouse.net.packet
 
 import dev.apollointhehouse.data.SyncedEntityData
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF16BE
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
 class PacketAddMob(
@@ -34,8 +34,7 @@ class PacketAddMob(
         get() = 21
 
     companion object : PacketFactory<PacketAddMob> {
-		override val packetID = 24
-        override suspend fun create(channel: ByteReadChannel): PacketAddMob {
+		override suspend fun create(channel: ByteReadChannel): PacketAddMob {
             val id = channel.readInt()
             val type = channel.readShort()
             val x = channel.readInt()

@@ -24,8 +24,7 @@ class PacketSetMobSpawner(
         get() = 14
 
     companion object : PacketFactory<PacketSetMobSpawner> {
-		override val packetID = 132
-        override suspend fun create(channel: ByteReadChannel): PacketSetMobSpawner {
+		override suspend fun create(channel: ByteReadChannel): PacketSetMobSpawner {
             val x = channel.readInt()
             val y = channel.readShort()
             val z = channel.readInt()

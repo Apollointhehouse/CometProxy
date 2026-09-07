@@ -13,7 +13,6 @@ class PacketSetPaintingArt(
         get() = 0
 
     companion object : PacketFactory<PacketSetPaintingArt> {
-		override val packetID = 139
         override suspend fun create(channel: ByteReadChannel): PacketSetPaintingArt {
             val motive = channel.readInt()
 

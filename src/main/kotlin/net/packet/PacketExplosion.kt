@@ -1,8 +1,8 @@
 package dev.apollointhehouse.net.packet
 
 import dev.apollointhehouse.data.TilePos
-import dev.apollointhehouse.net.packet.Packet.Companion.readBoolean
-import dev.apollointhehouse.net.packet.Packet.Companion.writeBoolean
+import dev.apollointhehouse.utils.extensions.readBoolean
+import dev.apollointhehouse.utils.extensions.writeBoolean
 import io.ktor.utils.io.*
 
 class PacketExplosion(
@@ -36,8 +36,7 @@ class PacketExplosion(
         get() = 32 + this.destroyedBlockPositions.size * 3 + 1
 
     companion object : PacketFactory<PacketExplosion> {
-		override val packetID = 60
-        override suspend fun create(channel: ByteReadChannel): PacketExplosion {
+		override suspend fun create(channel: ByteReadChannel): PacketExplosion {
             val explosionX = channel.readDouble()
             val explosionY = channel.readDouble()
             val explosionZ = channel.readDouble()

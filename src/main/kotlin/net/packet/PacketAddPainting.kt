@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
 class PacketAddPainting(
@@ -31,8 +31,7 @@ class PacketAddPainting(
         get() = 24
 
     companion object : PacketFactory<PacketAddPainting> {
-		override val packetID = 25
-        override suspend fun create(channel: ByteReadChannel): PacketAddPainting {
+		override suspend fun create(channel: ByteReadChannel): PacketAddPainting {
             val entityId = channel.readInt()
             val key = channel.readJavaStringUTF8(30)
             val xPosition = channel.readInt()

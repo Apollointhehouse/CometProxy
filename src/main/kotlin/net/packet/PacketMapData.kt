@@ -30,8 +30,6 @@ class PacketMapData(
         get() = 4 + mapData.size
 
     companion object : PacketFactory<PacketMapData> {
-        override val packetID = 131
-
         override suspend fun create(channel: ByteReadChannel): PacketMapData {
             val itemId = channel.readShort()
             val meta = channel.readShort()

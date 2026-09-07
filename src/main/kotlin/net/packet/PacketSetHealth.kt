@@ -13,8 +13,7 @@ class PacketSetHealth(
         get() = 2
 
     companion object : PacketFactory<PacketSetHealth> {
-		override val packetID = 8
-        override suspend fun create(channel: ByteReadChannel): PacketSetHealth {
+		override suspend fun create(channel: ByteReadChannel): PacketSetHealth {
             val healthMP = channel.readShort()
 
             return PacketSetHealth(healthMP = healthMP)

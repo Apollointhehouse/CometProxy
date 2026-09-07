@@ -33,8 +33,7 @@ class PacketChunkBlocksUpdate(
         get() = 10 + size * 4
 
     companion object : PacketFactory<PacketChunkBlocksUpdate> {
-		override val packetID = 52
-        override suspend fun create(channel: ByteReadChannel): PacketChunkBlocksUpdate {
+		override suspend fun create(channel: ByteReadChannel): PacketChunkBlocksUpdate {
             val xChunk = channel.readInt()
             val zChunk = channel.readInt()
             val size = channel.readShort() and '\uffff'.code.toShort()

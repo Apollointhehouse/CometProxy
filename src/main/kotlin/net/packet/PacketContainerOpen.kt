@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
 class PacketContainerOpen(
@@ -23,8 +23,7 @@ class PacketContainerOpen(
         get() = 3 + this.windowTitle.length
 
     companion object : PacketFactory<PacketContainerOpen> {
-		override val packetID = 100
-        override suspend fun create(channel: ByteReadChannel): PacketContainerOpen {
+		override suspend fun create(channel: ByteReadChannel): PacketContainerOpen {
             val windowId = channel.readByte()
             val inventoryType = channel.readByte()
             val windowTitle = channel.readJavaStringUTF8(50)

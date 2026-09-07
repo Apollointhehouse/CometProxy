@@ -21,8 +21,7 @@ class PacketPlaySound(
         get() = 20
 
     companion object : PacketFactory<PacketPlaySound> {
-		override val packetID = 61
-        override suspend fun create(channel: ByteReadChannel): PacketPlaySound {
+		override suspend fun create(channel: ByteReadChannel): PacketPlaySound {
             val soundID = channel.readInt()
             val x = channel.readInt()
             val y = channel.readInt()

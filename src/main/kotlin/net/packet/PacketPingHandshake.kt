@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF16BE
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 import java.nio.charset.StandardCharsets
 
@@ -26,8 +26,7 @@ class PacketPingHandshake(
     override val estimatedSize: Int = 0
 
     companion object : PacketFactory<PacketPingHandshake> {
-		override val packetID = 254
-        override suspend fun create(channel: ByteReadChannel): PacketPingHandshake {
+		override suspend fun create(channel: ByteReadChannel): PacketPingHandshake {
             val payload = channel.readByte().toUByte()
             val identifier = channel.readByte().toUByte()
             val pingHostString = channel.readJavaStringUTF16BE(255)

@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF16BE
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
 class PacketDisconnect(
@@ -17,8 +17,7 @@ class PacketDisconnect(
         get() = reason.length
 
     companion object : PacketFactory<PacketDisconnect> {
-		override val packetID = 255
-        override suspend fun create(channel: ByteReadChannel): PacketDisconnect {
+		override suspend fun create(channel: ByteReadChannel): PacketDisconnect {
             val reason = channel.readJavaStringUTF16BE(255)
 
             return PacketDisconnect(reason = reason)

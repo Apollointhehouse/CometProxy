@@ -19,8 +19,7 @@ class PacketSetEntityMotion(
         get() = 10
 
     companion object : PacketFactory<PacketSetEntityMotion> {
-		override val packetID = 28
-        override suspend fun create(channel: ByteReadChannel): PacketSetEntityMotion {
+		override suspend fun create(channel: ByteReadChannel): PacketSetEntityMotion {
             val entityId = channel.readInt()
             val motionX = channel.readShort()
             val motionY = channel.readShort()

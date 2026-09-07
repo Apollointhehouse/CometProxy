@@ -15,8 +15,7 @@ class PacketContainerClose(
         get() = 1
 
     companion object : PacketFactory<PacketContainerClose> {
-		override val packetID = 101
-        override suspend fun create(channel: ByteReadChannel): PacketContainerClose {
+		override suspend fun create(channel: ByteReadChannel): PacketContainerClose {
             val windowId = channel.readByte()
 
             return PacketContainerClose(windowId = windowId)

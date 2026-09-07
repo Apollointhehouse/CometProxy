@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 import kotlin.experimental.and
 
@@ -23,8 +23,7 @@ class PacketSyncIDs(
         get() = 4 + 1
 
     companion object : PacketFactory<PacketSyncIDs> {
-		override val packetID = 201
-        override suspend fun create(channel: ByteReadChannel): PacketSyncIDs {
+		override suspend fun create(channel: ByteReadChannel): PacketSyncIDs {
             val destinationId = channel.readByte() and 255.toByte()
             val count = channel.readInt()
             val mapping: MutableMap<Short, String> = mutableMapOf()

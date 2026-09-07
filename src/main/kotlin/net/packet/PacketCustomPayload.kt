@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
 class PacketCustomPayload(
@@ -22,8 +22,7 @@ class PacketCustomPayload(
         get() = netChannel.length + 4 + data.size
 
     companion object : PacketFactory<PacketCustomPayload> {
-		override val packetID = 250
-        override suspend fun create(channel: ByteReadChannel): PacketCustomPayload {
+		override suspend fun create(channel: ByteReadChannel): PacketCustomPayload {
             val netChannel = channel.readJavaStringUTF8(128)
             val length = channel.readInt()
             var data = byteArrayOf()

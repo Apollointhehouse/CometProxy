@@ -2,8 +2,8 @@ package dev.apollointhehouse.net.packet
 
 import dev.apollointhehouse.data.ItemStack
 import dev.apollointhehouse.data.nbt.tags.CompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.readCompressedCompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.writeCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
 class PacketContainerClick(
@@ -53,8 +53,7 @@ class PacketContainerClick(
         get() = 11 + (if (this.args.isNotEmpty()) this.args.size * 4 else 0) + (if (this.changedSlots.isNotEmpty()) this.changedSlots.size * 7 else 0)
 
     companion object : PacketFactory<PacketContainerClick> {
-		override val packetID = 102
-        override suspend fun create(channel: ByteReadChannel): PacketContainerClick {
+		override suspend fun create(channel: ByteReadChannel): PacketContainerClick {
             val windowID = channel.readByte()
             val action = channel.readByte()
             val size = channel.readByte()

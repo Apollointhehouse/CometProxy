@@ -23,8 +23,7 @@ class PacketTeleportEntity(
         get() = 34
 
     companion object : PacketFactory<PacketTeleportEntity> {
-		override val packetID = 34
-        override suspend fun create(channel: ByteReadChannel): PacketTeleportEntity {
+		override suspend fun create(channel: ByteReadChannel): PacketTeleportEntity {
             val id = channel.readInt()
             val x = channel.readInt()
             val y = channel.readInt()

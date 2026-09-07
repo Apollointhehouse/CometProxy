@@ -17,8 +17,7 @@ class PacketContainerSetData(
         get() = 7
 
     companion object : PacketFactory<PacketContainerSetData> {
-		override val packetID = 105
-        override suspend fun create(channel: ByteReadChannel): PacketContainerSetData {
+		override suspend fun create(channel: ByteReadChannel): PacketContainerSetData {
             val windowId = channel.readByte()
             val progressBar = channel.readShort()
             val progressBarValue = channel.readShort()

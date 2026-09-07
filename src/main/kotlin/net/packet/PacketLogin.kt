@@ -1,9 +1,9 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.readUUID
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeUUID
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readUUID
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeUUID
 import io.ktor.utils.io.*
 import java.util.*
 
@@ -32,7 +32,6 @@ class PacketLogin(
         get() = 4 + username.length + 8 + 1 + 4 + 4
 
     companion object : PacketFactory<PacketLogin> {
-		override val packetID = 1
         override suspend fun create(channel: ByteReadChannel): PacketLogin {
             val playerEntityIdAndProtocolVersion = channel.readInt()
             val username = channel.readJavaStringUTF8(16)

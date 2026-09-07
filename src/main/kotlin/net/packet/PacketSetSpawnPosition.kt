@@ -17,7 +17,6 @@ class PacketSetSpawnPosition(
         get() = 12
 
     companion object : PacketFactory<PacketSetSpawnPosition> {
-		override val packetID = 6
         override suspend fun create(channel: ByteReadChannel): PacketSetSpawnPosition {
             val x = channel.readInt()
             val y = channel.readInt()

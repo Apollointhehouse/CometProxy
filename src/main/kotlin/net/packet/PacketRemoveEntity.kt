@@ -13,8 +13,7 @@ class PacketRemoveEntity(
         get() = 4
 
     companion object : PacketFactory<PacketRemoveEntity> {
-		override val packetID = 29
-        override suspend fun create(channel: ByteReadChannel): PacketRemoveEntity {
+		override suspend fun create(channel: ByteReadChannel): PacketRemoveEntity {
             val entityId = channel.readInt()
 
             return PacketRemoveEntity(entityId = entityId)

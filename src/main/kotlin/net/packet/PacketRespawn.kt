@@ -15,8 +15,7 @@ class PacketRespawn(
         get() = 8
 
     companion object : PacketFactory<PacketRespawn> {
-		override val packetID = 9
-        override suspend fun create(channel: ByteReadChannel): PacketRespawn {
+		override suspend fun create(channel: ByteReadChannel): PacketRespawn {
             val respawnDimensionId = channel.readInt()
             val respawnWorldTypeId = channel.readInt()
 

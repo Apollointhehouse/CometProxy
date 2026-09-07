@@ -2,8 +2,8 @@ package dev.apollointhehouse.net.packet
 
 import dev.apollointhehouse.data.ItemStack
 import dev.apollointhehouse.data.nbt.tags.CompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.readCompressedCompoundTag
-import dev.apollointhehouse.net.packet.Packet.Companion.writeCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
+import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
 class PacketContainerSetContent(
@@ -29,8 +29,7 @@ class PacketContainerSetContent(
         get() = 12 + this.stackList.size * 5
 
     companion object : PacketFactory<PacketContainerSetContent> {
-		override val packetID = 104
-        override suspend fun create(channel: ByteReadChannel): PacketContainerSetContent {
+		override suspend fun create(channel: ByteReadChannel): PacketContainerSetContent {
             val windowId = channel.readByte()
             val stateId = channel.readInt()
             val carriedItem = readStack(channel)

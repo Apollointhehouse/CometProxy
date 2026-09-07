@@ -23,8 +23,7 @@ class PacketEntityFling(
         get() = 21
 
     companion object : PacketFactory<PacketEntityFling> {
-		override val packetID = 37
-        override suspend fun create(channel: ByteReadChannel): PacketEntityFling {
+		override suspend fun create(channel: ByteReadChannel): PacketEntityFling {
             val entityId = channel.readInt()
             val xd = channel.readFloat().toDouble()
             val yd = channel.readFloat().toDouble()

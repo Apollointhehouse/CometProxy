@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readJavaStringUTF8
-import dev.apollointhehouse.net.packet.Packet.Companion.writeJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
+import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
 class PacketCommandManager(
@@ -15,7 +15,6 @@ class PacketCommandManager(
         get() = 1
 
     companion object : PacketFactory<PacketCommandManager> {
-		override val packetID = 120
-        override suspend fun create(channel: ByteReadChannel): PacketCommandManager = PacketCommandManager(channel.readJavaStringUTF8(65532))
+		override suspend fun create(channel: ByteReadChannel): PacketCommandManager = PacketCommandManager(channel.readJavaStringUTF8(65532))
     }
 }

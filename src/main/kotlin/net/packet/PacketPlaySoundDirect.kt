@@ -26,8 +26,7 @@ class PacketPlaySoundDirect(
         get() = 23
 
     companion object : PacketFactory<PacketPlaySoundDirect> {
-		override val packetID = 62
-        override suspend fun create(channel: ByteReadChannel): PacketPlaySoundDirect {
+		override suspend fun create(channel: ByteReadChannel): PacketPlaySoundDirect {
             val soundId = (channel.readShort() and '\uffff'.code.toShort())
             val soundType = channel.readByte()
             val x = channel.readFloat().toDouble()

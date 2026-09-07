@@ -15,8 +15,7 @@ class PacketAnimate(
         get() = 5
 
     companion object : PacketFactory<PacketAnimate> {
-		override val packetID = 18
-        override suspend fun create(channel: ByteReadChannel): PacketAnimate {
+		override suspend fun create(channel: ByteReadChannel): PacketAnimate {
             val entityId = channel.readInt()
             val animate = channel.readByte()
 

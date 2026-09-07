@@ -1,7 +1,7 @@
 package dev.apollointhehouse.net.packet
 
-import dev.apollointhehouse.net.packet.Packet.Companion.readBoolean
-import dev.apollointhehouse.net.packet.Packet.Companion.writeBoolean
+import dev.apollointhehouse.utils.extensions.readBoolean
+import dev.apollointhehouse.utils.extensions.writeBoolean
 import io.ktor.utils.io.*
 
 class PacketGuidebook(
@@ -15,8 +15,7 @@ class PacketGuidebook(
         get() = 1
 
     companion object : PacketFactory<PacketGuidebook> {
-		override val packetID = 133
-        override suspend fun create(channel: ByteReadChannel): PacketGuidebook {
+		override suspend fun create(channel: ByteReadChannel): PacketGuidebook {
             val isGuidebookOpen = channel.readBoolean()
 
             return PacketGuidebook(isGuidebookOpen = isGuidebookOpen)

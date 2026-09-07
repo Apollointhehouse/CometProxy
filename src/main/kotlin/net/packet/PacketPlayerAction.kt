@@ -25,8 +25,7 @@ class PacketPlayerAction(
         get() = 19
 
     companion object : PacketFactory<PacketPlayerAction> {
-		override val packetID = 14
-        override suspend fun create(channel: ByteReadChannel): PacketPlayerAction {
+		override suspend fun create(channel: ByteReadChannel): PacketPlayerAction {
             val action = channel.readByte().toUByte().toInt()
             val xPosition = channel.readInt()
             val yPosition = channel.readByte().toUByte().toInt()

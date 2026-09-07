@@ -42,8 +42,7 @@ class PacketMessageTranslatable(
         get() = 4 + this.args.size + this.args.size * 16
 
     companion object : PacketFactory<PacketMessageTranslatable> {
-		override val packetID = 70
-        override suspend fun create(channel: ByteReadChannel): PacketMessageTranslatable {
+		override suspend fun create(channel: ByteReadChannel): PacketMessageTranslatable {
             val key = channel.readShort()
             var type = channel.readByte()
             val formatted = (type and -128).toInt() != 0

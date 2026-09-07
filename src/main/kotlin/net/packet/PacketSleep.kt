@@ -21,8 +21,7 @@ class PacketSleep(
         get() = 17
 
     companion object : PacketFactory<PacketSleep> {
-		override val packetID = 17
-        override suspend fun create(channel: ByteReadChannel): PacketSleep {
+		override suspend fun create(channel: ByteReadChannel): PacketSleep {
             val entityID = channel.readInt()
             val wtf = channel.readByte()
             val x = channel.readInt()
