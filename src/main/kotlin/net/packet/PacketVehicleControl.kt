@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketVehicleControl(
+data class PacketVehicleControl(
     var entityId: Int = 0,
     var targetXD: Double = 0.0,
     var targetYD: Double = 0.0,

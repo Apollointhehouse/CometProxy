@@ -6,7 +6,7 @@ import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
-class PacketAddEntity(
+data class PacketAddEntity(
     val entityId: Int = 0,
     val xPosition: Int = 0,
     val yPosition: Int = 0,

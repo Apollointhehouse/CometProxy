@@ -4,77 +4,69 @@ import dev.apollointhehouse.utils.extensions.readBoolean
 import dev.apollointhehouse.utils.extensions.writeBoolean
 import io.ktor.utils.io.*
 
-open class PacketMovePlayer(
-    var x: Double = 0.0,
-    var y: Double = 0.0,
-    var z: Double = 0.0,
-    var yaw: Float = 0f,
-    var pitch: Float = 0f,
-    var onGround: Boolean = false
-) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeBoolean(onGround)
+sealed interface PacketMovePlayer : Packet {
+    var onGround: Boolean
+
+    data class NoPosition(
+        override var onGround: Boolean = false
+    ) : PacketMovePlayer {
+        override suspend fun write(channel: ByteWriteChannel) {
+            channel.writeBoolean(onGround)
+        }
+
+        override val estimatedSize: Int
+            get() = 1
+
+        companion object : PacketFactory<NoPosition> {
+            override suspend fun create(channel: ByteReadChannel): NoPosition =
+                NoPosition(onGround = channel.readBoolean())
+        }
     }
 
-    override val estimatedSize: Int
-        get() = 1
-
-    class Pos(
-        x: Double,
-        y: Double,
-        z: Double,
-        onGround: Boolean,
-    ) : PacketMovePlayer(
-        x = x,
-        y = y,
-        z = z,
-        onGround = onGround,
-    ) {
+    data class Position(
+        var x: Double,
+        var y: Double,
+        var z: Double,
+        override var onGround: Boolean,
+    ) : PacketMovePlayer {
         override suspend fun write(channel: ByteWriteChannel) {
             channel.writeDouble(x)
             channel.writeDouble(y)
             channel.writeDouble(z)
-            super.write(channel)
+            channel.writeBoolean(onGround)
         }
 
         override val estimatedSize: Int
             get() = 33
 
-        companion object : PacketFactory<Pos> {
+        companion object : PacketFactory<Position> {
 		    
-            override suspend fun create(channel: ByteReadChannel): Pos {
+            override suspend fun create(channel: ByteReadChannel): Position {
                 val x = channel.readDouble()
                 val y = channel.readDouble()
                 val z = channel.readDouble()
                 val onGround = channel.readBoolean()
 
-                return Pos(x, y, z, onGround)
+                return Position(x, y, z, onGround)
             }
         }
     }
 
-    class PosRot(
-        x: Double,
-        y: Double,
-        z: Double,
-        yaw: Float,
-        pitch: Float,
-        onGround: Boolean,
-    ) : PacketMovePlayer(
-        x = x,
-        y = y,
-        z = z,
-        yaw = yaw,
-        pitch = pitch,
-        onGround = onGround,
-    ) {
+    data class PosRot(
+        var x: Double,
+        var y: Double,
+        var z: Double,
+        var yaw: Float,
+        var pitch: Float,
+        override var onGround: Boolean,
+    ) : PacketMovePlayer {
         override suspend fun write(channel: ByteWriteChannel) {
             channel.writeDouble(x)
             channel.writeDouble(y)
             channel.writeDouble(z)
             channel.writeFloat(yaw)
             channel.writeFloat(pitch)
-            super.write(channel)
+            channel.writeBoolean(onGround)
         }
 
         override val estimatedSize: Int
@@ -95,36 +87,28 @@ open class PacketMovePlayer(
         }
     }
 
-    class Rot(
-        yaw: Float,
-        pitch: Float,
-        onGround: Boolean,
-    ) : PacketMovePlayer(
-        yaw = yaw,
-        pitch = pitch,
-        onGround = onGround,
-    ) {
+    data class Rotation(
+        var yaw: Float,
+        var pitch: Float,
+        override var onGround: Boolean,
+    ) : PacketMovePlayer {
         override suspend fun write(channel: ByteWriteChannel) {
             channel.writeFloat(yaw)
             channel.writeFloat(pitch)
-            super.write(channel)
+            channel.writeBoolean(onGround)
         }
 
         override val estimatedSize: Int
             get() = 9
 
-        companion object : PacketFactory<Rot> {
-            override suspend fun create(channel: ByteReadChannel): Rot {
+        companion object : PacketFactory<Rotation> {
+            override suspend fun create(channel: ByteReadChannel): Rotation {
                 val yaw = channel.readFloat()
                 val pitch = channel.readFloat()
                 val onGround = channel.readByte().toInt() != 0
 
-                return Rot(yaw, pitch, onGround)
+                return Rotation(yaw, pitch, onGround)
             }
         }
-    }
-
-    companion object : PacketFactory<PacketMovePlayer> {
-		override suspend fun create(channel: ByteReadChannel): PacketMovePlayer = PacketMovePlayer(onGround = channel.readBoolean())
     }
 }

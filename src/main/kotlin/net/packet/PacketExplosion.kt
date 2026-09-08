@@ -5,7 +5,7 @@ import dev.apollointhehouse.utils.extensions.readBoolean
 import dev.apollointhehouse.utils.extensions.writeBoolean
 import io.ktor.utils.io.*
 
-class PacketExplosion(
+data class PacketExplosion(
     val explosionX: Double = 0.0,
     val explosionY: Double = 0.0,
     val explosionZ: Double = 0.0,

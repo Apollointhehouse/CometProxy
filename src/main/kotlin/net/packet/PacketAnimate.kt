@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketAnimate(
+data class PacketAnimate(
     val entityId: Int = 0,
     val animate: Byte = 0,
 ) : Packet {

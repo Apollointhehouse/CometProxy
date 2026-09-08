@@ -5,7 +5,7 @@ import dev.apollointhehouse.utils.extensions.*
 import io.ktor.utils.io.*
 import java.util.*
 
-class PacketAddPlayer(
+data class PacketAddPlayer(
     val entityId: Int = 0,
     val name: String,
     val uuid: UUID,

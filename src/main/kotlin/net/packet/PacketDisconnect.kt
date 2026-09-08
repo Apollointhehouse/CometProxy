@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
-class PacketDisconnect(
+data class PacketDisconnect(
     val image: ByteArray = byteArrayOf(),
     var reason: String = "",
 ) : Packet {

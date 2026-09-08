@@ -6,7 +6,7 @@ import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
-class PacketContainerClick(
+data class PacketContainerClick(
     val windowID: Byte = 0,
     val action: Byte = 0,
     val args: IntArray = intArrayOf(),

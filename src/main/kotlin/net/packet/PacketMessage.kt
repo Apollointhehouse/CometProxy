@@ -7,7 +7,7 @@ import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 import kotlin.experimental.or
 
-class PacketMessage(
+data class PacketMessage(
     val format: Short = 0,
     var message: String = "",
     val type: Byte = 0,

@@ -5,7 +5,7 @@ import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 import kotlin.experimental.and
 
-class PacketSyncIDs(
+data class PacketSyncIDs(
     val destinationId: Byte = -1,
     val mapping: MutableMap<Short, String> = mutableMapOf(),
 ) : Packet {

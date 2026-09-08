@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketWeatherEffect(
+data class PacketWeatherEffect(
     val id: Int = 0,
     val x: Int = 0,
     val y: Int = 0,

@@ -3,7 +3,7 @@ package dev.apollointhehouse.net.packet
 import dev.apollointhehouse.data.SyncedEntityData
 import io.ktor.utils.io.*
 
-class PacketSetEntityData(
+data class PacketSetEntityData(
     val entityId: Int = 0,
     val packedItems: List<SyncedEntityData.DataItem<*>> = listOf(),
 ) : Packet {

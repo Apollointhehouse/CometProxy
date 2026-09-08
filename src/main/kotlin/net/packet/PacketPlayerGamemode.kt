@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
-class PacketPlayerGamemode(
+data class PacketPlayerGamemode(
     val gamemodeId: String = "",
     val entityId: Int = 0,
 ) : Packet {

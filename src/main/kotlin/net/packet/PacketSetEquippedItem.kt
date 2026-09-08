@@ -5,7 +5,7 @@ import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
-class PacketSetEquippedItem(
+data class PacketSetEquippedItem(
     val entityID: Int = 0,
     val slot: Short = 0,
     val itemID: Short = 0,

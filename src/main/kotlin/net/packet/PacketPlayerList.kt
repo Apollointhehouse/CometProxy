@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
-class PacketPlayerList(
+data class PacketPlayerList(
     val players: Array<String> = arrayOf(),
     val scores: Array<String> = arrayOf(),
     val count: Int = 0,

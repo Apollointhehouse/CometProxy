@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketPlayerConfig(
+data class PacketPlayerConfig(
     val entityId: Int = 0,
     val config: Short = 0,
 ) : Packet {

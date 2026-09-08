@@ -5,7 +5,7 @@ import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
-class PacketTileEntityData(
+data class PacketTileEntityData(
     val tag: CompoundTag? = null,
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {

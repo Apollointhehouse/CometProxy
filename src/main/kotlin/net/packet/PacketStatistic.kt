@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
-class PacketStatistic(
+data class PacketStatistic(
     val statID: String = "",
     val valueChange: Byte = 0,
 ) : Packet {

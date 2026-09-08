@@ -2,34 +2,33 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-open class PacketMoveEntity(
-    val id: Int = 0,
-    val x: Byte = 0,
-    val y: Byte = 0,
-    val z: Byte = 0,
-    val yaw: Byte = 0,
-    val pitch: Byte = 0,
-) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(id)
+interface PacketMoveEntity : Packet {
+    val id: Int
+
+    data class None(
+        override val id: Int = 0,
+    ) : PacketMoveEntity {
+        override suspend fun write(channel: ByteWriteChannel) {
+            channel.writeInt(id)
+        }
+
+        override val estimatedSize: Int
+            get() = 4
+
+        companion object : PacketFactory<None> {
+            override suspend fun create(channel: ByteReadChannel): None =
+                None(id = channel.readInt())
+        }
     }
 
-    override val estimatedSize: Int
-        get() = 4
-
-    class Pos(
-        id: Int,
-        x: Byte,
-        y: Byte,
-        z: Byte,
-    ) : PacketMoveEntity(
-        id = id,
-        x = x,
-        y = y,
-        z = z,
-    ) {
+    data class Pos(
+        override val id: Int,
+        val x: Byte,
+        val y: Byte,
+        val z: Byte,
+    ) : PacketMoveEntity {
         override suspend fun write(channel: ByteWriteChannel) {
-            super.write(channel)
+            channel.writeInt(id)
             channel.writeByte(x)
             channel.writeByte(y)
             channel.writeByte(z)
@@ -49,16 +48,16 @@ open class PacketMoveEntity(
         }
     }
 
-    class PosRot(
-        id: Int,
-        x: Byte,
-        y: Byte,
-        z: Byte,
-        yaw: Byte,
-        pitch: Byte,
-    ) : PacketMoveEntity(id, x, y, z, yaw, pitch) {
+    data class PosRot(
+        override val id: Int,
+        val x: Byte,
+        val y: Byte,
+        val z: Byte,
+        val yaw: Byte,
+        val pitch: Byte,
+    ) : PacketMoveEntity {
         override suspend fun write(channel: ByteWriteChannel) {
-            super.write(channel)
+            channel.writeInt(id)
             channel.writeByte(x)
             channel.writeByte(y)
             channel.writeByte(z)
@@ -81,17 +80,13 @@ open class PacketMoveEntity(
         }
     }
 
-    class Rot(
-        id: Int,
-        yaw: Byte,
-        pitch: Byte,
-    ) : PacketMoveEntity(
-        id = id,
-        yaw = yaw,
-        pitch = pitch,
-    ) {
+    data class Rot(
+        override val id: Int,
+        val yaw: Byte,
+        val pitch: Byte,
+    ) : PacketMoveEntity {
         override suspend fun write(channel: ByteWriteChannel) {
-            super.write(channel)
+            channel.writeInt(id)
             channel.writeByte(yaw)
             channel.writeByte(pitch)
         }
@@ -106,9 +101,5 @@ open class PacketMoveEntity(
                 pitch = channel.readByte()
             )
         }
-    }
-
-    companion object : PacketFactory<PacketMoveEntity> {
-		override suspend fun create(channel: ByteReadChannel): PacketMoveEntity = PacketMoveEntity(id = channel.readInt())
     }
 }

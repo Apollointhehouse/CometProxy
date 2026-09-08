@@ -2,13 +2,11 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketKeepAlive : Packet {
+data object PacketKeepAlive : Packet, PacketFactory<PacketKeepAlive> {
     override suspend fun write(channel: ByteWriteChannel) {}
 
     override val estimatedSize: Int
         get() = 0
 
-    companion object : PacketFactory<PacketKeepAlive> {
-        override suspend fun create(channel: ByteReadChannel): PacketKeepAlive = PacketKeepAlive()
-    }
+    override suspend fun create(channel: ByteReadChannel): PacketKeepAlive = PacketKeepAlive
 }

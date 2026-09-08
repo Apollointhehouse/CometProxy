@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
-class PacketRecipeSync(
+data class PacketRecipeSync(
     val recipe: String = "",
     val maxRecipes: Long = 0,
 ) : Packet {

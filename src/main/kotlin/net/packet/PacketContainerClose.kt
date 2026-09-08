@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketContainerClose(
+data class PacketContainerClose(
     val windowId: Byte = 0,
 ) : Packet {
     

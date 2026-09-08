@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readBoolean
 import dev.apollointhehouse.utils.extensions.writeBoolean
 import io.ktor.utils.io.*
 
-class PacketChunkVisibility(
+data class PacketChunkVisibility(
     val chunkX: Int = 0,
     val chunkZ: Int = 0,
     val playerAdded: Boolean = false,

@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketSetCarriedItem(
+data class PacketSetCarriedItem(
     val id: Short = 0,
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {

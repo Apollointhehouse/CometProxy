@@ -4,7 +4,7 @@ import dev.apollointhehouse.data.MapWaypoint
 import io.ktor.utils.io.*
 import kotlin.experimental.and
 
-class PacketMapData(
+data class PacketMapData(
     var itemId: Short = 0,
     var meta: Short = 0,
     var scale: Byte = 0,

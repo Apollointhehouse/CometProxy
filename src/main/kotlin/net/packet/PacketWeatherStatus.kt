@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketWeatherStatus(
+data class PacketWeatherStatus(
     val dimId: Int = 0,
     val id: Int = 0,
     val newId: Int = 0,

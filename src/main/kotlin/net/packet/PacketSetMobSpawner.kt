@@ -3,7 +3,7 @@ package dev.apollointhehouse.net.packet
 import io.ktor.utils.io.*
 import kotlin.experimental.and
 
-class PacketSetMobSpawner(
+data class PacketSetMobSpawner(
     val x: Int = 0,
     val y: Short = 0,
     val z: Int = 0,

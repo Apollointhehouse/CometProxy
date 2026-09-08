@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readBoolean
 import dev.apollointhehouse.utils.extensions.writeBoolean
 import io.ktor.utils.io.*
 
-class PacketPhotoMode(
+data class PacketPhotoMode(
     val disabled: Boolean = false,
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {

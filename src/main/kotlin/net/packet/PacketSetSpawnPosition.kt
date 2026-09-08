@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketSetSpawnPosition(
+data class PacketSetSpawnPosition(
     val x: Int = 0,
     val y: Int = 0,
     val z: Int = 0,

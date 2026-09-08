@@ -5,7 +5,7 @@ import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
-class PacketGameRule(
+data class PacketGameRule(
     val tag: CompoundTag = CompoundTag(null),
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {

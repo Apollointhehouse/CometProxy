@@ -6,7 +6,7 @@ import java.util.zip.DataFormatException
 import java.util.zip.Deflater
 import java.util.zip.Inflater
 
-class PacketBlockRegionUpdate(
+data class PacketBlockRegionUpdate(
     val xPosition: Int = 0,
     val yPosition: Short = 0,
     val zPosition: Int = 0,

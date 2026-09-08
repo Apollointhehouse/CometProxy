@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketPlayerAction(
+data class PacketPlayerAction(
     val xPosition: Int = 0,
     val yPosition: Int = 0,
     val zPosition: Int = 0,

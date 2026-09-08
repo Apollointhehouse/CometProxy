@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketFlagOpen(
+data class PacketFlagOpen(
     val windowId: Byte = 0,
     val x: Int = 0,
     val y: Short = 0,

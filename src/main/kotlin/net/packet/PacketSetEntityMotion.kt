@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketSetEntityMotion(
+data class PacketSetEntityMotion(
     val entityId: Int = 0,
     val motionX: Short = 0,
     val motionY: Short = 0,

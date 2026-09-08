@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
-class PacketCustomPayload(
+data class PacketCustomPayload(
     val netChannel: String = "",
     val data: ByteArray = byteArrayOf(),
 ) : Packet {

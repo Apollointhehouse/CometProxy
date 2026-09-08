@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketBlockEvent(
+data class PacketBlockEvent(
     val xLocation: Int = 0,
     val yLocation: Short = 0,
     val zLocation: Int = 0,

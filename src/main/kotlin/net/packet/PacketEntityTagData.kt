@@ -5,7 +5,7 @@ import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
-class PacketEntityTagData(
+data class PacketEntityTagData(
     val entityId: Int = 0,
     val tag: CompoundTag? = null,
 ) : Packet {

@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketEntityInteract(
+data class PacketEntityInteract(
     val sourceEntityID: Int = 0,
     val targetEntityID: Int = 0,
     val action: Byte = 0,

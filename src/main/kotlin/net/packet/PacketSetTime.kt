@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketSetTime(
+data class PacketSetTime(
     val time: Long = 0L,
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {

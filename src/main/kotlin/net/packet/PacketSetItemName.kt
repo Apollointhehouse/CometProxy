@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
-class PacketSetItemName(
+data class PacketSetItemName(
     val slot: Int = 0,
     val name: String = "",
 ) : Packet {

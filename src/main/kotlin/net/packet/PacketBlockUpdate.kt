@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketBlockUpdate(
+data class PacketBlockUpdate(
     val xPosition: Int = 0,
     val yPosition: Short = 0,
     val zPosition: Int = 0,

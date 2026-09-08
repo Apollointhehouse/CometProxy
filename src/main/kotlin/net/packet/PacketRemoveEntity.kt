@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketRemoveEntity(
+data class PacketRemoveEntity(
     val entityId: Int = 0,
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {

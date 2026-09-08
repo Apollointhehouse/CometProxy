@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
-class PacketContainerOpen(
+data class PacketContainerOpen(
     val windowId: Byte = 0,
     val inventoryType: Byte = 0,
     val windowTitle: String = "",

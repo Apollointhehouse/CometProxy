@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketRespawn(
+data class PacketRespawn(
     val respawnDimensionId: Int = 0,
     val respawnWorldTypeId: Int = 0,
 ) : Packet {

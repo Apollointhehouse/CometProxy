@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.*
 import io.ktor.utils.io.*
 import java.util.*
 
-class PacketUpdatePlayerProfile(
+data class PacketUpdatePlayerProfile(
     val username: String = "",
     val nickname: String = "",
     val uuid: UUID = UUID(0, 0),

@@ -6,7 +6,7 @@ import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
-class PacketContainerSetContent(
+data class PacketContainerSetContent(
     val windowId: Byte = 0,
     val stateId: Int = 0,
     val stackList: Array<ItemStack?> = arrayOf(),

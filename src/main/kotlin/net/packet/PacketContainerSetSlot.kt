@@ -6,7 +6,7 @@ import dev.apollointhehouse.utils.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.utils.extensions.writeCompressedCompoundTag
 import io.ktor.utils.io.*
 
-class PacketContainerSetSlot(
+data class PacketContainerSetSlot(
     var windowId: Byte = 0,
     var stateId: Int = 0,
     var itemSlot: Short = 0,

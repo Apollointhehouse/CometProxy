@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketTeleportEntity(
+data class PacketTeleportEntity(
     val id: Int = 0,
     val x: Int = 0,
     val y: Int = 0,

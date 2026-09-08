@@ -6,7 +6,7 @@ import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.math.min
 
-class PacketMessageTranslatable(
+data class PacketMessageTranslatable(
     val key: Short = 0,
     val type: Byte = 0,
     val args: Array<String> = arrayOf(),

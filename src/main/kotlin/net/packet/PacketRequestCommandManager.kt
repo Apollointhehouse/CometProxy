@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
-class PacketRequestCommandManager(
+data class PacketRequestCommandManager(
     val username: String = "",
     val text: String = "",
     val cursor: Int = 0,

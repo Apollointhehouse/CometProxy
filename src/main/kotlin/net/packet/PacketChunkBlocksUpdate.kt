@@ -3,7 +3,7 @@ package dev.apollointhehouse.net.packet
 import io.ktor.utils.io.*
 import kotlin.experimental.and
 
-class PacketChunkBlocksUpdate(
+data class PacketChunkBlocksUpdate(
     val xChunk: Int = 0,
     val zChunk: Int = 0,
     val coordinateArray: IntArray = intArrayOf(),

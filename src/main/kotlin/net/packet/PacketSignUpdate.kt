@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
-class PacketSignUpdate(
+data class PacketSignUpdate(
     var xPosition: Int = 0,
     var yPosition: Short = 0,
     var zPosition: Int = 0,

@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketUpdatePlayerState(
+data class PacketUpdatePlayerState(
     val state: Byte = 0,
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {

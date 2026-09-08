@@ -3,7 +3,7 @@ package dev.apollointhehouse.net.packet
 import io.ktor.utils.io.*
 import kotlin.experimental.and
 
-class PacketPlaySoundDirect(
+data class PacketPlaySoundDirect(
     val soundId: Short = 0,
     val x: Double = 0.0,
     val y: Double = 0.0,

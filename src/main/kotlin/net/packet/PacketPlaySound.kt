@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketPlaySound(
+data class PacketPlaySound(
     val soundID: Int = 0,
     val data: Int = 0,
     val x: Int = 0,

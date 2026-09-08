@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF8
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
-class PacketAESSendKey(
+data class PacketAESSendKey(
     var key: String,
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {

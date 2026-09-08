@@ -6,7 +6,7 @@ import dev.apollointhehouse.utils.extensions.writeBoolean
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
 
-class PacketAddParticle(
+data class PacketAddParticle(
     var particleKey: String,
     var x: Double = 0.0,
     var y: Double = 0.0,

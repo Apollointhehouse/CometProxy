@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketTakeItemEntity(
+data class PacketTakeItemEntity(
     val collectedEntityId: Int = 0,
     val collectorEntityId: Int = 0,
 ) : Packet {

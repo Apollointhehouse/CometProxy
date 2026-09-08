@@ -4,7 +4,7 @@ import dev.apollointhehouse.utils.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.utils.extensions.writeJavaStringUTF16BE
 import io.ktor.utils.io.*
 
-class PacketEntityNickname(
+data class PacketEntityNickname(
     var entityId: Int = 0,
     var nickname: String,
     var chatColor: Byte = 0

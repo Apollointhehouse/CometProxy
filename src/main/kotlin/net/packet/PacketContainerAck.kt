@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketContainerAck(
+data class PacketContainerAck(
     val windowId: Byte = 0,
     val shortWindowId: Short = 0,
     val accepted: Boolean = false,

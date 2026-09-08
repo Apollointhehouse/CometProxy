@@ -7,7 +7,7 @@ import dev.apollointhehouse.utils.extensions.writeUUID
 import io.ktor.utils.io.*
 import java.util.*
 
-class PacketLogin(
+data class PacketLogin(
     val playerEntityIdAndProtocolVersion: Int = 0,
     val username: String,
     val uuid: UUID,

@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketEntityEvent(
+data class PacketEntityEvent(
     val entityId: Int = 0,
     val entityStatus: Byte = 0,
     val attackedAtYaw: Float = 0f,

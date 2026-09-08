@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketSetRiding(
+data class PacketSetRiding(
     val passengerId: Int = 0,
     val isTileEntity: Boolean = false,
     val vehicleId: Int = 0,

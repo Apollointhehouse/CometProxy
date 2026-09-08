@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketEntityFling(
+data class PacketEntityFling(
     val entityId: Int = 0,
     val xd: Double = 0.0,
     val yd: Double = 0.0,

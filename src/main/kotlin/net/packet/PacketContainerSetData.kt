@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketContainerSetData(
+data class PacketContainerSetData(
     val windowId: Byte = 0,
     val progressBar: Short = 0,
     val progressBarValue: Short = 0,

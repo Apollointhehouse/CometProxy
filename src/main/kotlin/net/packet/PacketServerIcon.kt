@@ -2,7 +2,7 @@ package dev.apollointhehouse.net.packet
 
 import io.ktor.utils.io.*
 
-class PacketServerIcon(
+data class PacketServerIcon(
     val image: ByteArray = byteArrayOf(),
 ) : Packet {
     override suspend fun write(channel: ByteWriteChannel) {
