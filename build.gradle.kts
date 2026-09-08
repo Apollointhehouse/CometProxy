@@ -11,6 +11,10 @@ version = "1.0.0-SNAPSHOT"
 
 kotlin {
     jvmToolchain(21)
+
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xcollection-literals", "-Xname-based-destructuring=complete")
+    }
 }
 
 compose.desktop {

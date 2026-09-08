@@ -37,7 +37,7 @@ data class PacketPlayerList(
 		override suspend fun create(channel: ByteReadChannel): PacketPlayerList {
             val count = channel.readInt()
 
-            val (players, scores) = (0..<count)
+            val [players, scores] = (0..<count)
                 .map { channel.readJavaStringUTF16BE(256) to channel.readJavaStringUTF16BE(256) }
                 .unzip()
 

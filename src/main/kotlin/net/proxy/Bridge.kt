@@ -19,18 +19,17 @@ import java.security.KeyPair
 class Bridge(
     val proxyKeypair: KeyPair,
     val clientSocket: Socket,
-    val serverSocket: Socket
+    val serverSocket: PooledSocket
 ) {
     private val log = logger()
 
     suspend fun run() = withContext(Dispatchers.IO) {
-        val clientIn = clientSocket.openReadChannel()
-        val clientOut = clientSocket.openWriteChannel()
+        val clientRead = clientSocket.openReadChannel()
+        val clientWrite = clientSocket.openWriteChannel()
 
-        val serverIn = serverSocket.openReadChannel()
-        val serverOut = serverSocket.openWriteChannel()
+        val (serverRead = read, serverWrite = write) = serverSocket
 
-        val ctx = ConnectionContext(serverOut, clientOut)
+        val ctx = ConnectionContext(serverWrite, clientWrite)
 
         val pipeline = buildPipeline()
 
@@ -47,7 +46,7 @@ class Bridge(
             val clientToServerJob = launch {
                 try {
                     while (true) {
-                        val packet = Packet.readPacket(clientIn) ?: break
+                        val packet = Packet.readPacket(clientRead) ?: break
                         val result = pipeline.process(c2sContext, packet)
 
                         if (result != null) ctx.sendToServer(result)
@@ -63,7 +62,7 @@ class Bridge(
             val serverToClientJob = launch {
                 try {
                     while (true) {
-                        val packet = Packet.readPacket(serverIn) ?: break
+                        val packet = Packet.readPacket(serverRead) ?: break
                         val result = pipeline.process(s2cContext, packet)
 
                         if (result != null) ctx.sendToClient(result)
@@ -87,6 +86,7 @@ class Bridge(
             ConnectionRegistry.unregister(ctx)
             clientSocket.close()
             serverSocket.close()
+            ctx.close()
         }
     }
 
