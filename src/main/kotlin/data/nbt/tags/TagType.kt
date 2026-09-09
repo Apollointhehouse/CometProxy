@@ -17,8 +17,12 @@ enum class TagType(val value: Byte, val factory: TagFactory<*>) {
     LongArray(13, LongArrayTag);
 
     companion object {
-        operator fun invoke(id: Byte): TagType = entries
-            .getOrNull(id.toInt())
-            ?: throw IllegalArgumentException("No NBT Tag type for id '$id'!")
+        private val BY_ID = Array(14) { id -> entries.firstOrNull { it.value.toInt() == id } }
+
+        operator fun invoke(id: Byte): TagType =
+            fromID(id) ?: throw IllegalArgumentException("No NBT Tag type for id '$id'!")
+
+        fun fromID(id: Byte): TagType? =
+            BY_ID.getOrNull(id.toInt())
     }
 }

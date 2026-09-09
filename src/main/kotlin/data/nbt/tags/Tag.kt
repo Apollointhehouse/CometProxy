@@ -3,38 +3,27 @@ package dev.apollointhehouse.data.nbt.tags
 import dev.apollointhehouse.data.nbt.UnknownTagException
 import java.io.DataInput
 import java.io.DataOutput
-import java.util.Objects
 
-abstract class Tag<T>(
-    val name: String? = null,
+interface Tag<T> {
+    val name: String?
     val value: T
-) {
-    abstract fun write(dos: DataOutput)
 
-    abstract val type: TagType
+    fun write(dos: DataOutput)
 
-    override fun equals(other: Any?): Boolean =
-        other is Tag<*> && value == other.value && type == other.type
+    val type: TagType
+
+    fun copy(): Tag<T>
 
     companion object {
         fun read(input: DataInput): Tag<*> {
             val id = input.readByte()
-
-            try {
-                val type = TagType(id)
-
-                if (type == TagType.End) {
-                    return EndTag(null)
-                }
-
-                val tagFactory = type.factory
-
-                val name = input.readUTF()
-                val tag = tagFactory.create(name, input)
-                return tag
-            } catch (_: IllegalArgumentException) {
-                throw UnknownTagException("Unknown tag type '$id'!")
+            if (id == 0.toByte()) {
+                return EndTag(null)
             }
+
+            val type = TagType.fromID(id) ?: throw UnknownTagException("Unknown tag type '$id'!")
+            val name = input.readUTF()
+            return type.factory.create(name, input)
         }
 
         fun write(tag: Tag<*>, output: DataOutput) {
@@ -45,6 +34,4 @@ abstract class Tag<T>(
             }
         }
     }
-
-    override fun hashCode(): Int = Objects.hash(name ?: "", value, type.value)
 }

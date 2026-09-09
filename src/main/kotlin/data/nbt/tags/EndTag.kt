@@ -3,14 +3,18 @@ package dev.apollointhehouse.data.nbt.tags
 import java.io.DataInput
 import java.io.DataOutput
 
-class EndTag(name: String?) : Tag<Nothing?>(name, null) {
+data class EndTag(
+    override val name: String?
+) : Tag<Nothing?> {
+    override val value = null
+
+    override val type: TagType = TagType.End
+
     override fun write(dos: DataOutput) {}
 
-    override val type = TagType.End
+    override fun copy(): EndTag = EndTag(name)
 
     companion object : TagFactory<EndTag> {
-        override fun create(name: String?, dis: DataInput): EndTag {
-            return EndTag(name)
-        }
+        override fun create(name: String?, dis: DataInput): EndTag = EndTag(name)
     }
 }

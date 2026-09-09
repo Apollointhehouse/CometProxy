@@ -3,18 +3,21 @@ package dev.apollointhehouse.data.nbt.tags
 import java.io.DataInput
 import java.io.DataOutput
 
-class DoubleTag(name: String?, value: Double = 0.0) : Tag<Double>(name, value) {
+data class DoubleTag(
+    override val name: String?,
+    override val value: Double
+) : Tag<Double> {
+
+    override val type: TagType = TagType.Double
+
     override fun write(dos: DataOutput) {
         dos.writeDouble(value)
     }
 
-    override val type = TagType.Double
+    override fun copy(): DoubleTag = DoubleTag(name, value)
 
     companion object : TagFactory<DoubleTag> {
-        override fun create(name: String?, dis: DataInput): DoubleTag {
-            val value = dis.readDouble()
-
-            return DoubleTag(name, value)
-        }
+        override fun create(name: String?, dis: DataInput): DoubleTag =
+            DoubleTag(name, dis.readDouble())
     }
 }

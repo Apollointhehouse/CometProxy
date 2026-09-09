@@ -3,18 +3,21 @@ package dev.apollointhehouse.data.nbt.tags
 import java.io.DataInput
 import java.io.DataOutput
 
-class LongTag(name: String?, value: Long = 0L) : Tag<Long>(name, value) {
+data class LongTag(
+    override val name: String?,
+    override val value: Long
+) : Tag<Long> {
+
+    override val type: TagType = TagType.Long
+
     override fun write(dos: DataOutput) {
         dos.writeLong(value)
     }
 
-    override val type = TagType.Long
+    override fun copy(): LongTag = LongTag(name, value)
 
     companion object : TagFactory<LongTag> {
-        override fun create(name: String?, dis: DataInput): LongTag {
-            val value = dis.readLong()
-
-            return LongTag(name, value)
-        }
+        override fun create(name: String?, dis: DataInput): LongTag =
+            LongTag(name, dis.readLong())
     }
 }
