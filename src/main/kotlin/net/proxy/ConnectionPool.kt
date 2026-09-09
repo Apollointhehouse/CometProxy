@@ -2,6 +2,7 @@ package dev.apollointhehouse.net.proxy
 
 import dev.apollointhehouse.net.packet.Packet
 import dev.apollointhehouse.net.packet.PacketDisconnect
+import dev.apollointhehouse.utils.extensions.close
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
@@ -11,28 +12,14 @@ import org.apache.logging.log4j.kotlin.logger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-data class PooledSocket(
-    private val socket: Socket,
-    val read: ByteReadChannel,
-    val write: ByteWriteChannel,
-) : Socket by socket {
-    override fun attachForReading(channel: ByteChannel): WriterJob {
-        throw UnsupportedOperationException("PooledSocket manages its own channels. Direct attachment is disabled.")
-    }
-
-    override fun attachForWriting(channel: ByteChannel): ReaderJob {
-        throw UnsupportedOperationException("PooledSocket manages its own channels. Direct attachment is disabled.")
-    }
-}
-
-class SocketPool(
+class ConnectionPool(
     private val address: InetSocketAddress,
     private val size: Int,
     private val selectorManager: SelectorManager,
     private val healthCheck: Duration = 15.seconds
 ) {
     private val log = logger("SocketPool")
-    private val channel: Channel<PooledSocket> = Channel(Channel.UNLIMITED)
+    private val channel: Channel<Connection> = Channel(Channel.UNLIMITED)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var healthCheckJob: Job? = null
 
@@ -44,23 +31,23 @@ class SocketPool(
         healthCheckJob = scope.launch { healthCheckLoop() }
     }
 
-    suspend fun getSocket(): PooledSocket? {
+    suspend fun getConnection(): Connection? {
         while (true) {
-            val socket = channel.tryReceive().getOrNull() ?: break
+            val connection = channel.tryReceive().getOrNull() ?: break
             scope.launch { replenish() }
 
-            if (!wasKicked(socket)) return socket
+            if (!wasKicked(connection)) return connection
         }
 
-        return null
+        return channel.receiveCatching().getOrNull()
     }
 
-    private suspend fun createSocket(): PooledSocket? {
+    private suspend fun createConnection(): Connection? {
         try {
-            val socket = aSocket(selectorManager).tcp().connect(address) {
+            val conn = aSocket(selectorManager).tcp().connect(address) {
                 keepAlive = true
             }
-            return PooledSocket(socket, socket.openReadChannel(), socket.openWriteChannel())
+            return conn.connection()
         } catch (e: Exception) {
             log.error(e) { "Failed to connect to $address" }
             return null
@@ -68,12 +55,12 @@ class SocketPool(
     }
 
     private suspend fun replenish() = withContext(Dispatchers.IO) {
-        val socket = createSocket() ?: return@withContext
-        val result = channel.trySend(socket)
+        val connection = createConnection() ?: return@withContext
+        val result = channel.trySend(connection)
 
         if (result.isFailure) {
-            log.error(result.exceptionOrNull()) { "Failed to queue socket" }
-            socket.close()
+            log.error(result.exceptionOrNull()) { "Failed to queue connection" }
+            connection.close()
         }
     }
 
@@ -85,9 +72,9 @@ class SocketPool(
         }
     }
 
-    private suspend fun wasKicked(socket: PooledSocket): Boolean {
-        if (socket.read.availableForRead > 0) {
-            val packet = Packet.readPacket(socket.read)
+    private suspend fun wasKicked(connection: Connection): Boolean {
+        if (connection.input.availableForRead > 0) {
+            val packet = Packet.readPacket(connection.input)
             if (packet is PacketDisconnect) {
                 log.debug { "Kick reason: ${packet.reason}" }
                 return true
@@ -97,20 +84,20 @@ class SocketPool(
         return false
     }
 
-    private suspend fun isAlive(socket: PooledSocket): Boolean {
-        if (socket.isClosed) return false
+    private suspend fun isAlive(connection: Connection): Boolean {
+        if (connection.socket.isClosed) return false
 
         try {
-            if (wasKicked(socket)) {
-                logger.debug { "Server closed socket" }
+            if (wasKicked(connection)) {
+                logger.debug { "Server closed connection" }
                 return false
             }
 
-            if (socket.read.isClosedForRead) return false
+            if (connection.input.isClosedForRead) return false
 
             return true
         } catch (e: Exception) {
-            log.warn(e) { "Health probe failed for socket to $address" }
+            log.warn(e) { "Health probe failed for connection to $address" }
             return false
         }
     }
@@ -119,17 +106,17 @@ class SocketPool(
         val drained = generateSequence { channel.tryReceive().getOrNull() }.toList()
         var dead = 0
 
-        for (socket in drained) {
-            if (isAlive(socket)) {
-                if (channel.trySend(socket).isFailure) socket.close()
+        for (conn in drained) {
+            if (isAlive(conn)) {
+                if (channel.trySend(conn).isFailure) conn.close()
             } else {
                 dead++
-                socket.close()
+                conn.close()
             }
         }
 
         if (dead > 0) {
-            log.debug { "Health check evicted $dead dead socket(s), replenishing" }
+            log.debug { "Health check evicted $dead dead connection(s), replenishing" }
             coroutineScope { (1..dead).map { async { replenish() } }.awaitAll() }
         }
     }
@@ -138,8 +125,8 @@ class SocketPool(
         healthCheckJob?.cancel()
         channel.close()
         while (true) {
-            val pooled = channel.tryReceive().getOrNull() ?: break
-            pooled.close()
+            val connection = channel.tryReceive().getOrNull() ?: break
+            connection.close()
         }
         scope.cancel()
     }

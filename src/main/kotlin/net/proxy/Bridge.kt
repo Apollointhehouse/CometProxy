@@ -1,12 +1,16 @@
 package dev.apollointhehouse.net.proxy
 
+import dev.apollointhehouse.data.ProxyConfig
 import dev.apollointhehouse.net.packet.Packet
+import dev.apollointhehouse.net.packet.PacketDisconnect
+import dev.apollointhehouse.net.packet.PacketPingHandshake
 import dev.apollointhehouse.net.proxy.handlers.ChatMessageHandler
 import dev.apollointhehouse.net.proxy.handlers.ProxyAesKeyHandler
 import dev.apollointhehouse.net.proxy.handlers.ProxyLoginHandler
 import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
 import dev.apollointhehouse.net.proxy.pipeline.PacketContext
 import dev.apollointhehouse.net.proxy.pipeline.PacketPipeline
+import dev.apollointhehouse.utils.extensions.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
@@ -14,22 +18,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withContext
 import org.apache.logging.log4j.kotlin.logger
-import java.security.KeyPair
 
 class Bridge(
-    val proxyKeypair: KeyPair,
-    val clientSocket: Socket,
-    val serverSocket: PooledSocket
+    val config: ProxyConfig,
+    val client: Connection,
+    val server: Connection
 ) {
     private val log = logger()
 
     suspend fun run() = withContext(Dispatchers.IO) {
-        val clientRead = clientSocket.openReadChannel()
-        val clientWrite = clientSocket.openWriteChannel()
+        val (clientIn = input, _ = output) = client
+        val (serverIn = input, _ = output) = server
 
-        val (serverRead = read, serverWrite = write) = serverSocket
-
-        val ctx = ConnectionContext(serverWrite, clientWrite)
+        val ctx = ConnectionContext(client, server)
 
         val pipeline = buildPipeline()
 
@@ -46,7 +47,7 @@ class Bridge(
             val clientToServerJob = launch {
                 try {
                     while (true) {
-                        val packet = Packet.readPacket(clientRead) ?: break
+                        val packet = Packet.readPacket(clientIn) ?: break
                         val result = pipeline.process(c2sContext, packet)
 
                         if (result != null) ctx.sendToServer(result)
@@ -62,7 +63,7 @@ class Bridge(
             val serverToClientJob = launch {
                 try {
                     while (true) {
-                        val packet = Packet.readPacket(serverRead) ?: break
+                        val packet = Packet.readPacket(serverIn) ?: break
                         val result = pipeline.process(s2cContext, packet)
 
                         if (result != null) ctx.sendToClient(result)
@@ -84,8 +85,8 @@ class Bridge(
             log.error(e) { "Failed to establish backend proxy connection: ${e.message}" }
         } finally {
             ConnectionRegistry.unregister(ctx)
-            clientSocket.close()
-            serverSocket.close()
+            client.close()
+            server.close()
             ctx.close()
         }
     }
@@ -93,9 +94,17 @@ class Bridge(
     private fun buildPipeline(): PacketPipeline {
         val pipeline = PacketPipeline()
 
-        pipeline += ProxyLoginHandler(proxyKeypair)
-        pipeline += ProxyAesKeyHandler(proxyKeypair)
+        pipeline += ProxyLoginHandler(config.keyPair)
+        pipeline += ProxyAesKeyHandler(config.keyPair)
         pipeline += ChatMessageHandler()
+        pipeline += { ctx, _: PacketPingHandshake ->
+            log.info { "Client Ping!" }
+
+            val con = ctx.connection
+            con.sendToClient(PacketDisconnect(reason = "§1\u000032769\u0000${config.btaVersion}\u0000${config.motd}\u00000\u0000100\u0000\u0000"))
+
+            null
+        }
 
         return pipeline
     }

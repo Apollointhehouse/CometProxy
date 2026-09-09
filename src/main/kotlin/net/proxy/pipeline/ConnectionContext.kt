@@ -2,6 +2,7 @@ package dev.apollointhehouse.net.proxy.pipeline
 
 import dev.apollointhehouse.net.packet.Packet
 import dev.apollointhehouse.net.proxy.session.PlayerSession
+import io.ktor.network.sockets.Connection
 import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -13,8 +14,8 @@ import kotlin.uuid.Uuid
 private val log = logger("NetContext")
 
 data class ConnectionContext(
-    val serverOut: ByteWriteChannel,
-    val clientOut: ByteWriteChannel,
+    val serverConn: Connection,
+    val clientConn: Connection,
     var session: PlayerSession? = null,
     val id: Uuid = Uuid.random()
 ) : AutoCloseable {
@@ -24,8 +25,8 @@ data class ConnectionContext(
     private val serverQueue = Channel<Packet>(Channel.UNLIMITED)
 
     init {
-        ioScope.launch { writerLoop(clientOut, clientQueue, "client") }
-        ioScope.launch { writerLoop(serverOut, serverQueue, "server") }
+        ioScope.launch { writerLoop(clientConn.output, clientQueue, "client") }
+        ioScope.launch { writerLoop(serverConn.output, serverQueue, "server") }
     }
 
     fun sendToClient(packet: Packet) {

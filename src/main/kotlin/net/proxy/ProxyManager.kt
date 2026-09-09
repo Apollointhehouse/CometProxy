@@ -1,5 +1,6 @@
 package dev.apollointhehouse.net.proxy
 
+import dev.apollointhehouse.data.ProxyConfig
 import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.logger
 
@@ -11,8 +12,9 @@ class ProxyManager {
         if (proxyJob?.isActive == true) return
         proxyJob = scope.launch {
             try {
-                val proxy = Proxy()
-                proxy.start(targetServer = host, targetPort = port)
+                val proxy = Proxy(ProxyConfig(targetServer = host, targetPort = port, motd = "Proxy Server"))
+
+                proxy.start()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

@@ -14,15 +14,18 @@ import dev.apollointhehouse.net.proxy.pipeline.PacketContext
 import dev.apollointhehouse.net.proxy.pipeline.PacketPipeline
 import dev.apollointhehouse.utils.crypt.AES
 import dev.apollointhehouse.utils.crypt.RSA
+import dev.apollointhehouse.utils.extensions.close
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
 import org.slf4j.LoggerFactory
+import kotlin.coroutines.CoroutineContext
 
 object JvmWarmup {
     fun warmup() = runBlocking(Dispatchers.IO) {
@@ -55,8 +58,9 @@ object JvmWarmup {
                 register(ChatMessageHandler())
             }
 
-            val dummyOut1 = ByteChannel()
-            val dummyOut2 = ByteChannel()
+            val dummySocket = DummySocket()
+            val dummyOut1 = Connection(dummySocket, ByteChannel(), ByteChannel())
+            val dummyOut2 = Connection(dummySocket, ByteChannel(), ByteChannel())
             val connCtx = ConnectionContext(dummyOut1, dummyOut2)
             val c2sContext = PacketContext(PacketContext.Direction.CLIENT_TO_SERVER, connCtx)
             val s2cContext = PacketContext(PacketContext.Direction.SERVER_TO_CLIENT, connCtx)
@@ -141,5 +145,28 @@ object JvmWarmup {
             rootLogger?.level = originalLevel
             logger.debug { "Warmup Completed!" }
         }
+    }
+
+    private class DummySocket : Socket {
+        override val socketContext: Job
+            get() = TODO("Not yet implemented")
+
+        override fun close() {}
+
+        override fun attachForReading(channel: ByteChannel): WriterJob {
+            TODO("Not yet implemented")
+        }
+
+        override fun attachForWriting(channel: ByteChannel): ReaderJob {
+            TODO("Not yet implemented")
+        }
+
+        override val localAddress: SocketAddress
+            get() = TODO("Not yet implemented")
+        override val remoteAddress: SocketAddress
+            get() = TODO("Not yet implemented")
+        override val coroutineContext: CoroutineContext
+            get() = TODO("Not yet implemented")
+
     }
 }

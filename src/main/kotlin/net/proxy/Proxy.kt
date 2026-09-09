@@ -1,6 +1,7 @@
 package dev.apollointhehouse.net.proxy
 
-import dev.apollointhehouse.utils.crypt.RSA
+import dev.apollointhehouse.data.ProxyConfig
+import dev.apollointhehouse.utils.extensions.close
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.Dispatchers
@@ -9,40 +10,33 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.logging.log4j.kotlin.logger
 import java.net.InetAddress
-import java.security.KeyPair
 
-class Proxy {
-    val log = logger()
+class Proxy(val config: ProxyConfig) {
+    private val log = logger()
 
-    suspend fun start(
-        targetServer: String,
-        targetPort: Int
-    ) = withContext(Dispatchers.IO) {
-        val port = 25565
-        val resolvedIp = runCatching { InetAddress.getByName(targetServer) }
+    suspend fun start() = withContext(Dispatchers.IO) {
+        val resolvedIp = runCatching { InetAddress.getByName(config.targetServer) }
             .onFailure { log.error(it.toString()) }
             .getOrNull()?.hostAddress ?: return@withContext
 
-        val targetAddress = InetSocketAddress(resolvedIp, targetPort)
-
-        val proxyKeyPair = RSA.generateKeyPair()
+        val targetAddress = InetSocketAddress(resolvedIp, config.targetPort)
 
         val selectorManager = ActorSelectorManager(Dispatchers.IO)
 
-        val mitmSocket = aSocket(selectorManager).tcp().bind(port = port) {
+        val proxySocket = aSocket(selectorManager).tcp().bind(port = config.hostPort) {
             reuseAddress = true
         }
-        log.info("Comet-Proxy listening at ${mitmSocket.localAddress}")
+        log.info("Comet-Proxy listening at ${proxySocket.localAddress}")
 
-        val serverSocketPool = SocketPool(targetAddress, 5, selectorManager)
-        serverSocketPool.init()
+        val serverConnPool = ConnectionPool(targetAddress, config.poolSize, selectorManager)
+        serverConnPool.init()
 
         try {
-            acceptConnections(proxyKeyPair, mitmSocket, serverSocketPool)
+            acceptConnections(proxySocket, serverConnPool)
         } finally {
             withContext(NonCancellable) {
-                mitmSocket.close()
-                serverSocketPool.close()
+                proxySocket.close()
+                serverConnPool.close()
                 selectorManager.close()
                 log.info("Proxy Stopped")
             }
@@ -50,24 +44,25 @@ class Proxy {
     }
 
     private suspend fun acceptConnections(
-        proxyKeyPair: KeyPair,
-        mitmSocket: ServerSocket,
-        serverSocketPool: SocketPool
+        proxySocket: ServerSocket,
+        serverConnPool: ConnectionPool
     ) = withContext(Dispatchers.IO) {
         while (true) {
-            val clientSocket = mitmSocket.accept()
+            val clientSocket = proxySocket.accept()
             log.info("Accepted ${clientSocket.remoteAddress}")
 
+            val clientConn = clientSocket.connection()
+
             launch(Dispatchers.IO) {
-                val serverSocket = serverSocketPool.getSocket() ?: return@launch
+                val serverConn = serverConnPool.getConnection() ?: return@launch
 
                 try {
-                    Bridge(proxyKeyPair, clientSocket, serverSocket).run()
+                    Bridge(config, clientConn, serverConn).run()
                 } catch (e: Exception) {
                     log.error("Error bridging connection", e)
                 } finally {
-                    serverSocket.close()
-                    clientSocket.close()
+                    serverConn.close()
+                    clientConn.close()
                 }
             }
         }
