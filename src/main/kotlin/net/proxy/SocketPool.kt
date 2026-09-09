@@ -1,5 +1,7 @@
 package dev.apollointhehouse.net.proxy
 
+import dev.apollointhehouse.net.packet.Packet
+import dev.apollointhehouse.net.packet.PacketDisconnect
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
@@ -7,7 +9,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import org.apache.logging.log4j.kotlin.logger
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 data class PooledSocket(
@@ -28,8 +29,7 @@ class SocketPool(
     private val address: InetSocketAddress,
     private val size: Int,
     private val selectorManager: SelectorManager,
-    private val healthCheck: Duration = 30.seconds,
-    private val healthProbe: Duration = 200.milliseconds,
+    private val healthCheck: Duration = 15.seconds
 ) {
     private val log = logger("SocketPool")
     private val channel: Channel<PooledSocket> = Channel(Channel.UNLIMITED)
@@ -37,14 +37,22 @@ class SocketPool(
     private var healthCheckJob: Job? = null
 
     suspend fun init() = coroutineScope {
-        (1..size).map { async { replenish() } }.awaitAll()
+        (1..size).map {
+            delay(1.seconds)
+            async { replenish() }
+        }.awaitAll()
         healthCheckJob = scope.launch { healthCheckLoop() }
     }
 
-    fun getSocket(): PooledSocket? {
-        val socket = channel.tryReceive().getOrNull()
-        scope.launch { replenish() }
-        return socket
+    suspend fun getSocket(): PooledSocket? {
+        while (true) {
+            val socket = channel.tryReceive().getOrNull() ?: break
+            scope.launch { replenish() }
+
+            if (!wasKicked(socket)) return socket
+        }
+
+        return null
     }
 
     private suspend fun createSocket(): PooledSocket? {
@@ -60,12 +68,12 @@ class SocketPool(
     }
 
     private suspend fun replenish() = withContext(Dispatchers.IO) {
-        val pooled = createSocket() ?: return@withContext
-        val result = channel.trySend(pooled)
+        val socket = createSocket() ?: return@withContext
+        val result = channel.trySend(socket)
 
         if (result.isFailure) {
             log.error(result.exceptionOrNull()) { "Failed to queue socket" }
-            pooled.close()
+            socket.close()
         }
     }
 
@@ -77,18 +85,30 @@ class SocketPool(
         }
     }
 
-    private suspend fun isAlive(pooled: PooledSocket): Boolean {
-        if (pooled.isClosed) return false
+    private suspend fun wasKicked(socket: PooledSocket): Boolean {
+        if (socket.read.availableForRead > 0) {
+            val packet = Packet.readPacket(socket.read)
+            if (packet is PacketDisconnect) {
+                log.debug { "Kick reason: ${packet.reason}" }
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private suspend fun isAlive(socket: PooledSocket): Boolean {
+        if (socket.isClosed) return false
 
         try {
-            withTimeoutOrNull(healthProbe) {
-                pooled.read.awaitContent()
-            } ?: return true
+            if (wasKicked(socket)) {
+                logger.debug { "Server closed socket" }
+                return false
+            }
 
-            if (pooled.read.isClosedForRead) return false
+            if (socket.read.isClosedForRead) return false
 
-            log.warn { "Pooled socket to $address had unexpected pending data, discarding" }
-            return false
+            return true
         } catch (e: Exception) {
             log.warn(e) { "Health probe failed for socket to $address" }
             return false
@@ -99,17 +119,17 @@ class SocketPool(
         val drained = generateSequence { channel.tryReceive().getOrNull() }.toList()
         var dead = 0
 
-        for (pooled in drained) {
-            if (isAlive(pooled)) {
-                if (channel.trySend(pooled).isFailure) pooled.close()
+        for (socket in drained) {
+            if (isAlive(socket)) {
+                if (channel.trySend(socket).isFailure) socket.close()
             } else {
                 dead++
-                pooled.close()
+                socket.close()
             }
         }
 
         if (dead > 0) {
-            log.warn { "Health check evicted $dead dead socket(s), replenishing" }
+            log.debug { "Health check evicted $dead dead socket(s), replenishing" }
             coroutineScope { (1..dead).map { async { replenish() } }.awaitAll() }
         }
     }
