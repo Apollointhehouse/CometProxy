@@ -6,11 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
-import dev.apollointhehouse.net.API
-import dev.apollointhehouse.net.packet.PacketMessage
-import dev.apollointhehouse.net.proxy.ConnectionRegistry
-import dev.apollointhehouse.net.proxy.ProxyManager
-import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
+import dev.apollointhehouse.network.API
+import dev.apollointhehouse.network.packet.chat.PacketMessage
+import dev.apollointhehouse.network.proxy.ConnectionRegistry
+import dev.apollointhehouse.network.proxy.ProxyManager
+import dev.apollointhehouse.network.proxy.pipeline.ConnectionContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

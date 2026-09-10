@@ -12,7 +12,7 @@ import dev.apollointhehouse.ui.components.ProxyActions
 import dev.apollointhehouse.ui.components.ProxyLog
 import dev.apollointhehouse.ui.components.ProxyTargetInput
 import dev.apollointhehouse.ui.model.AppViewModel
-import dev.apollointhehouse.utils.GuiLogBus
+import dev.apollointhehouse.ui.logging.GuiLogBus
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.Orientation
 import org.jetbrains.jewel.ui.component.Divider

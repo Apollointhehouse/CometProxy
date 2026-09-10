@@ -5,7 +5,7 @@
         </encoder>
     </appender>
 
-    <appender name="GUI" class="dev.apollointhehouse.utils.GuiAppender" />
+    <appender name="GUI" class="dev.apollointhehouse.ui.logging.GuiAppender" />
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>

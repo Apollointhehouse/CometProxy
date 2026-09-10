@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
+import dev.apollointhehouse.network.proxy.pipeline.ConnectionContext
 import dev.apollointhehouse.ui.model.AppViewModel
 import org.jetbrains.jewel.foundation.ExperimentalJewelApi
 import org.jetbrains.jewel.ui.component.DefaultButton

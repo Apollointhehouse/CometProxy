@@ -1,7 +1,7 @@
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
-import dev.apollointhehouse.utils.GuiLogBus
-import dev.apollointhehouse.utils.JvmWarmup
+import dev.apollointhehouse.network.warmup.JvmWarmup
+import dev.apollointhehouse.ui.logging.GuiLogBus
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.apollointhehouse.net.proxy.pipeline.ConnectionContext
+import dev.apollointhehouse.network.proxy.pipeline.ConnectionContext
 import dev.apollointhehouse.ui.model.AppViewModel
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text

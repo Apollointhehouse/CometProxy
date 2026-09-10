@@ -1,5 +1,5 @@
-import dev.apollointhehouse.net.packet.Packet
-import dev.apollointhehouse.net.packet.PacketPingHandshake
+import dev.apollointhehouse.network.packet.Packet
+import dev.apollointhehouse.network.packet.handshake.PacketPingHandshake
 import io.ktor.utils.io.*
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

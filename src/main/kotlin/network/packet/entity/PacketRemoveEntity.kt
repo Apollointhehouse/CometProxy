@@ -1,0 +1,24 @@
+package dev.apollointhehouse.network.packet.entity
+
+import dev.apollointhehouse.network.packet.Packet
+import dev.apollointhehouse.network.packet.PacketFactory
+import io.ktor.utils.io.*
+
+data class PacketRemoveEntity(
+    val entityId: Int = 0,
+) : Packet {
+    override suspend fun write(channel: ByteWriteChannel) {
+        channel.writeInt(entityId)
+    }
+
+    override val estimatedSize: Int
+        get() = 4
+
+    companion object : PacketFactory<PacketRemoveEntity> {
+		override suspend fun create(channel: ByteReadChannel): PacketRemoveEntity {
+            val entityId = channel.readInt()
+
+            return PacketRemoveEntity(entityId = entityId)
+        }
+    }
+}

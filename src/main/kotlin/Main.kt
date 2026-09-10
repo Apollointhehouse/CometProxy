@@ -9,12 +9,10 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import dev.apollointhehouse.ui.Home
 import dev.apollointhehouse.ui.model.AppViewModel
-import dev.apollointhehouse.utils.JvmWarmup
+import dev.apollointhehouse.network.warmup.JvmWarmup
 import org.jetbrains.jewel.intui.standalone.theme.IntUiTheme
 import org.slf4j.LoggerFactory
 import java.lang.management.ManagementFactory
-
-
 
 fun main() = application {
     LaunchedEffect(Unit) {

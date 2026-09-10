@@ -1,6 +1,6 @@
-import dev.apollointhehouse.data.nbt.NbtIO
-import dev.apollointhehouse.data.nbt.UnknownTagException
-import dev.apollointhehouse.data.nbt.tags.*
+import dev.apollointhehouse.nbt.NbtIO
+import dev.apollointhehouse.nbt.UnknownTagException
+import dev.apollointhehouse.nbt.tags.*
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
