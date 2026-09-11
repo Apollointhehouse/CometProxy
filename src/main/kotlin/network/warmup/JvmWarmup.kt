@@ -9,7 +9,7 @@ import dev.apollointhehouse.network.packet.PacketRegistry
 import dev.apollointhehouse.network.proxy.handlers.ChatMessageHandler
 import dev.apollointhehouse.network.proxy.handlers.ProxyAesKeyHandler
 import dev.apollointhehouse.network.proxy.handlers.ProxyLoginHandler
-import dev.apollointhehouse.network.proxy.pipeline.ConnectionContext
+import dev.apollointhehouse.network.proxy.connection.ConnectionContext
 import dev.apollointhehouse.network.proxy.pipeline.PacketContext
 import dev.apollointhehouse.network.proxy.pipeline.PacketPipeline
 import dev.apollointhehouse.network.crypto.AES
@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory
 import kotlin.coroutines.CoroutineContext
 
 object JvmWarmup {
+    private val log = logger()
+
     fun warmup() = runBlocking(Dispatchers.IO) {
         val context = LoggerFactory.getILoggerFactory() as? LoggerContext
         val rootLogger = context?.getLogger(Logger.ROOT_LOGGER_NAME)
@@ -144,7 +146,7 @@ object JvmWarmup {
             }
         } finally {
             rootLogger?.level = originalLevel
-            logger.debug { "Warmup Completed!" }
+            log.debug { "Warmup Completed!" }
         }
     }
 

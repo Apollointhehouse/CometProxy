@@ -12,6 +12,8 @@ interface Packet {
     suspend fun write(channel: ByteWriteChannel)
 
     companion object {
+        private val log = logger()
+
         suspend fun readPacket(channel: ByteReadChannel): Packet? {
             try {
                 if (channel.isClosedForRead) return null
@@ -19,11 +21,11 @@ interface Packet {
 
                 val packetFactory = PacketRegistry.getPacketFactory(id) ?: throw IOException("Unregistered packet id: $id")
                 val packet = packetFactory.create(channel)
-                logger.debug { "READ id=$id class=${packet::class.simpleName}" }
+                log.debug { "READ id=$id class=${packet::class.simpleName}" }
 
                 return packet
             } catch (_: EOFException) {
-                logger.debug { "Connection closed while reading packet" }
+                log.debug { "Connection closed while reading packet" }
                 return null
             }
         }

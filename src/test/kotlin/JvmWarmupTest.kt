@@ -24,6 +24,7 @@ class JvmWarmupTest {
 
     @Test
     fun `test gui log bus emits and buffers events without dropping`() = runBlocking {
+        GuiLogBus.clear()
         for (i in 1..500) {
             GuiLogBus.publish("log $i")
         }

@@ -15,4 +15,9 @@ object GuiLogBus {
     fun publish(line: String) {
         _events.tryEmit(line)
     }
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    fun clear() {
+        _events.resetReplayCache()
+    }
 }

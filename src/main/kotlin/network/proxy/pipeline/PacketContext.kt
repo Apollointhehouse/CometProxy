@@ -1,5 +1,7 @@
 package dev.apollointhehouse.network.proxy.pipeline
 
+import dev.apollointhehouse.network.proxy.connection.ConnectionContext
+
 class PacketContext(
     val direction: Direction,
     val connection: ConnectionContext,

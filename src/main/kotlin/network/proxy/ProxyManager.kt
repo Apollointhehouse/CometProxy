@@ -7,6 +7,7 @@ import org.apache.logging.log4j.kotlin.logger
 class ProxyManager {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var proxyJob: Job? = null
+    private val log = logger()
 
     fun start(host: String, port: Int) {
         if (proxyJob?.isActive == true) return
@@ -18,7 +19,7 @@ class ProxyManager {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                logger.error(e) { "Error starting proxy" }
+                log.error(e) { "Error starting proxy" }
             }
         }
     }

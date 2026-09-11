@@ -1,6 +1,5 @@
-package dev.apollointhehouse.network.proxy
+package dev.apollointhehouse.network.proxy.connection
 
-import dev.apollointhehouse.network.proxy.pipeline.ConnectionContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

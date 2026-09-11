@@ -7,6 +7,8 @@ import dev.apollointhehouse.network.crypto.AES
 import org.apache.logging.log4j.kotlin.logger
 
 class ChatMessageHandler : PacketHandler<PacketMessage> {
+    private val log = logger()
+
     override suspend fun handle(context: PacketContext, packet: PacketMessage): PacketMessage {
         var msg: String
 
@@ -17,7 +19,7 @@ class ChatMessageHandler : PacketHandler<PacketMessage> {
             msg = AES.decrypt(packet.message, aesKey)
         }
 
-        logger.info { "${context.direction} Sent: $msg" }
+        log.info { "${context.direction} Sent: $msg" }
 
         return packet
     }

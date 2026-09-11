@@ -5,10 +5,11 @@ import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.handshake.PacketDisconnect
 import dev.apollointhehouse.network.packet.handshake.PacketPingHandshake
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
+import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
 import dev.apollointhehouse.network.proxy.handlers.ChatMessageHandler
 import dev.apollointhehouse.network.proxy.handlers.ProxyAesKeyHandler
 import dev.apollointhehouse.network.proxy.handlers.ProxyLoginHandler
-import dev.apollointhehouse.network.proxy.pipeline.ConnectionContext
+import dev.apollointhehouse.network.proxy.connection.ConnectionContext
 import dev.apollointhehouse.network.proxy.pipeline.PacketContext
 import dev.apollointhehouse.network.proxy.pipeline.PacketPipeline
 import io.ktor.network.sockets.*
@@ -23,7 +24,7 @@ class Bridge(
     val config: ProxyConfig,
     val client: Connection,
     val server: Connection
-) {
+) : AutoCloseable {
     private val log = logger()
 
     suspend fun run() = withContext(Dispatchers.IO) {
@@ -110,6 +111,11 @@ class Bridge(
         }
 
         return pipeline
+    }
+
+    override fun close() {
+        client.close()
+        server.close()
     }
 }
 

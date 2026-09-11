@@ -8,9 +8,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
 import dev.apollointhehouse.network.API
 import dev.apollointhehouse.network.packet.chat.PacketMessage
-import dev.apollointhehouse.network.proxy.ConnectionRegistry
+import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
 import dev.apollointhehouse.network.proxy.ProxyManager
-import dev.apollointhehouse.network.proxy.pipeline.ConnectionContext
+import dev.apollointhehouse.network.proxy.connection.ConnectionContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,6 +20,7 @@ import kotlin.uuid.Uuid
 
 class AppViewModel(private val scope: CoroutineScope) {
     private val proxyManager = ProxyManager()
+    private val log = logger()
 
     val connections: StateFlow<List<ConnectionContext>> = ConnectionRegistry.connections
 
@@ -85,7 +86,7 @@ class AppViewModel(private val scope: CoroutineScope) {
                     val img = API.fetchHead(uuid)
                     heads[uuid] = img
                 } catch (e: Exception) {
-                    logger.error(e) { "Failed to fetch head" }
+                    log.error(e) { "Failed to fetch head" }
                 } finally {
                     loadingUuids.remove(uuid)
                 }

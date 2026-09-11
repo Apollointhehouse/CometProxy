@@ -1,7 +1,7 @@
 package dev.apollointhehouse.network.proxy.handlers
 
 import dev.apollointhehouse.network.packet.auth.PacketLogin
-import dev.apollointhehouse.network.proxy.ConnectionRegistry
+import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
 import dev.apollointhehouse.network.proxy.pipeline.PacketContext
 import dev.apollointhehouse.network.proxy.pipeline.PacketHandler
 import dev.apollointhehouse.network.proxy.session.ChatSession

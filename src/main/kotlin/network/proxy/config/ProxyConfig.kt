@@ -9,6 +9,5 @@ class ProxyConfig(
     val hostPort: Int = 25565,
     val btaVersion: String = "8.0.1",
     val motd: String,
-    val poolSize: Int = 5,
     val keyPair: KeyPair = RSA.generateKeyPair()
 )

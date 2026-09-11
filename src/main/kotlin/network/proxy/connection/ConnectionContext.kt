@@ -1,4 +1,4 @@
-package dev.apollointhehouse.network.proxy.pipeline
+package dev.apollointhehouse.network.proxy.connection
 
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.proxy.session.PlayerSession
@@ -11,14 +11,13 @@ import kotlinx.io.IOException
 import org.apache.logging.log4j.kotlin.logger
 import kotlin.uuid.Uuid
 
-private val log = logger("NetContext")
-
 data class ConnectionContext(
     val clientConn: Connection,
     val serverConn: Connection,
     var session: PlayerSession? = null,
     val id: Uuid = Uuid.random()
 ) : AutoCloseable {
+    private val log = logger()
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val clientQueue = Channel<Packet>(Channel.UNLIMITED)
