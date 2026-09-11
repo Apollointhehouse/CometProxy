@@ -1,4 +1,4 @@
-package dev.apollointhehouse.network.proxy.pipeline
+package dev.apollointhehouse.network.pipeline
 
 import dev.apollointhehouse.network.packet.Packet
 

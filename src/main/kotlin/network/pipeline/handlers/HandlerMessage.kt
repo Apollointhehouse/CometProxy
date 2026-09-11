@@ -1,12 +1,12 @@
-package dev.apollointhehouse.network.proxy.handlers
+package dev.apollointhehouse.network.pipeline.handlers
 
 import dev.apollointhehouse.network.packet.chat.PacketMessage
-import dev.apollointhehouse.network.proxy.pipeline.PacketContext
-import dev.apollointhehouse.network.proxy.pipeline.PacketHandler
+import dev.apollointhehouse.network.pipeline.PacketContext
+import dev.apollointhehouse.network.pipeline.PacketHandler
 import dev.apollointhehouse.network.crypto.AES
 import org.apache.logging.log4j.kotlin.logger
 
-class ChatMessageHandler : PacketHandler<PacketMessage> {
+class HandlerMessage : PacketHandler<PacketMessage> {
     private val log = logger()
 
     override suspend fun handle(context: PacketContext, packet: PacketMessage): PacketMessage {

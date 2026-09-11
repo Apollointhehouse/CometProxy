@@ -1,14 +1,14 @@
-package dev.apollointhehouse.network.proxy.handlers
+package dev.apollointhehouse.network.pipeline.handlers
 
 import dev.apollointhehouse.network.packet.auth.PacketAESSendKey
-import dev.apollointhehouse.network.proxy.pipeline.PacketContext
-import dev.apollointhehouse.network.proxy.pipeline.PacketHandler
+import dev.apollointhehouse.network.pipeline.PacketContext
+import dev.apollointhehouse.network.pipeline.PacketHandler
 import dev.apollointhehouse.network.crypto.RSA
 import java.security.KeyPair
 import javax.crypto.spec.SecretKeySpec
 import kotlin.io.encoding.Base64
 
-class ProxyAesKeyHandler(private val proxyKeyPair: KeyPair) : PacketHandler<PacketAESSendKey> {
+class HandlerAESSendKey(private val proxyKeyPair: KeyPair) : PacketHandler<PacketAESSendKey> {
     override suspend fun handle(context: PacketContext, packet: PacketAESSendKey): PacketAESSendKey {
         val rawAesKeyBytes = RSA.decrypt(packet.key, proxyKeyPair.private)
 

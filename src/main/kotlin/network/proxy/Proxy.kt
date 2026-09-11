@@ -5,6 +5,7 @@ import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.network.proxy.connection.ConnectionManager
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.logging.log4j.kotlin.logger
 
-class Proxy(val config: ProxyConfig) {
+class Proxy(private val config: ProxyConfig) {
     private val log = logger()
 
     suspend fun start() = withContext(Dispatchers.IO) {
@@ -47,7 +48,7 @@ class Proxy(val config: ProxyConfig) {
         val clientConn = proxySocket.accept().connection()
         log.info("Accepted ${clientConn.socket.remoteAddress}")
 
-        launch(Dispatchers.IO) {
+        launch(CoroutineName("session/${clientConn.socket.remoteAddress}")) {
             val serverConn = serverConnManager.getConnection() ?: return@launch
             val bridge = Bridge(config, clientConn, serverConn)
 

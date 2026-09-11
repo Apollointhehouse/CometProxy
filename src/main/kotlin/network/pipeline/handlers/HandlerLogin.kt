@@ -1,16 +1,16 @@
-package dev.apollointhehouse.network.proxy.handlers
+package dev.apollointhehouse.network.pipeline.handlers
 
 import dev.apollointhehouse.network.packet.auth.PacketLogin
 import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
-import dev.apollointhehouse.network.proxy.pipeline.PacketContext
-import dev.apollointhehouse.network.proxy.pipeline.PacketHandler
+import dev.apollointhehouse.network.pipeline.PacketContext
+import dev.apollointhehouse.network.pipeline.PacketHandler
 import dev.apollointhehouse.network.proxy.session.ChatSession
 import dev.apollointhehouse.network.proxy.session.PlayerSession
 import dev.apollointhehouse.network.crypto.RSA
 import java.security.KeyPair
 import kotlin.uuid.toKotlinUuid
 
-class ProxyLoginHandler(private val proxyKeyPair: KeyPair) : PacketHandler<PacketLogin> {
+class HandlerLogin(private val proxyKeyPair: KeyPair) : PacketHandler<PacketLogin> {
     override suspend fun handle(context: PacketContext, packet: PacketLogin): PacketLogin {
         when (context.direction) {
             PacketContext.Direction.CLIENT_TO_SERVER -> {

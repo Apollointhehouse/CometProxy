@@ -6,12 +6,12 @@ import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.handshake.PacketDisconnect
 import dev.apollointhehouse.network.packet.handshake.PacketPingHandshake
 import dev.apollointhehouse.network.packet.PacketRegistry
-import dev.apollointhehouse.network.proxy.handlers.ChatMessageHandler
-import dev.apollointhehouse.network.proxy.handlers.ProxyAesKeyHandler
-import dev.apollointhehouse.network.proxy.handlers.ProxyLoginHandler
+import dev.apollointhehouse.network.pipeline.handlers.HandlerMessage
+import dev.apollointhehouse.network.pipeline.handlers.HandlerAESSendKey
+import dev.apollointhehouse.network.pipeline.handlers.HandlerLogin
 import dev.apollointhehouse.network.proxy.connection.ConnectionContext
-import dev.apollointhehouse.network.proxy.pipeline.PacketContext
-import dev.apollointhehouse.network.proxy.pipeline.PacketPipeline
+import dev.apollointhehouse.network.pipeline.PacketContext
+import dev.apollointhehouse.network.pipeline.PacketPipeline
 import dev.apollointhehouse.network.crypto.AES
 import dev.apollointhehouse.network.crypto.RSA
 import dev.apollointhehouse.network.extensions.close
@@ -56,9 +56,9 @@ object JvmWarmup {
             }
 
             val pipeline = PacketPipeline().apply {
-                register(ProxyLoginHandler(keyPair))
-                register(ProxyAesKeyHandler(keyPair))
-                register(ChatMessageHandler())
+                register(HandlerLogin(keyPair))
+                register(HandlerAESSendKey(keyPair))
+                register(HandlerMessage())
             }
 
             val dummySocket = DummySocket()

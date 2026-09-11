@@ -2,16 +2,11 @@ package dev.apollointhehouse.network.proxy
 
 import dev.apollointhehouse.network.extensions.close
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.handshake.PacketDisconnect
-import dev.apollointhehouse.network.packet.handshake.PacketPingHandshake
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
-import dev.apollointhehouse.network.proxy.handlers.ChatMessageHandler
-import dev.apollointhehouse.network.proxy.handlers.ProxyAesKeyHandler
-import dev.apollointhehouse.network.proxy.handlers.ProxyLoginHandler
 import dev.apollointhehouse.network.proxy.connection.ConnectionContext
-import dev.apollointhehouse.network.proxy.pipeline.PacketContext
-import dev.apollointhehouse.network.proxy.pipeline.PacketPipeline
+import dev.apollointhehouse.network.pipeline.PacketContext
+import dev.apollointhehouse.network.pipeline.PacketPipeline
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +31,7 @@ class Bridge(
             serverConn = server
         )
 
-        val pipeline = buildPipeline()
+        val pipeline = PacketPipeline.create(config)
 
         try {
             val c2sContext = PacketContext(
@@ -93,24 +88,6 @@ class Bridge(
             server.close()
             ctx.close()
         }
-    }
-
-    private fun buildPipeline(): PacketPipeline {
-        val pipeline = PacketPipeline()
-
-        pipeline += ProxyLoginHandler(config.keyPair)
-        pipeline += ProxyAesKeyHandler(config.keyPair)
-        pipeline += ChatMessageHandler()
-        pipeline += { ctx, _: PacketPingHandshake ->
-            log.info { "Client Ping!" }
-
-            val con = ctx.connection
-            con.sendToClient(PacketDisconnect(reason = "§1\u000032769\u0000${config.btaVersion}\u0000${config.motd}\u00000\u0000100\u0000\u0000"))
-
-            null
-        }
-
-        return pipeline
     }
 
     override fun close() {

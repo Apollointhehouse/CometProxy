@@ -1,6 +1,11 @@
-package dev.apollointhehouse.network.proxy.pipeline
+package dev.apollointhehouse.network.pipeline
 
 import dev.apollointhehouse.network.packet.Packet
+import dev.apollointhehouse.network.pipeline.handlers.HandlerAESSendKey
+import dev.apollointhehouse.network.pipeline.handlers.HandlerLogin
+import dev.apollointhehouse.network.pipeline.handlers.HandlerMessage
+import dev.apollointhehouse.network.pipeline.handlers.HandlerPingHandshake
+import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import kotlin.reflect.KClass
 
 class PacketPipeline {
@@ -27,5 +32,18 @@ class PacketPipeline {
         }
 
         return current
+    }
+
+    companion object {
+        fun create(config: ProxyConfig): PacketPipeline {
+            val pipeline = PacketPipeline()
+
+            pipeline += HandlerLogin(config.keyPair)
+            pipeline += HandlerAESSendKey(config.keyPair)
+            pipeline += HandlerMessage()
+            pipeline += HandlerPingHandshake(config)
+
+            return pipeline
+        }
     }
 }

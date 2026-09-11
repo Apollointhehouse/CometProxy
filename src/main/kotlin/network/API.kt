@@ -9,6 +9,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
 import org.jetbrains.skia.Image
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.uuid.Uuid
 
 object API {
@@ -18,7 +19,7 @@ object API {
         }
     }
 
-    private val heads: MutableMap<Uuid, ImageBitmap> = mutableMapOf()
+    private val heads: ConcurrentHashMap<Uuid, ImageBitmap> = ConcurrentHashMap()
 
     suspend fun fetchHead(uuid: Uuid): ImageBitmap = heads.getOrPut(uuid) {
         val imgBytes = client.get("https://mc-heads.net/avatar/${uuid.toHexString()}").body<ByteArray>()
