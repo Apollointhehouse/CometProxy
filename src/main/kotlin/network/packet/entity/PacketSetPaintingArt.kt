@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.entity
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketSetPaintingArt(
     val motive: Int = 0,
@@ -12,11 +13,13 @@ data class PacketSetPaintingArt(
     }
 
     override val estimatedSize: Int
-        get() = 0
+        get() = size
 
-    companion object : PacketFactory<PacketSetPaintingArt> {
-        override suspend fun create(channel: ByteReadChannel): PacketSetPaintingArt {
-            val motive = channel.readInt()
+    companion object : BufferedPacketFactory<PacketSetPaintingArt> {
+        override val size: Int = 4
+
+        override fun create(buffer: Source): PacketSetPaintingArt {
+            val motive = buffer.readInt()
 
             return PacketSetPaintingArt(motive = motive)
         }

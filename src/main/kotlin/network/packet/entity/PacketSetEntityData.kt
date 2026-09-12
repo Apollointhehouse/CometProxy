@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.entity
 import dev.apollointhehouse.model.EntityDataItem
 import dev.apollointhehouse.model.SyncedEntityData
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketSetEntityData(
@@ -18,7 +18,7 @@ data class PacketSetEntityData(
     override val estimatedSize: Int
         get() = 5
 
-    companion object : PacketFactory<PacketSetEntityData> {
+    companion object : StreamingPacketFactory<PacketSetEntityData> {
 		override suspend fun create(channel: ByteReadChannel): PacketSetEntityData {
             val entityId = channel.readInt()
             val packedItems = SyncedEntityData.unpack(channel)

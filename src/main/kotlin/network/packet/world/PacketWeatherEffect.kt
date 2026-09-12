@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.world
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketWeatherEffect(
     val id: Int = 0,
@@ -20,15 +21,17 @@ data class PacketWeatherEffect(
     }
 
     override val estimatedSize: Int
-        get() = 17
+        get() = size
 
-    companion object : PacketFactory<PacketWeatherEffect> {
-		override suspend fun create(channel: ByteReadChannel): PacketWeatherEffect {
-            val id = channel.readInt()
-            val effectId = channel.readByte()
-            val x = channel.readInt()
-            val y = channel.readInt()
-            val z = channel.readInt()
+    companion object : BufferedPacketFactory<PacketWeatherEffect> {
+        override val size: Int = 17
+
+        override fun create(buffer: Source): PacketWeatherEffect {
+            val id = buffer.readInt()
+            val effectId = buffer.readByte()
+            val x = buffer.readInt()
+            val y = buffer.readInt()
+            val z = buffer.readInt()
 
             return PacketWeatherEffect(id = id, x = x, y = y, z = z, effectId = effectId)
         }

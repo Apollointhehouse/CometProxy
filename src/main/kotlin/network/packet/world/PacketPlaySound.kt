@@ -1,7 +1,7 @@
 package dev.apollointhehouse.network.packet.world
 
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketPlaySound(
@@ -22,7 +22,7 @@ data class PacketPlaySound(
     override val estimatedSize: Int
         get() = 20
 
-    companion object : PacketFactory<PacketPlaySound> {
+    companion object : StreamingPacketFactory<PacketPlaySound> {
 		override suspend fun create(channel: ByteReadChannel): PacketPlaySound {
             val soundID = channel.readInt()
             val x = channel.readInt()

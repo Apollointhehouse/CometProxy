@@ -4,7 +4,7 @@ import dev.apollointhehouse.nbt.tags.CompoundTag
 import dev.apollointhehouse.network.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketGameRule(
@@ -17,7 +17,7 @@ data class PacketGameRule(
     override val estimatedSize: Int
         get() = 0
 
-    companion object : PacketFactory<PacketGameRule> {
+    companion object : StreamingPacketFactory<PacketGameRule> {
 		override suspend fun create(channel: ByteReadChannel): PacketGameRule {
             val tag = channel.readCompressedCompoundTag()!!
 

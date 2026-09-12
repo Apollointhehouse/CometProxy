@@ -16,7 +16,7 @@ import org.apache.logging.log4j.kotlin.logger
 class Proxy(private val config: ProxyConfig) {
     private val log = logger()
 
-    suspend fun start() = withContext(Dispatchers.IO) {
+    suspend fun start() = withContext(Dispatchers.Default) {
         val targetAddress = InetSocketAddress(config.targetServer, config.targetPort)
 
         val selectorManager = ActorSelectorManager(Dispatchers.IO)

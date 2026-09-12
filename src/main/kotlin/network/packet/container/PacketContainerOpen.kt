@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.container
 import dev.apollointhehouse.network.extensions.readJavaStringUTF8
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketContainerOpen(
@@ -24,7 +24,7 @@ data class PacketContainerOpen(
     override val estimatedSize: Int
         get() = 3 + this.windowTitle.length
 
-    companion object : PacketFactory<PacketContainerOpen> {
+    companion object : StreamingPacketFactory<PacketContainerOpen> {
 		override suspend fun create(channel: ByteReadChannel): PacketContainerOpen {
             val windowId = channel.readByte()
             val inventoryType = channel.readByte()

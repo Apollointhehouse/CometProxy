@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.entity
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketEntityInteract(
     val sourceEntityID: Int = 0,
@@ -16,15 +17,21 @@ data class PacketEntityInteract(
     }
 
     override val estimatedSize: Int
-        get() = 9
+        get() = size
 
-    companion object : PacketFactory<PacketEntityInteract> {
-		override suspend fun create(channel: ByteReadChannel): PacketEntityInteract {
-            val sourceEntityID = channel.readInt()
-            val targetEntityID = channel.readInt()
-            val action = channel.readByte()
+    companion object : BufferedPacketFactory<PacketEntityInteract> {
+        override val size: Int = 9
 
-            return PacketEntityInteract(sourceEntityID = sourceEntityID, targetEntityID = targetEntityID, action = action)
+        override fun create(buffer: Source): PacketEntityInteract {
+            val sourceEntityID = buffer.readInt()
+            val targetEntityID = buffer.readInt()
+            val action = buffer.readByte()
+
+            return PacketEntityInteract(
+                sourceEntityID = sourceEntityID,
+                targetEntityID = targetEntityID,
+                action = action
+            )
         }
     }
 }

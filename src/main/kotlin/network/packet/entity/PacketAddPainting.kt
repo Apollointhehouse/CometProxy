@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.entity
 import dev.apollointhehouse.network.extensions.readJavaStringUTF8
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketAddPainting(
@@ -32,7 +32,7 @@ data class PacketAddPainting(
     override val estimatedSize: Int
         get() = 24
 
-    companion object : PacketFactory<PacketAddPainting> {
+    companion object : StreamingPacketFactory<PacketAddPainting> {
 		override suspend fun create(channel: ByteReadChannel): PacketAddPainting {
             val entityId = channel.readInt()
             val key = channel.readJavaStringUTF8(30)

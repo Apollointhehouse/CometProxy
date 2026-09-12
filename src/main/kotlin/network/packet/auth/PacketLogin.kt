@@ -5,7 +5,7 @@ import dev.apollointhehouse.network.extensions.readUUID
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.extensions.writeUUID
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 import java.util.*
 
@@ -33,7 +33,7 @@ data class PacketLogin(
     override val estimatedSize: Int
         get() = 4 + username.length + 8 + 1 + 4 + 4
 
-    companion object : PacketFactory<PacketLogin> {
+    companion object : StreamingPacketFactory<PacketLogin> {
         override suspend fun create(channel: ByteReadChannel): PacketLogin {
             val playerEntityIdAndProtocolVersion = channel.readInt()
             val username = channel.readJavaStringUTF8(16)

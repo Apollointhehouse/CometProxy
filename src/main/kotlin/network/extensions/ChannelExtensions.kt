@@ -12,6 +12,7 @@ import io.ktor.utils.io.writeByte
 import io.ktor.utils.io.writeFully
 import io.ktor.utils.io.writeLong
 import io.ktor.utils.io.writeShort
+import kotlinx.io.Source
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -106,5 +107,9 @@ suspend fun ByteWriteChannel.writeBoolean(bool: Boolean) {
 }
 
 suspend fun ByteReadChannel.readBoolean(): Boolean {
+    return readByte() != 0.toByte()
+}
+
+fun Source.readBoolean(): Boolean {
     return readByte() != 0.toByte()
 }

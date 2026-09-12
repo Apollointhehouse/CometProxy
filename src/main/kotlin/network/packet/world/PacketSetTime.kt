@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.world
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketSetTime(
     val time: Long = 0L,
@@ -12,11 +13,13 @@ data class PacketSetTime(
     }
 
     override val estimatedSize: Int
-        get() = 8
+        get() = size
 
-    companion object : PacketFactory<PacketSetTime> {
-        override suspend fun create(channel: ByteReadChannel): PacketSetTime {
-            val time = channel.readLong()
+    companion object : BufferedPacketFactory<PacketSetTime> {
+        override val size: Int = 8
+
+        override fun create(buffer: Source): PacketSetTime {
+            val time = buffer.readLong()
 
             return PacketSetTime(time = time)
         }

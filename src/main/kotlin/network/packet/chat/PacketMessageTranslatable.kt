@@ -1,7 +1,7 @@
 package dev.apollointhehouse.network.packet.chat
 
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 import java.nio.charset.StandardCharsets
 import kotlin.experimental.and
@@ -43,7 +43,7 @@ data class PacketMessageTranslatable(
     override val estimatedSize: Int
         get() = 4 + this.args.size + this.args.size * 16
 
-    companion object : PacketFactory<PacketMessageTranslatable> {
+    companion object : StreamingPacketFactory<PacketMessageTranslatable> {
 		override suspend fun create(channel: ByteReadChannel): PacketMessageTranslatable {
             val key = channel.readShort()
             var type = channel.readByte()

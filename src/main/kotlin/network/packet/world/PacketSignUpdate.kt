@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.world
 import dev.apollointhehouse.network.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketSignUpdate(
@@ -30,7 +30,7 @@ data class PacketSignUpdate(
     override val estimatedSize: Int
         get() = signLines.size*16 + 4
 
-    companion object : PacketFactory<PacketSignUpdate> {
+    companion object : StreamingPacketFactory<PacketSignUpdate> {
 		override suspend fun create(channel: ByteReadChannel): PacketSignUpdate {
             val xPosition = channel.readInt()
             val yPosition = channel.readShort()

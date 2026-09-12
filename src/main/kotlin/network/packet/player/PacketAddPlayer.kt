@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.player
 import dev.apollointhehouse.nbt.tags.CompoundTag
 import dev.apollointhehouse.network.extensions.*
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 import java.util.*
 
@@ -52,7 +52,7 @@ data class PacketAddPlayer(
     override val estimatedSize: Int
         get() = 29
 
-    companion object : PacketFactory<PacketAddPlayer> {
+    companion object : StreamingPacketFactory<PacketAddPlayer> {
 		override suspend fun create(channel: ByteReadChannel): PacketAddPlayer {
             val entityId = channel.readInt()
             val name = channel.readJavaStringUTF8(16)

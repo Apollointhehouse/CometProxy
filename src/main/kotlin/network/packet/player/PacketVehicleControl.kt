@@ -1,8 +1,11 @@
 package dev.apollointhehouse.network.packet.player
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
+import kotlinx.io.readDouble
+import kotlinx.io.readFloat
 
 data class PacketVehicleControl(
     var entityId: Int = 0,
@@ -22,17 +25,18 @@ data class PacketVehicleControl(
     }
 
     override val estimatedSize: Int
-        get() = 36
+        get() = size
 
-    companion object : PacketFactory<PacketVehicleControl> {
-        
-        override suspend fun create(channel: ByteReadChannel): PacketVehicleControl {
-            val entityId = channel.readInt()
-            val targetXD = channel.readDouble()
-            val targetYD = channel.readDouble()
-            val targetZD = channel.readDouble()
-            val targetYRot = channel.readFloat()
-            val fallDistance = channel.readFloat()
+    companion object : BufferedPacketFactory<PacketVehicleControl> {
+        override val size: Int = 36
+
+        override fun create(buffer: Source): PacketVehicleControl {
+            val entityId = buffer.readInt()
+            val targetXD = buffer.readDouble()
+            val targetYD = buffer.readDouble()
+            val targetZD = buffer.readDouble()
+            val targetYRot = buffer.readFloat()
+            val fallDistance = buffer.readFloat()
 
             return PacketVehicleControl(entityId, targetXD, targetYD, targetZD, targetYRot, fallDistance)
         }

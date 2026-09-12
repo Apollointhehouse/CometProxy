@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.world
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketBlockUpdate(
     val xPosition: Int = 0,
@@ -11,28 +12,34 @@ data class PacketBlockUpdate(
     val blockId: Short = 0,
     val metadata: Int = 0,
 ) : Packet {
-    
-
     override suspend fun write(channel: ByteWriteChannel) {
-      channel.writeInt(xPosition)
-      channel.writeShort(yPosition)
-      channel.writeInt(zPosition)
-      channel.writeShort(blockId)
-      channel.writeByte(metadata.toByte())
+        channel.writeInt(xPosition)
+        channel.writeShort(yPosition)
+        channel.writeInt(zPosition)
+        channel.writeShort(blockId)
+        channel.writeByte(metadata.toByte())
     }
 
     override val estimatedSize: Int
-        get() = 11
+        get() = size
 
-    companion object : PacketFactory<PacketBlockUpdate> {
-		override suspend fun create(channel: ByteReadChannel): PacketBlockUpdate {
-            val xPosition = channel.readInt()
-            val yPosition = channel.readShort()
-            val zPosition = channel.readInt()
-            val blockId = channel.readShort()
-            val metadata = channel.readByte().toUByte().toInt()
+    companion object : BufferedPacketFactory<PacketBlockUpdate> {
+        override val size: Int = 13
 
-            return PacketBlockUpdate(xPosition = xPosition, yPosition = yPosition, zPosition = zPosition, blockId = blockId, metadata = metadata)
+        override fun create(buffer: Source): PacketBlockUpdate {
+            val xPosition = buffer.readInt()
+            val yPosition = buffer.readShort()
+            val zPosition = buffer.readInt()
+            val blockId = buffer.readShort()
+            val metadata = buffer.readByte().toUByte().toInt()
+
+            return PacketBlockUpdate(
+                xPosition = xPosition,
+                yPosition = yPosition,
+                zPosition = zPosition,
+                blockId = blockId,
+                metadata = metadata
+            )
         }
     }
 }

@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.container
 import dev.apollointhehouse.network.extensions.readJavaStringUTF8
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketRecipeSync(
@@ -18,7 +18,7 @@ data class PacketRecipeSync(
     override val estimatedSize: Int
         get() = recipe.toByteArray().size
 
-    companion object : PacketFactory<PacketRecipeSync> {
+    companion object : StreamingPacketFactory<PacketRecipeSync> {
 		override suspend fun create(channel: ByteReadChannel): PacketRecipeSync {
             val recipe = channel.readJavaStringUTF8(65532)
             val maxRecipes = channel.readLong()

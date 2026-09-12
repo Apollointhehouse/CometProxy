@@ -2,9 +2,12 @@ package dev.apollointhehouse.network.packet.player
 
 import dev.apollointhehouse.network.extensions.readBoolean
 import dev.apollointhehouse.network.extensions.writeBoolean
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
+import kotlinx.io.readDouble
+import kotlinx.io.readFloat
 
 sealed interface PacketMovePlayer : Packet {
     var onGround: Boolean
@@ -17,11 +20,13 @@ sealed interface PacketMovePlayer : Packet {
         }
 
         override val estimatedSize: Int
-            get() = 1
+            get() = size
 
-        companion object : PacketFactory<NoPosition> {
-            override suspend fun create(channel: ByteReadChannel): NoPosition =
-                NoPosition(onGround = channel.readBoolean())
+        companion object : BufferedPacketFactory<NoPosition> {
+            override val size: Int = 1
+
+            override fun create(buffer: Source): NoPosition =
+                NoPosition(onGround = buffer.readBoolean())
         }
     }
 
@@ -39,15 +44,16 @@ sealed interface PacketMovePlayer : Packet {
         }
 
         override val estimatedSize: Int
-            get() = 33
+            get() = size
 
-        companion object : PacketFactory<Position> {
-		    
-            override suspend fun create(channel: ByteReadChannel): Position {
-                val x = channel.readDouble()
-                val y = channel.readDouble()
-                val z = channel.readDouble()
-                val onGround = channel.readBoolean()
+        companion object : BufferedPacketFactory<Position> {
+            override val size: Int = 25
+
+            override fun create(buffer: Source): Position {
+                val x = buffer.readDouble()
+                val y = buffer.readDouble()
+                val z = buffer.readDouble()
+                val onGround = buffer.readBoolean()
 
                 return Position(x, y, z, onGround)
             }
@@ -72,17 +78,18 @@ sealed interface PacketMovePlayer : Packet {
         }
 
         override val estimatedSize: Int
-            get() = 41
+            get() = size
 
-        companion object : PacketFactory<PosRot> {
-		    
-            override suspend fun create(channel: ByteReadChannel): PosRot {
-                val x = channel.readDouble()
-                val y = channel.readDouble()
-                val z = channel.readDouble()
-                val yaw = channel.readFloat()
-                val pitch = channel.readFloat()
-                val onGround = channel.readBoolean()
+        companion object : BufferedPacketFactory<PosRot> {
+            override val size: Int = 33
+
+            override fun create(buffer: Source): PosRot {
+                val x = buffer.readDouble()
+                val y = buffer.readDouble()
+                val z = buffer.readDouble()
+                val yaw = buffer.readFloat()
+                val pitch = buffer.readFloat()
+                val onGround = buffer.readBoolean()
 
                 return PosRot(x, y, z, yaw, pitch, onGround)
             }
@@ -101,13 +108,15 @@ sealed interface PacketMovePlayer : Packet {
         }
 
         override val estimatedSize: Int
-            get() = 9
+            get() = size
 
-        companion object : PacketFactory<Rotation> {
-            override suspend fun create(channel: ByteReadChannel): Rotation {
-                val yaw = channel.readFloat()
-                val pitch = channel.readFloat()
-                val onGround = channel.readByte().toInt() != 0
+        companion object : BufferedPacketFactory<Rotation> {
+            override val size: Int = 9
+
+            override fun create(buffer: Source): Rotation {
+                val yaw = buffer.readFloat()
+                val pitch = buffer.readFloat()
+                val onGround = buffer.readByte().toInt() != 0
 
                 return Rotation(yaw, pitch, onGround)
             }

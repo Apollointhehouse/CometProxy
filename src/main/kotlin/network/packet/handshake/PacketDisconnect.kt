@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.handshake
 import dev.apollointhehouse.network.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketDisconnect(
@@ -18,7 +18,7 @@ data class PacketDisconnect(
     override val estimatedSize: Int
         get() = reason.length
 
-    companion object : PacketFactory<PacketDisconnect> {
+    companion object : StreamingPacketFactory<PacketDisconnect> {
 		override suspend fun create(channel: ByteReadChannel): PacketDisconnect {
             val reason = channel.readJavaStringUTF16BE(255)
 

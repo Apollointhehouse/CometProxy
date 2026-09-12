@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.player
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketSetHealth(
     val healthMP: Short = 0,
@@ -12,11 +13,13 @@ data class PacketSetHealth(
     }
 
     override val estimatedSize: Int
-        get() = 2
+        get() = size
 
-    companion object : PacketFactory<PacketSetHealth> {
-		override suspend fun create(channel: ByteReadChannel): PacketSetHealth {
-            val healthMP = channel.readShort()
+    companion object : BufferedPacketFactory<PacketSetHealth> {
+        override val size: Int = 2
+
+        override fun create(buffer: Source): PacketSetHealth {
+            val healthMP = buffer.readShort()
 
             return PacketSetHealth(healthMP = healthMP)
         }

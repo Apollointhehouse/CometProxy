@@ -1,7 +1,7 @@
 package dev.apollointhehouse.network.packet.player
 
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketUseOrPlaceItemStack(
@@ -16,8 +16,6 @@ data class PacketUseOrPlaceItemStack(
     val stackSize: Byte = -1,
     val meta: Short = -1
 ) : Packet {
-    
-
     override suspend fun write(channel: ByteWriteChannel) {
         channel.writeInt(xPosition)
         channel.writeByte(yPosition.toByte())
@@ -39,7 +37,7 @@ data class PacketUseOrPlaceItemStack(
     override val estimatedSize: Int
         get() = 20
 
-    companion object : PacketFactory<PacketUseOrPlaceItemStack> {
+    companion object : StreamingPacketFactory<PacketUseOrPlaceItemStack> {
 		override suspend fun create(channel: ByteReadChannel): PacketUseOrPlaceItemStack {
             val xPosition = channel.readInt()
             val yPosition = channel.readByte().toUByte().toInt()

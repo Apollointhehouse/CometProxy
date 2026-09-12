@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.entity
 import dev.apollointhehouse.network.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketEntityNickname(
@@ -20,7 +20,7 @@ data class PacketEntityNickname(
         channel.writeByte(chatColor)
     }
 
-    companion object : PacketFactory<PacketEntityNickname> {
+    companion object : StreamingPacketFactory<PacketEntityNickname> {
         
         override suspend fun create(channel: ByteReadChannel): PacketEntityNickname {
             val entityId = channel.readInt()

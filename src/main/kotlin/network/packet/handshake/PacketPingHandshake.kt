@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.handshake
 import dev.apollointhehouse.network.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 import java.nio.charset.StandardCharsets
 
@@ -27,7 +27,7 @@ data class PacketPingHandshake(
 
     override val estimatedSize: Int = 0
 
-    companion object : PacketFactory<PacketPingHandshake> {
+    companion object : StreamingPacketFactory<PacketPingHandshake> {
 		override suspend fun create(channel: ByteReadChannel): PacketPingHandshake {
             val payload = channel.readByte().toUByte()
             val identifier = channel.readByte().toUByte()

@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.entity
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketSetEntityMotion(
     val entityId: Int = 0,
@@ -18,14 +19,16 @@ data class PacketSetEntityMotion(
     }
 
     override val estimatedSize: Int
-        get() = 10
+        get() = size
 
-    companion object : PacketFactory<PacketSetEntityMotion> {
-		override suspend fun create(channel: ByteReadChannel): PacketSetEntityMotion {
-            val entityId = channel.readInt()
-            val motionX = channel.readShort()
-            val motionY = channel.readShort()
-            val motionZ = channel.readShort()
+    companion object : BufferedPacketFactory<PacketSetEntityMotion> {
+        override val size: Int = 10
+
+        override fun create(buffer: Source): PacketSetEntityMotion {
+            val entityId = buffer.readInt()
+            val motionX = buffer.readShort()
+            val motionY = buffer.readShort()
+            val motionZ = buffer.readShort()
 
             return PacketSetEntityMotion(entityId = entityId, motionX = motionX, motionY = motionY, motionZ = motionZ)
         }

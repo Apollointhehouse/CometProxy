@@ -1,12 +1,8 @@
 package dev.apollointhehouse.network.packet.world
 
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
-import java.io.IOException
-import java.util.zip.DataFormatException
-import java.util.zip.Deflater
-import java.util.zip.Inflater
 
 data class PacketBlockRegionUpdate(
     val xPosition: Int = 0,
@@ -25,27 +21,30 @@ data class PacketBlockRegionUpdate(
         channel.writeByte((ySize - 1).toByte())
         channel.writeByte((zSize - 1).toByte())
 
-        val deflater = Deflater(-1)
-        try {
-            deflater.setInput(this.chunk)
-            deflater.finish()
-            val outBuffer = ByteArray(this.chunk.size + 64) // headroom, deflate can slightly expand
-            var compressedSize = 0
-            while (!deflater.finished()) {
-                compressedSize += deflater.deflate(outBuffer, compressedSize, outBuffer.size - compressedSize)
-            }
-            channel.writeInt(compressedSize)
-            channel.writeFully(outBuffer, 0, compressedSize)
-        } finally {
-            deflater.end()
-        }
+        channel.writeInt(chunk.size)
+        channel.writeFully(chunk)
+
+//        val deflater = Deflater(-1)
+//        try {
+//            deflater.setInput(this.chunk)
+//            deflater.finish()
+//            val outBuffer = ByteArray(this.chunk.size + 64) // headroom, deflate can slightly expand
+//            var compressedSize = 0
+//            while (!deflater.finished()) {
+//                compressedSize += deflater.deflate(outBuffer, compressedSize, outBuffer.size - compressedSize)
+//            }
+//            channel.writeInt(compressedSize)
+//            channel.writeFully(outBuffer, 0, compressedSize)
+//        } finally {
+//            deflater.end()
+//        }
     }
 
     override val estimatedSize: Int
         get() = 17 + this.chunk.size
 
-    companion object : PacketFactory<PacketBlockRegionUpdate> {
-		        const val BYTES_PER_CELL = 8
+    companion object : StreamingPacketFactory<PacketBlockRegionUpdate> {
+//		        const val BYTES_PER_CELL = 8
 
         override suspend fun create(channel: ByteReadChannel): PacketBlockRegionUpdate {
             val xPosition = channel.readInt()
@@ -59,26 +58,26 @@ data class PacketBlockRegionUpdate(
             val compressedBuffer = ByteArray(compressedSize)
             channel.readFully(compressedBuffer)
 
-            var chunk: ByteArray
+//            var chunk: ByteArray
+//
+//            val inflater = Inflater()
+//            try {
+//                inflater.setInput(compressedBuffer)
+//                val decompressed = ByteArray(xSize * ySize * zSize * BYTES_PER_CELL)
+//                var totalRead = 0
+//                while (!inflater.finished() && totalRead < decompressed.size) {
+//                    val n = inflater.inflate(decompressed, totalRead, decompressed.size - totalRead)
+//                    if (n == 0 && inflater.needsInput()) break
+//                    totalRead += n
+//                }
+//                chunk = decompressed
+//            } catch (e: DataFormatException) {
+//                throw IOException("Bad compressed data format", e)
+//            } finally {
+//                inflater.end()
+//            }
 
-            val inflater = Inflater()
-            try {
-                inflater.setInput(compressedBuffer)
-                val decompressed = ByteArray(xSize * ySize * zSize * BYTES_PER_CELL)
-                var totalRead = 0
-                while (!inflater.finished() && totalRead < decompressed.size) {
-                    val n = inflater.inflate(decompressed, totalRead, decompressed.size - totalRead)
-                    if (n == 0 && inflater.needsInput()) break
-                    totalRead += n
-                }
-                chunk = decompressed
-            } catch (e: DataFormatException) {
-                throw IOException("Bad compressed data format", e)
-            } finally {
-                inflater.end()
-            }
-
-            return PacketBlockRegionUpdate(xPosition, yPosition, zPosition, xSize, ySize, zSize, chunk)
+            return PacketBlockRegionUpdate(xPosition, yPosition, zPosition, xSize, ySize, zSize, compressedBuffer)
         }
     }
 }

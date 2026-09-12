@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.player
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketFlagOpen(
     val windowId: Byte = 0,
@@ -18,14 +19,16 @@ data class PacketFlagOpen(
     }
 
     override val estimatedSize: Int
-        get() = 11
+        get() = size
 
-    companion object : PacketFactory<PacketFlagOpen> {
-		override suspend fun create(channel: ByteReadChannel): PacketFlagOpen {
-            val windowId = channel.readByte()
-            val x = channel.readInt()
-            val y = channel.readShort()
-            val z = channel.readInt()
+    companion object : BufferedPacketFactory<PacketFlagOpen> {
+        override val size: Int = 11
+
+        override fun create(buffer: Source): PacketFlagOpen {
+            val windowId = buffer.readByte()
+            val x = buffer.readInt()
+            val y = buffer.readShort()
+            val z = buffer.readInt()
 
             return PacketFlagOpen(windowId = windowId, x = x, y = y, z = z)
         }

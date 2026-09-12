@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.player
 import dev.apollointhehouse.network.extensions.readJavaStringUTF16BE
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketPlayerList(
@@ -35,7 +35,7 @@ data class PacketPlayerList(
             return size
         }
 
-    companion object : PacketFactory<PacketPlayerList> {
+    companion object : StreamingPacketFactory<PacketPlayerList> {
 		override suspend fun create(channel: ByteReadChannel): PacketPlayerList {
             val count = channel.readInt()
 

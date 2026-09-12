@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.chat
 import dev.apollointhehouse.network.extensions.readJavaStringUTF8
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketRequestCommandManager(
@@ -20,7 +20,7 @@ data class PacketRequestCommandManager(
     override val estimatedSize: Int
         get() = 10
 
-    companion object : PacketFactory<PacketRequestCommandManager> {
+    companion object : StreamingPacketFactory<PacketRequestCommandManager> {
 		override suspend fun create(channel: ByteReadChannel): PacketRequestCommandManager {
             val username = channel.readJavaStringUTF8(20)
             val text = channel.readJavaStringUTF8(256)

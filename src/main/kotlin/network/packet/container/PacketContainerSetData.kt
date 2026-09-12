@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.container
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketContainerSetData(
     val windowId: Byte = 0,
@@ -16,15 +17,21 @@ data class PacketContainerSetData(
     }
 
     override val estimatedSize: Int
-        get() = 7
+        get() = size
 
-    companion object : PacketFactory<PacketContainerSetData> {
-		override suspend fun create(channel: ByteReadChannel): PacketContainerSetData {
-            val windowId = channel.readByte()
-            val progressBar = channel.readShort()
-            val progressBarValue = channel.readShort()
+    companion object : BufferedPacketFactory<PacketContainerSetData> {
+        override val size: Int = 5
 
-            return PacketContainerSetData(windowId = windowId, progressBar = progressBar, progressBarValue = progressBarValue)
+        override fun create(buffer: Source): PacketContainerSetData {
+            val windowId = buffer.readByte()
+            val progressBar = buffer.readShort()
+            val progressBarValue = buffer.readShort()
+
+            return PacketContainerSetData(
+                windowId = windowId,
+                progressBar = progressBar,
+                progressBarValue = progressBarValue
+            )
         }
     }
 }

@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.world
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketSetSpawnPosition(
     val x: Int = 0,
@@ -16,13 +17,15 @@ data class PacketSetSpawnPosition(
     }
 
     override val estimatedSize: Int
-        get() = 12
+        get() = size
 
-    companion object : PacketFactory<PacketSetSpawnPosition> {
-        override suspend fun create(channel: ByteReadChannel): PacketSetSpawnPosition {
-            val x = channel.readInt()
-            val y = channel.readInt()
-            val z = channel.readInt()
+    companion object : BufferedPacketFactory<PacketSetSpawnPosition> {
+        override val size: Int = 12
+
+        override fun create(buffer: Source): PacketSetSpawnPosition {
+            val x = buffer.readInt()
+            val y = buffer.readInt()
+            val z = buffer.readInt()
 
             return PacketSetSpawnPosition(x = x, y = y, z = z)
         }

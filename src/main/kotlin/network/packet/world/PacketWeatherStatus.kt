@@ -1,8 +1,10 @@
 package dev.apollointhehouse.network.packet.world
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
+import kotlinx.io.readFloat
 
 data class PacketWeatherStatus(
     val dimId: Int = 0,
@@ -22,18 +24,27 @@ data class PacketWeatherStatus(
     }
 
     override val estimatedSize: Int
-        get() = 28
+        get() = size
 
-    companion object : PacketFactory<PacketWeatherStatus> {
-		override suspend fun create(channel: ByteReadChannel): PacketWeatherStatus {
-            val dimId = channel.readInt()
-            val id = channel.readInt()
-            val newId = channel.readInt()
-            val duration = channel.readLong()
-            val intensity = channel.readFloat()
-            val power = channel.readFloat()
+    companion object : BufferedPacketFactory<PacketWeatherStatus> {
+        override val size: Int = 28
 
-            return PacketWeatherStatus(dimId = dimId, id = id, newId = newId, duration = duration, intensity = intensity, power = power)
+        override fun create(buffer: Source): PacketWeatherStatus {
+            val dimId = buffer.readInt()
+            val id = buffer.readInt()
+            val newId = buffer.readInt()
+            val duration = buffer.readLong()
+            val intensity = buffer.readFloat()
+            val power = buffer.readFloat()
+
+            return PacketWeatherStatus(
+                dimId = dimId,
+                id = id,
+                newId = newId,
+                duration = duration,
+                intensity = intensity,
+                power = power
+            )
         }
     }
 }

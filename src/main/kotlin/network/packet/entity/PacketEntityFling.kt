@@ -1,8 +1,10 @@
 package dev.apollointhehouse.network.packet.entity
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
+import kotlinx.io.readFloat
 
 data class PacketEntityFling(
     val entityId: Int = 0,
@@ -22,18 +24,27 @@ data class PacketEntityFling(
     }
 
     override val estimatedSize: Int
-        get() = 21
+        get() = size
 
-    companion object : PacketFactory<PacketEntityFling> {
-		override suspend fun create(channel: ByteReadChannel): PacketEntityFling {
-            val entityId = channel.readInt()
-            val xd = channel.readFloat().toDouble()
-            val yd = channel.readFloat().toDouble()
-            val zd = channel.readFloat().toDouble()
-            val pushTime = channel.readFloat()
-            val pushesTick = channel.readByte().toUByte().toInt()
+    companion object : BufferedPacketFactory<PacketEntityFling> {
+        override val size: Int = 21
 
-            return PacketEntityFling(entityId = entityId, xd = xd, yd = yd, zd = zd, pushTime = pushTime, pushesTick = pushesTick)
+        override fun create(buffer: Source): PacketEntityFling {
+            val entityId = buffer.readInt()
+            val xd = buffer.readFloat().toDouble()
+            val yd = buffer.readFloat().toDouble()
+            val zd = buffer.readFloat().toDouble()
+            val pushTime = buffer.readFloat()
+            val pushesTick = buffer.readByte().toUByte().toInt()
+
+            return PacketEntityFling(
+                entityId = entityId,
+                xd = xd,
+                yd = yd,
+                zd = zd,
+                pushTime = pushTime,
+                pushesTick = pushesTick
+            )
         }
     }
 }

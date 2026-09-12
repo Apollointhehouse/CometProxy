@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.player
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketAnimate(
     val entityId: Int = 0,
@@ -14,12 +15,14 @@ data class PacketAnimate(
     }
 
     override val estimatedSize: Int
-        get() = 5
+        get() = size
 
-    companion object : PacketFactory<PacketAnimate> {
-		override suspend fun create(channel: ByteReadChannel): PacketAnimate {
-            val entityId = channel.readInt()
-            val animate = channel.readByte()
+    companion object : BufferedPacketFactory<PacketAnimate> {
+        override val size: Int = 5
+
+        override fun create(buffer: Source): PacketAnimate {
+            val entityId = buffer.readInt()
+            val animate = buffer.readByte()
 
             return PacketAnimate(entityId = entityId, animate = animate)
         }

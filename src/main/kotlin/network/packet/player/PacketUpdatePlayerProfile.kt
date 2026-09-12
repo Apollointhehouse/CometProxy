@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.player
 
 import dev.apollointhehouse.network.extensions.*
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 import java.util.*
 
@@ -28,7 +28,7 @@ data class PacketUpdatePlayerProfile(
     override val estimatedSize: Int
         get() = 10 + this.username.length + 4
 
-    companion object : PacketFactory<PacketUpdatePlayerProfile> {
+    companion object : StreamingPacketFactory<PacketUpdatePlayerProfile> {
 		override suspend fun create(channel: ByteReadChannel): PacketUpdatePlayerProfile {
             val username = channel.readJavaStringUTF8(16)
             val nickname = channel.readJavaStringUTF16BE(256)

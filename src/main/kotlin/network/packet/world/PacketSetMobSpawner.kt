@@ -1,7 +1,7 @@
 package dev.apollointhehouse.network.packet.world
 
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 import kotlin.experimental.and
 
@@ -25,7 +25,7 @@ data class PacketSetMobSpawner(
     override val estimatedSize: Int
         get() = 14
 
-    companion object : PacketFactory<PacketSetMobSpawner> {
+    companion object : StreamingPacketFactory<PacketSetMobSpawner> {
 		override suspend fun create(channel: ByteReadChannel): PacketSetMobSpawner {
             val x = channel.readInt()
             val y = channel.readShort()

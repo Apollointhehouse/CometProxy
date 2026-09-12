@@ -5,7 +5,7 @@ import dev.apollointhehouse.network.extensions.readJavaStringUTF8
 import dev.apollointhehouse.network.extensions.writeBoolean
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 import kotlin.experimental.or
 
@@ -28,7 +28,7 @@ data class PacketMessage(
     override val estimatedSize: Int
         get() = message.length + 1
 
-    companion object : PacketFactory<PacketMessage> {
+    companion object : StreamingPacketFactory<PacketMessage> {
         override suspend fun create(channel: ByteReadChannel): PacketMessage {
             var type = channel.readByte()
             val formatted = (type.toInt() and -128) != 0

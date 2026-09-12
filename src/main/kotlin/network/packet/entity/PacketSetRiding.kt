@@ -1,7 +1,7 @@
 package dev.apollointhehouse.network.packet.entity
 
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketSetRiding(
@@ -27,7 +27,7 @@ data class PacketSetRiding(
     override val estimatedSize: Int
         get() = 8
 
-    companion object : PacketFactory<PacketSetRiding> {
+    companion object : StreamingPacketFactory<PacketSetRiding> {
 		override suspend fun create(channel: ByteReadChannel): PacketSetRiding {
             val passengerId = channel.readInt()
             val isTileEntity = channel.readByte().toInt() != 0

@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.entity
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketRemoveEntity(
     val entityId: Int = 0,
@@ -12,11 +13,13 @@ data class PacketRemoveEntity(
     }
 
     override val estimatedSize: Int
-        get() = 4
+        get() = size
 
-    companion object : PacketFactory<PacketRemoveEntity> {
-		override suspend fun create(channel: ByteReadChannel): PacketRemoveEntity {
-            val entityId = channel.readInt()
+    companion object : BufferedPacketFactory<PacketRemoveEntity> {
+        override val size: Int = 4
+
+        override fun create(buffer: Source): PacketRemoveEntity {
+            val entityId = buffer.readInt()
 
             return PacketRemoveEntity(entityId = entityId)
         }

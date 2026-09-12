@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.entity
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 interface PacketMoveEntity : Packet {
     val id: Int
@@ -15,11 +16,13 @@ interface PacketMoveEntity : Packet {
         }
 
         override val estimatedSize: Int
-            get() = 4
+            get() = size
 
-        companion object : PacketFactory<None> {
-            override suspend fun create(channel: ByteReadChannel): None =
-                None(id = channel.readInt())
+        companion object : BufferedPacketFactory<None> {
+            override val size: Int = 4
+
+            override fun create(buffer: Source): None =
+                None(id = buffer.readInt())
         }
     }
 
@@ -37,15 +40,16 @@ interface PacketMoveEntity : Packet {
         }
 
         override val estimatedSize: Int
-            get() = 7
+            get() = size
 
-        companion object : PacketFactory<Pos> {
-		    
-            override suspend fun create(channel: ByteReadChannel): Pos = Pos(
-                id = channel.readInt(),
-                x = channel.readByte(),
-                y = channel.readByte(),
-                z = channel.readByte()
+        companion object : BufferedPacketFactory<Pos> {
+            override val size: Int = 7
+
+            override fun create(buffer: Source): Pos = Pos(
+                id = buffer.readInt(),
+                x = buffer.readByte(),
+                y = buffer.readByte(),
+                z = buffer.readByte()
             )
         }
     }
@@ -68,16 +72,18 @@ interface PacketMoveEntity : Packet {
         }
 
         override val estimatedSize: Int
-            get() = 9
+            get() = size
 
-        companion object : PacketFactory<PosRot> {
-            override suspend fun create(channel: ByteReadChannel): PosRot = PosRot(
-                id = channel.readInt(),
-                x = channel.readByte(),
-                y = channel.readByte(),
-                z = channel.readByte(),
-                yaw = channel.readByte(),
-                pitch = channel.readByte()
+        companion object : BufferedPacketFactory<PosRot> {
+            override val size: Int = 9
+
+            override fun create(buffer: Source): PosRot = PosRot(
+                id = buffer.readInt(),
+                x = buffer.readByte(),
+                y = buffer.readByte(),
+                z = buffer.readByte(),
+                yaw = buffer.readByte(),
+                pitch = buffer.readByte()
             )
         }
     }
@@ -94,13 +100,15 @@ interface PacketMoveEntity : Packet {
         }
 
         override val estimatedSize: Int
-            get() = 6
+            get() = size
 
-        companion object : PacketFactory<Rot> {
-            override suspend fun create(channel: ByteReadChannel): Rot = Rot(
-                id = channel.readInt(),
-                yaw = channel.readByte(),
-                pitch = channel.readByte()
+        companion object : BufferedPacketFactory<Rot> {
+            override val size: Int = 6
+
+            override fun create(buffer: Source): Rot = Rot(
+                id = buffer.readInt(),
+                yaw = buffer.readByte(),
+                pitch = buffer.readByte()
             )
         }
     }

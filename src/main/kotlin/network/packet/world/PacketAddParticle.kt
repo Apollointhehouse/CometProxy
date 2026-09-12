@@ -5,7 +5,7 @@ import dev.apollointhehouse.network.extensions.readJavaStringUTF8
 import dev.apollointhehouse.network.extensions.writeBoolean
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketAddParticle(
@@ -52,7 +52,7 @@ data class PacketAddParticle(
     override val estimatedSize: Int
         get() = 40
 
-    companion object : PacketFactory<PacketAddParticle> {
+    companion object : StreamingPacketFactory<PacketAddParticle> {
 		override suspend fun create(channel: ByteReadChannel): PacketAddParticle {
             val particleKey = channel.readJavaStringUTF8(100)
             val x = channel.readDouble()

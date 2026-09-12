@@ -1,8 +1,10 @@
 package dev.apollointhehouse.network.packet.entity
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
+import kotlinx.io.readFloat
 
 data class PacketEntityEvent(
     val entityId: Int = 0,
@@ -16,13 +18,15 @@ data class PacketEntityEvent(
     }
 
     override val estimatedSize: Int
-        get() = 9
+        get() = size
 
-    companion object : PacketFactory<PacketEntityEvent> {
-		override suspend fun create(channel: ByteReadChannel): PacketEntityEvent {
-            val entityId = channel.readInt()
-            val entityStatus = channel.readByte()
-            val attackedAtYaw = channel.readFloat()
+    companion object : BufferedPacketFactory<PacketEntityEvent> {
+        override val size: Int = 9
+
+        override fun create(buffer: Source): PacketEntityEvent {
+            val entityId = buffer.readInt()
+            val entityStatus = buffer.readByte()
+            val attackedAtYaw = buffer.readFloat()
 
             return PacketEntityEvent(entityId = entityId, entityStatus = entityStatus, attackedAtYaw = attackedAtYaw)
         }

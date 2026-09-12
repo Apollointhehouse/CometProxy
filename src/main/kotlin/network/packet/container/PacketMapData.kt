@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.container
 
 import dev.apollointhehouse.model.MapWaypoint
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 import kotlin.experimental.and
 
@@ -31,7 +31,7 @@ data class PacketMapData(
     override val estimatedSize: Int
         get() = 4 + mapData.size
 
-    companion object : PacketFactory<PacketMapData> {
+    companion object : StreamingPacketFactory<PacketMapData> {
         override suspend fun create(channel: ByteReadChannel): PacketMapData {
             val itemId = channel.readShort()
             val meta = channel.readShort()

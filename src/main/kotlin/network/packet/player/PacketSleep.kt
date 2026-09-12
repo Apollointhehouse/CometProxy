@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.player
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketSleep(
     val entityID: Int = 0,
@@ -20,15 +21,17 @@ data class PacketSleep(
     }
 
     override val estimatedSize: Int
-        get() = 17
+        get() = size
 
-    companion object : PacketFactory<PacketSleep> {
-		override suspend fun create(channel: ByteReadChannel): PacketSleep {
-            val entityID = channel.readInt()
-            val wtf = channel.readByte()
-            val x = channel.readInt()
-            val y = channel.readInt()
-            val z = channel.readInt()
+    companion object : BufferedPacketFactory<PacketSleep> {
+        override val size: Int = 17
+
+        override fun create(buffer: Source): PacketSleep {
+            val entityID = buffer.readInt()
+            val wtf = buffer.readByte()
+            val x = buffer.readInt()
+            val y = buffer.readInt()
+            val z = buffer.readInt()
 
             return PacketSleep(entityID = entityID, x = x, y = y, z = z, wtf = wtf)
         }

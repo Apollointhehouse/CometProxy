@@ -1,7 +1,7 @@
 package dev.apollointhehouse.network.packet.handshake
 
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketServerIcon(
@@ -15,7 +15,7 @@ data class PacketServerIcon(
     override val estimatedSize: Int
         get() = this.image.size + 4
 
-    companion object : PacketFactory<PacketServerIcon> {
+    companion object : StreamingPacketFactory<PacketServerIcon> {
 		override suspend fun create(channel: ByteReadChannel): PacketServerIcon {
             val size = channel.readInt()
             val image = ByteArray(size)

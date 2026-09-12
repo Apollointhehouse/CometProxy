@@ -1,8 +1,9 @@
 package dev.apollointhehouse.network.packet.container
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
 
 data class PacketContainerAck(
     val windowId: Byte = 0,
@@ -16,13 +17,15 @@ data class PacketContainerAck(
     }
 
     override val estimatedSize: Int
-        get() = 4
+        get() = size
 
-    companion object : PacketFactory<PacketContainerAck> {
-		override suspend fun create(channel: ByteReadChannel): PacketContainerAck {
-            val windowId = channel.readByte()
-            val shortWindowId = channel.readShort()
-            val accepted = channel.readByte().toInt() != 0
+    companion object : BufferedPacketFactory<PacketContainerAck> {
+        override val size: Int = 4
+
+        override fun create(buffer: Source): PacketContainerAck {
+            val windowId = buffer.readByte()
+            val shortWindowId = buffer.readShort()
+            val accepted = buffer.readByte().toInt() != 0
 
             return PacketContainerAck(windowId = windowId, shortWindowId = shortWindowId, accepted = accepted)
         }

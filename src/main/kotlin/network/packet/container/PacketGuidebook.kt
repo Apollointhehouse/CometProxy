@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.container
 import dev.apollointhehouse.network.extensions.readBoolean
 import dev.apollointhehouse.network.extensions.writeBoolean
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketGuidebook(
@@ -16,7 +16,7 @@ data class PacketGuidebook(
     override val estimatedSize: Int
         get() = 1
 
-    companion object : PacketFactory<PacketGuidebook> {
+    companion object : StreamingPacketFactory<PacketGuidebook> {
 		override suspend fun create(channel: ByteReadChannel): PacketGuidebook {
             val isGuidebookOpen = channel.readBoolean()
 

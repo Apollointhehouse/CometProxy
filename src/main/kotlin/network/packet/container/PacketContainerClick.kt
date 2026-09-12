@@ -5,7 +5,7 @@ import dev.apollointhehouse.nbt.tags.CompoundTag
 import dev.apollointhehouse.network.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketContainerClick(
@@ -54,7 +54,7 @@ data class PacketContainerClick(
     override val estimatedSize: Int
         get() = 11 + (if (this.args.isNotEmpty()) this.args.size * 4 else 0) + (if (this.changedSlots.isNotEmpty()) this.changedSlots.size * 7 else 0)
 
-    companion object : PacketFactory<PacketContainerClick> {
+    companion object : StreamingPacketFactory<PacketContainerClick> {
 		override suspend fun create(channel: ByteReadChannel): PacketContainerClick {
             val windowID = channel.readByte()
             val action = channel.readByte()

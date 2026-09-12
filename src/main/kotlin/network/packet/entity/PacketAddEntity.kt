@@ -6,7 +6,7 @@ import dev.apollointhehouse.nbt.tags.CompoundTag
 import dev.apollointhehouse.network.extensions.readCompressedCompoundTag
 import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
+import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
 
 data class PacketAddEntity(
@@ -59,8 +59,8 @@ data class PacketAddEntity(
     override val estimatedSize: Int
         get() = if (21 + ownerId <= 0) 0 else 6
 
-    companion object : PacketFactory<PacketAddEntity> {
-		        fun hasOwner(value: Byte): Boolean {
+    companion object : StreamingPacketFactory<PacketAddEntity> {
+        fun hasOwner(value: Byte): Boolean {
             return (value.toInt() and 1) != 0
         }
 
@@ -136,7 +136,7 @@ data class PacketAddEntity(
             }
 
             return PacketAddEntity(
-                                entityId,
+                entityId,
                 xPosition,
                 yPosition,
                 zPosition,

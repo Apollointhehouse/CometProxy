@@ -18,11 +18,14 @@ interface Packet {
             try {
                 if (channel.isClosedForRead) return null
                 val id = channel.readByte().toUByte().toInt()
+                val factory = PacketRegistry.getPacketFactory(id) ?: throw IOException("Unregistered packet id: $id")
 
-                val packetFactory = PacketRegistry.getPacketFactory(id) ?: throw IOException("Unregistered packet id: $id")
-                val packet = packetFactory.create(channel)
+                val packet = when (factory) {
+                    is BufferedPacketFactory<*> -> factory.create(channel.readPacket(factory.size))
+                    is StreamingPacketFactory<*> -> factory.create(channel)
+                }
+
                 log.debug { "READ id=$id class=${packet::class.simpleName}" }
-
                 return packet
             } catch (_: EOFException) {
                 log.debug { "Connection closed while reading packet" }

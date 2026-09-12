@@ -1,8 +1,10 @@
 package dev.apollointhehouse.network.packet.player
 
+import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import dev.apollointhehouse.network.packet.PacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Source
+import kotlinx.io.readDouble
 
 data class PacketPlayerAction(
     val xPosition: Int = 0,
@@ -24,19 +26,29 @@ data class PacketPlayerAction(
     }
 
     override val estimatedSize: Int
-        get() = 19
+        get() = size
 
-    companion object : PacketFactory<PacketPlayerAction> {
-		override suspend fun create(channel: ByteReadChannel): PacketPlayerAction {
-            val action = channel.readByte().toUByte().toInt()
-            val xPosition = channel.readInt()
-            val yPosition = channel.readByte().toUByte().toInt()
-            val zPosition = channel.readInt()
-            val side = channel.readByte().toUByte().toInt()
-            val xHit = channel.readDouble()
-            val yHit = channel.readDouble()
+    companion object : BufferedPacketFactory<PacketPlayerAction> {
+        override val size: Int = 27
 
-            return PacketPlayerAction(xPosition = xPosition, yPosition = yPosition, zPosition = zPosition, xHit = xHit, yHit = yHit, action = action, side = side)
+        override fun create(buffer: Source): PacketPlayerAction {
+            val action = buffer.readByte().toUByte().toInt()
+            val xPosition = buffer.readInt()
+            val yPosition = buffer.readByte().toUByte().toInt()
+            val zPosition = buffer.readInt()
+            val side = buffer.readByte().toUByte().toInt()
+            val xHit = buffer.readDouble()
+            val yHit = buffer.readDouble()
+
+            return PacketPlayerAction(
+                xPosition = xPosition,
+                yPosition = yPosition,
+                zPosition = zPosition,
+                xHit = xHit,
+                yHit = yHit,
+                action = action,
+                side = side
+            )
         }
     }
 }
