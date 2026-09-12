@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.entity
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 interface PacketMoveEntity : Packet {
@@ -11,8 +11,8 @@ interface PacketMoveEntity : Packet {
     data class None(
         override val id: Int = 0,
     ) : PacketMoveEntity {
-        override suspend fun write(channel: ByteWriteChannel) {
-            channel.writeInt(id)
+        override fun write(sink: Sink) {
+            sink.writeInt(id)
         }
 
         override val estimatedSize: Int
@@ -32,11 +32,11 @@ interface PacketMoveEntity : Packet {
         val y: Byte,
         val z: Byte,
     ) : PacketMoveEntity {
-        override suspend fun write(channel: ByteWriteChannel) {
-            channel.writeInt(id)
-            channel.writeByte(x)
-            channel.writeByte(y)
-            channel.writeByte(z)
+        override fun write(sink: Sink) {
+            sink.writeInt(id)
+            sink.writeByte(x)
+            sink.writeByte(y)
+            sink.writeByte(z)
         }
 
         override val estimatedSize: Int
@@ -62,13 +62,13 @@ interface PacketMoveEntity : Packet {
         val yaw: Byte,
         val pitch: Byte,
     ) : PacketMoveEntity {
-        override suspend fun write(channel: ByteWriteChannel) {
-            channel.writeInt(id)
-            channel.writeByte(x)
-            channel.writeByte(y)
-            channel.writeByte(z)
-            channel.writeByte(yaw)
-            channel.writeByte(pitch)
+        override fun write(sink: Sink) {
+            sink.writeInt(id)
+            sink.writeByte(x)
+            sink.writeByte(y)
+            sink.writeByte(z)
+            sink.writeByte(yaw)
+            sink.writeByte(pitch)
         }
 
         override val estimatedSize: Int
@@ -93,10 +93,10 @@ interface PacketMoveEntity : Packet {
         val yaw: Byte,
         val pitch: Byte,
     ) : PacketMoveEntity {
-        override suspend fun write(channel: ByteWriteChannel) {
-            channel.writeInt(id)
-            channel.writeByte(yaw)
-            channel.writeByte(pitch)
+        override fun write(sink: Sink) {
+            sink.writeInt(id)
+            sink.writeByte(yaw)
+            sink.writeByte(pitch)
         }
 
         override val estimatedSize: Int

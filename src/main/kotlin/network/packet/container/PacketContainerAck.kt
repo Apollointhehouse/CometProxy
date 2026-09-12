@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.container
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketContainerAck(
@@ -10,10 +10,10 @@ data class PacketContainerAck(
     val shortWindowId: Short = 0,
     val accepted: Boolean = false,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(windowId)
-        channel.writeShort(shortWindowId)
-        channel.writeByte(if (accepted) 1 else 0)
+    override fun write(sink: Sink) {
+        sink.writeByte(windowId)
+        sink.writeShort(shortWindowId)
+        sink.writeByte(if (accepted) 1 else 0)
     }
 
     override val estimatedSize: Int

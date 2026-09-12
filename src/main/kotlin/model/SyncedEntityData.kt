@@ -6,88 +6,90 @@ import dev.apollointhehouse.network.extensions.readJavaStringUTF8
 import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
+import kotlinx.io.writeFloat
 import java.util.*
 
 object SyncedEntityData {
-    suspend fun pack(items: List<EntityDataItem<*>>?, channel: ByteWriteChannel) {
+    fun pack(items: List<EntityDataItem<*>>?, sink: Sink) {
         if (items != null) {
             for (item in items) {
-                writeDataItem(channel, item)
+                writeDataItem(sink, item)
             }
         }
 
-        channel.writeByte(0xFF.toByte())
+        sink.writeByte(0xFF.toByte())
     }
 
-    private suspend fun <T> writeDataItem(channel: ByteWriteChannel, item: EntityDataItem<T>) {
-        channel.writeByte((item.id and 0xFF).toByte())
-        channel.writeByte((item.type and 0xFF).toByte())
+    private fun <T> writeDataItem(sink: Sink, item: EntityDataItem<T>) {
+        sink.writeByte((item.id and 0xFF).toByte())
+        sink.writeByte((item.type and 0xFF).toByte())
         var metadata: Byte = 0
         val value = item.value
 
         if (value == null) {
             metadata = 1.toByte()
-            channel.writeByte(metadata)
+            sink.writeByte(metadata)
             return
         }
 
-        packItem(item, channel, metadata, value)
+        packItem(item, sink, metadata, value)
     }
 
-    private suspend fun <T> packItem(
+    private fun <T> packItem(
         di: EntityDataItem<T>,
-        channel: ByteWriteChannel,
+        sink: Sink,
         metadata: Byte,
         value: T & Any
     ): Unit = when (di.type) {
         0 -> {
-            channel.writeByte(metadata)
-            channel.writeByte(value as Byte)
+            sink.writeByte(metadata)
+            sink.writeByte(value as Byte)
         }
 
         1 -> {
-            channel.writeByte(metadata)
-            channel.writeShort(value as Short)
+            sink.writeByte(metadata)
+            sink.writeShort(value as Short)
         }
 
         2 -> {
-            channel.writeByte(metadata)
-            channel.writeInt(value as Int)
+            sink.writeByte(metadata)
+            sink.writeInt(value as Int)
         }
 
         3 -> {
-            channel.writeByte(metadata)
-            channel.writeFloat(value as Float)
+            sink.writeByte(metadata)
+            sink.writeFloat(value as Float)
         }
 
         4 -> {
             val s = value as String
-            channel.writeByte(metadata)
-            channel.writeJavaStringUTF8(s)
+            sink.writeByte(metadata)
+            sink.writeJavaStringUTF8(s)
         }
 
         5 -> {
             val itemStack: ItemStack = value as ItemStack
-            channel.writeByte(metadata)
-            channel.writeShort(itemStack.itemID)
-            channel.writeByte(itemStack.size)
-            channel.writeShort(itemStack.meta)
-            channel.writeCompressedCompoundTag(itemStack.tag!!)
+            sink.writeByte(metadata)
+            sink.writeShort(itemStack.itemID)
+            sink.writeByte(itemStack.size)
+            sink.writeShort(itemStack.meta)
+            sink.writeCompressedCompoundTag(itemStack.tag!!)
         }
 
         6 -> {
             val chunkCoords: ChunkCoordinates = value as ChunkCoordinates
-            channel.writeByte(metadata)
-            channel.writeInt(chunkCoords.x)
-            channel.writeInt(chunkCoords.y)
-            channel.writeInt(chunkCoords.z)
+            sink.writeByte(metadata)
+            sink.writeInt(chunkCoords.x)
+            sink.writeInt(chunkCoords.y)
+            sink.writeInt(chunkCoords.z)
         }
 
         7 -> {
             val uuid = value as UUID
-            channel.writeByte(metadata)
-            channel.writeLong(uuid.mostSignificantBits)
-            channel.writeLong(uuid.leastSignificantBits)
+            sink.writeByte(metadata)
+            sink.writeLong(uuid.mostSignificantBits)
+            sink.writeLong(uuid.leastSignificantBits)
         }
 
         else -> {}

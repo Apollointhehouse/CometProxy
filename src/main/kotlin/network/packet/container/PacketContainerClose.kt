@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.packet.container
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketContainerClose(
@@ -11,8 +11,8 @@ data class PacketContainerClose(
 ) : Packet {
 
 
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(windowId)
+    override fun write(sink: Sink) {
+        sink.writeByte(windowId)
     }
 
     override val estimatedSize: Int

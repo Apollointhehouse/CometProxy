@@ -2,16 +2,16 @@ package dev.apollointhehouse.network.packet.player
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketPlayerConfig(
     val entityId: Int = 0,
     val config: Short = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeShort(config)
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeShort(config)
     }
 
     override val estimatedSize: Int

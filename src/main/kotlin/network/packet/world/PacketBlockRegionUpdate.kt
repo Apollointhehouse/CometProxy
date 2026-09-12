@@ -3,6 +3,8 @@ package dev.apollointhehouse.network.packet.world
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
+import kotlinx.io.Sink
 
 data class PacketBlockRegionUpdate(
     val xPosition: Int = 0,
@@ -13,16 +15,16 @@ data class PacketBlockRegionUpdate(
     val zSize: Int = 0,
     var chunk: ByteArray = byteArrayOf()
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(xPosition)
-        channel.writeShort(yPosition)
-        channel.writeInt(zPosition)
-        channel.writeByte((xSize - 1).toByte())
-        channel.writeByte((ySize - 1).toByte())
-        channel.writeByte((zSize - 1).toByte())
+    override fun write(sink: Sink) {
+        sink.writeInt(xPosition)
+        sink.writeShort(yPosition)
+        sink.writeInt(zPosition)
+        sink.writeByte((xSize - 1).toByte())
+        sink.writeByte((ySize - 1).toByte())
+        sink.writeByte((zSize - 1).toByte())
 
-        channel.writeInt(chunk.size)
-        channel.writeFully(chunk)
+        sink.writeInt(chunk.size)
+        sink.writeFully(chunk)
 
 //        val deflater = Deflater(-1)
 //        try {

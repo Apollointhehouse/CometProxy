@@ -2,16 +2,16 @@ package dev.apollointhehouse.network.packet.player
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketRespawn(
     val respawnDimensionId: Int = 0,
     val respawnWorldTypeId: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(respawnDimensionId)
-        channel.writeInt(respawnWorldTypeId)
+    override fun write(sink: Sink) {
+        sink.writeInt(respawnDimensionId)
+        sink.writeInt(respawnWorldTypeId)
     }
 
     override val estimatedSize: Int

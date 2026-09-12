@@ -5,12 +5,13 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketHandshake(
     val username: String = "",
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeJavaStringUTF8(username)
+    override fun write(sink: Sink) {
+        sink.writeJavaStringUTF8(username)
     }
 
     override val estimatedSize: Int

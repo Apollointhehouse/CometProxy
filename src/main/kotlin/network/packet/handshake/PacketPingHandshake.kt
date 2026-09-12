@@ -5,6 +5,7 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import java.nio.charset.StandardCharsets
 
 data class PacketPingHandshake(
@@ -15,20 +16,20 @@ data class PacketPingHandshake(
     val hostname: String = "",
     val port: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(payload.toByte())
-        channel.writeByte(identifier.toByte())
-        channel.writeJavaStringUTF16BE(pingHostString)
-        channel.writeShort((3 + StandardCharsets.UTF_16BE.encode(pingHostString).array().size + 4).toShort())
-        channel.writeByte(protocolVersion.toByte())
-        channel.writeJavaStringUTF16BE(hostname)
-        channel.writeInt(port)
+    override fun write(sink: Sink) {
+        sink.writeByte(payload.toByte())
+        sink.writeByte(identifier.toByte())
+        sink.writeJavaStringUTF16BE(pingHostString)
+        sink.writeShort((3 + StandardCharsets.UTF_16BE.encode(pingHostString).array().size + 4).toShort())
+        sink.writeByte(protocolVersion.toByte())
+        sink.writeJavaStringUTF16BE(hostname)
+        sink.writeInt(port)
     }
 
     override val estimatedSize: Int = 0
 
     companion object : StreamingPacketFactory<PacketPingHandshake> {
-		override suspend fun create(channel: ByteReadChannel): PacketPingHandshake {
+        override suspend fun create(channel: ByteReadChannel): PacketPingHandshake {
             val payload = channel.readByte().toUByte()
             val identifier = channel.readByte().toUByte()
             val pingHostString = channel.readJavaStringUTF16BE(255)

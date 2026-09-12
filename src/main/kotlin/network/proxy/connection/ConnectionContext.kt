@@ -1,5 +1,6 @@
 package dev.apollointhehouse.network.proxy.connection
 
+import dev.apollointhehouse.network.extensions.close
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.proxy.session.PlayerSession
 import io.ktor.network.sockets.Connection
@@ -40,6 +41,16 @@ data class ConnectionContext(
         }
     }
 
+    suspend fun sendToClientImmediately(packet: Packet) {
+        Packet.writePacket(clientConn.output, packet)
+        clientConn.output.flush()
+    }
+
+    suspend fun sendToServerImmediately(packet: Packet) {
+        Packet.writePacket(serverConn.output, packet)
+        serverConn.output.flush()
+    }
+
     private suspend fun writerLoop(channel: ByteWriteChannel, queue: Channel<Packet>, target: String) {
         try {
             while (ioScope.isActive) {
@@ -64,6 +75,8 @@ data class ConnectionContext(
     override fun close() {
         clientQueue.close()
         serverQueue.close()
+        clientConn.close()
+        serverConn.close()
         ioScope.cancel()
     }
 }

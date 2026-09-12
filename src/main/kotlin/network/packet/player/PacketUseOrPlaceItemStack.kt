@@ -3,6 +3,8 @@ package dev.apollointhehouse.network.packet.player
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
+import kotlinx.io.writeDouble
 
 data class PacketUseOrPlaceItemStack(
     val xPosition: Int = 0,
@@ -16,21 +18,21 @@ data class PacketUseOrPlaceItemStack(
     val stackSize: Byte = -1,
     val meta: Short = -1
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(xPosition)
-        channel.writeByte(yPosition.toByte())
-        channel.writeInt(zPosition)
-        channel.writeByte(direction.toByte())
-        channel.writeDouble(xPlaced)
-        channel.writeDouble(yPlaced)
-        channel.writeByte(type)
+    override fun write(sink: Sink) {
+        sink.writeInt(xPosition)
+        sink.writeByte(yPosition.toByte())
+        sink.writeInt(zPosition)
+        sink.writeByte(direction.toByte())
+        sink.writeDouble(xPlaced)
+        sink.writeDouble(yPlaced)
+        sink.writeByte(type)
 
         if (itemID < 0) {
-           channel.writeShort(-1)
+            sink.writeShort(-1)
         } else {
-           channel.writeShort(itemID)
-           channel.writeByte(stackSize)
-           channel.writeShort(meta)
+            sink.writeShort(itemID)
+            sink.writeByte(stackSize)
+            sink.writeShort(meta)
         }
     }
 
@@ -38,7 +40,7 @@ data class PacketUseOrPlaceItemStack(
         get() = 20
 
     companion object : StreamingPacketFactory<PacketUseOrPlaceItemStack> {
-		override suspend fun create(channel: ByteReadChannel): PacketUseOrPlaceItemStack {
+        override suspend fun create(channel: ByteReadChannel): PacketUseOrPlaceItemStack {
             val xPosition = channel.readInt()
             val yPosition = channel.readByte().toUByte().toInt()
             val zPosition = channel.readInt()
@@ -56,7 +58,18 @@ data class PacketUseOrPlaceItemStack(
                 meta = channel.readShort()
             }
 
-            return PacketUseOrPlaceItemStack(xPosition, yPosition, zPosition, xPlaced, yPlaced, type, direction, itemID, stackSize, meta)
+            return PacketUseOrPlaceItemStack(
+                xPosition,
+                yPosition,
+                zPosition,
+                xPlaced,
+                yPlaced,
+                type,
+                direction,
+                itemID,
+                stackSize,
+                meta
+            )
         }
     }
 }

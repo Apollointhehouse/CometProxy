@@ -4,14 +4,14 @@ import dev.apollointhehouse.network.extensions.readBoolean
 import dev.apollointhehouse.network.extensions.writeBoolean
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketPhotoMode(
     val disabled: Boolean = false,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeBoolean(disabled)
+    override fun write(sink: Sink) {
+        sink.writeBoolean(disabled)
     }
 
     override val estimatedSize: Int

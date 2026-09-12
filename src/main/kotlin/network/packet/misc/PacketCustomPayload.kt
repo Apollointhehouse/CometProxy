@@ -5,18 +5,20 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
+import kotlinx.io.Sink
 
 data class PacketCustomPayload(
     val netChannel: String = "",
     val data: ByteArray = byteArrayOf(),
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeJavaStringUTF8(netChannel)
+    override fun write(sink: Sink) {
+        sink.writeJavaStringUTF8(netChannel)
         if (data.isNotEmpty()) {
-            channel.writeInt(data.size)
-            channel.writeFully(data)
+            sink.writeInt(data.size)
+            sink.writeFully(data)
         } else {
-            channel.writeInt(0)
+            sink.writeInt(0)
         }
     }
 
@@ -24,7 +26,7 @@ data class PacketCustomPayload(
         get() = netChannel.length + 4 + data.size
 
     companion object : StreamingPacketFactory<PacketCustomPayload> {
-		override suspend fun create(channel: ByteReadChannel): PacketCustomPayload {
+        override suspend fun create(channel: ByteReadChannel): PacketCustomPayload {
             val netChannel = channel.readJavaStringUTF8(128)
             val length = channel.readInt()
             var data = byteArrayOf()

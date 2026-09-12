@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.entity
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketSetEntityMotion(
@@ -11,11 +11,11 @@ data class PacketSetEntityMotion(
     val motionY: Short = 0,
     val motionZ: Short = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeShort(motionX)
-        channel.writeShort(motionY)
-        channel.writeShort(motionZ)
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeShort(motionX)
+        sink.writeShort(motionY)
+        sink.writeShort(motionZ)
     }
 
     override val estimatedSize: Int

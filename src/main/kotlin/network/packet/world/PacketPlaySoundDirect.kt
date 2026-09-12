@@ -3,6 +3,8 @@ package dev.apollointhehouse.network.packet.world
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
+import kotlinx.io.writeFloat
 import kotlin.experimental.and
 
 data class PacketPlaySoundDirect(
@@ -14,21 +16,21 @@ data class PacketPlaySoundDirect(
     val pitch: Float = 0f,
     val soundType: Byte = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeShort(soundId)
-        channel.writeByte(soundType)
-        channel.writeFloat(x.toFloat())
-        channel.writeFloat(y.toFloat())
-        channel.writeFloat(z.toFloat())
-        channel.writeFloat(volume)
-        channel.writeFloat(pitch)
+    override fun write(sink: Sink) {
+        sink.writeShort(soundId)
+        sink.writeByte(soundType)
+        sink.writeFloat(x.toFloat())
+        sink.writeFloat(y.toFloat())
+        sink.writeFloat(z.toFloat())
+        sink.writeFloat(volume)
+        sink.writeFloat(pitch)
     }
 
     override val estimatedSize: Int
         get() = 23
 
     companion object : StreamingPacketFactory<PacketPlaySoundDirect> {
-		override suspend fun create(channel: ByteReadChannel): PacketPlaySoundDirect {
+        override suspend fun create(channel: ByteReadChannel): PacketPlaySoundDirect {
             val soundId = (channel.readShort() and '\uffff'.code.toShort())
             val soundType = channel.readByte()
             val x = channel.readFloat().toDouble()
@@ -37,7 +39,15 @@ data class PacketPlaySoundDirect(
             val volume = channel.readFloat()
             val pitch = channel.readFloat()
 
-            return PacketPlaySoundDirect(soundId = soundId, x = x, y = y, z = z, volume = volume, pitch = pitch, soundType = soundType)
+            return PacketPlaySoundDirect(
+                soundId = soundId,
+                x = x,
+                y = y,
+                z = z,
+                volume = volume,
+                pitch = pitch,
+                soundType = soundType
+            )
         }
     }
 }

@@ -7,6 +7,7 @@ import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketContainerClick(
     val windowID: Byte = 0,
@@ -16,46 +17,46 @@ data class PacketContainerClick(
     val changedSlots: MutableMap<Short, ItemStack?> = mutableMapOf(),
     val carriedItem: ItemStack? = null
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(windowID)
-        channel.writeByte(action)
+    override fun write(sink: Sink) {
+        sink.writeByte(windowID)
+        sink.writeByte(action)
         if (this.args.isNotEmpty()) {
             if (this.args.size > 255) {
                 System.err.println("Too many args!")
                 Thread.dumpStack()
-                channel.writeByte(0)
+                sink.writeByte(0)
                 return
             }
 
-            channel.writeByte(args.size.toByte())
+            sink.writeByte(args.size.toByte())
 
             for (i in this.args.indices) {
-                channel.writeInt(args[i])
+                sink.writeInt(args[i])
             }
         } else {
-            channel.writeByte(0)
+            sink.writeByte(0)
         }
 
-        channel.writeInt(stateId)
+        sink.writeInt(stateId)
         if (changedSlots.isEmpty()) {
-            channel.writeShort(0)
+            sink.writeShort(0)
         } else {
-            channel.writeShort(changedSlots.size.toShort())
+            sink.writeShort(changedSlots.size.toShort())
 
             for ((key, value) in changedSlots) {
-                channel.writeShort(key)
-                writeStack(channel, value)
+                sink.writeShort(key)
+                writeStack(sink, value)
             }
         }
 
-        writeStack(channel, this.carriedItem)
+        writeStack(sink, this.carriedItem)
     }
 
     override val estimatedSize: Int
         get() = 11 + (if (this.args.isNotEmpty()) this.args.size * 4 else 0) + (if (this.changedSlots.isNotEmpty()) this.changedSlots.size * 7 else 0)
 
     companion object : StreamingPacketFactory<PacketContainerClick> {
-		override suspend fun create(channel: ByteReadChannel): PacketContainerClick {
+        override suspend fun create(channel: ByteReadChannel): PacketContainerClick {
             val windowID = channel.readByte()
             val action = channel.readByte()
             val size = channel.readByte()
@@ -91,14 +92,14 @@ data class PacketContainerClick(
             }
         }
 
-        private suspend fun writeStack(channel: ByteWriteChannel, stack: ItemStack?) {
+        private fun writeStack(sink: Sink, stack: ItemStack?) {
             if (stack == null) {
-                channel.writeShort(-1)
+                sink.writeShort(-1)
             } else {
-                channel.writeShort(stack.itemID)
-                channel.writeByte(stack.size)
-                channel.writeShort(stack.meta)
-                channel.writeCompressedCompoundTag(stack.tag)
+                sink.writeShort(stack.itemID)
+                sink.writeByte(stack.size)
+                sink.writeShort(stack.meta)
+                sink.writeCompressedCompoundTag(stack.tag)
             }
         }
     }

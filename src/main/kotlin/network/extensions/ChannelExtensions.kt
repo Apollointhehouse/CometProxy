@@ -2,24 +2,19 @@ package dev.apollointhehouse.network.extensions
 
 import dev.apollointhehouse.nbt.NbtIO
 import dev.apollointhehouse.nbt.tags.CompoundTag
-import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.ByteWriteChannel
-import io.ktor.utils.io.readByte
-import io.ktor.utils.io.readFully
-import io.ktor.utils.io.readLong
-import io.ktor.utils.io.readShort
-import io.ktor.utils.io.writeByte
-import io.ktor.utils.io.writeFully
-import io.ktor.utils.io.writeLong
-import io.ktor.utils.io.writeShort
+import io.ktor.utils.io.*
+import io.ktor.utils.io.core.writeFully
+import kotlinx.io.Sink
 import kotlinx.io.Source
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.UUID
+import java.util.*
+import kotlin.text.String
+import kotlin.text.toByteArray
 
-suspend fun ByteWriteChannel.writeJavaStringUTF8(string: String) {
+fun Sink.writeJavaStringUTF8(string: String) {
     if (string.length > 32767) {
         throw IOException("String too big")
     }
@@ -29,7 +24,7 @@ suspend fun ByteWriteChannel.writeJavaStringUTF8(string: String) {
     writeFully(buf)
 }
 
-suspend fun ByteWriteChannel.writeJavaStringUTF16BE(string: String) {
+fun Sink.writeJavaStringUTF16BE(string: String) {
     if (string.length > 32767) {
         throw IOException("String too big")
     }
@@ -39,7 +34,7 @@ suspend fun ByteWriteChannel.writeJavaStringUTF16BE(string: String) {
     writeFully(buf)
 }
 
-suspend fun ByteWriteChannel.writeUUID(uuid: UUID) {
+fun Sink.writeUUID(uuid: UUID) {
     writeLong(uuid.mostSignificantBits)
     writeLong(uuid.leastSignificantBits)
 }
@@ -81,7 +76,7 @@ suspend fun ByteReadChannel.readUUID(): UUID {
     return UUID(msb, lsb)
 }
 
-suspend fun ByteWriteChannel.writeCompressedCompoundTag(tag: CompoundTag?) {
+fun Sink.writeCompressedCompoundTag(tag: CompoundTag?) {
     if (tag == null) return
 
     val output = ByteArrayOutputStream()
@@ -102,7 +97,7 @@ suspend fun ByteReadChannel.readCompressedCompoundTag(): CompoundTag? {
     }
 }
 
-suspend fun ByteWriteChannel.writeBoolean(bool: Boolean) {
+fun Sink.writeBoolean(bool: Boolean) {
     writeByte(if (bool) 1 else 0)
 }
 

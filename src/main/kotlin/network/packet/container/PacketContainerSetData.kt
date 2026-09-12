@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.container
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketContainerSetData(
@@ -10,10 +10,10 @@ data class PacketContainerSetData(
     val progressBar: Short = 0,
     val progressBarValue: Short = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(windowId)
-        channel.writeShort(progressBar)
-        channel.writeShort(progressBarValue)
+    override fun write(sink: Sink) {
+        sink.writeByte(windowId)
+        sink.writeShort(progressBar)
+        sink.writeShort(progressBarValue)
     }
 
     override val estimatedSize: Int

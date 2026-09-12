@@ -3,6 +3,7 @@ package dev.apollointhehouse.network.packet.entity
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketSetRiding(
     val passengerId: Int = 0,
@@ -12,15 +13,15 @@ data class PacketSetRiding(
     val y: Int = 0,
     val z: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(passengerId)
-        channel.writeByte(if (isTileEntity) 1 else 0)
+    override fun write(sink: Sink) {
+        sink.writeInt(passengerId)
+        sink.writeByte(if (isTileEntity) 1 else 0)
         if (this.isTileEntity) {
-            channel.writeInt(x)
-            channel.writeInt(y)
-            channel.writeInt(z)
+            sink.writeInt(x)
+            sink.writeInt(y)
+            sink.writeInt(z)
         } else {
-            channel.writeInt(vehicleId)
+            sink.writeInt(vehicleId)
         }
     }
 
@@ -28,7 +29,7 @@ data class PacketSetRiding(
         get() = 8
 
     companion object : StreamingPacketFactory<PacketSetRiding> {
-		override suspend fun create(channel: ByteReadChannel): PacketSetRiding {
+        override suspend fun create(channel: ByteReadChannel): PacketSetRiding {
             val passengerId = channel.readInt()
             val isTileEntity = channel.readByte().toInt() != 0
 

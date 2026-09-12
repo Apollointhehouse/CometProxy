@@ -4,10 +4,7 @@ import dev.apollointhehouse.network.extensions.readBoolean
 import dev.apollointhehouse.network.extensions.writeBoolean
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
-import kotlinx.io.Source
-import kotlinx.io.readDouble
-import kotlinx.io.readFloat
+import kotlinx.io.*
 
 sealed interface PacketMovePlayer : Packet {
     var onGround: Boolean
@@ -15,8 +12,8 @@ sealed interface PacketMovePlayer : Packet {
     data class NoPosition(
         override var onGround: Boolean = false
     ) : PacketMovePlayer {
-        override suspend fun write(channel: ByteWriteChannel) {
-            channel.writeBoolean(onGround)
+        override fun write(sink: Sink) {
+            sink.writeBoolean(onGround)
         }
 
         override val estimatedSize: Int
@@ -36,11 +33,11 @@ sealed interface PacketMovePlayer : Packet {
         var z: Double,
         override var onGround: Boolean,
     ) : PacketMovePlayer {
-        override suspend fun write(channel: ByteWriteChannel) {
-            channel.writeDouble(x)
-            channel.writeDouble(y)
-            channel.writeDouble(z)
-            channel.writeBoolean(onGround)
+        override fun write(sink: Sink) {
+            sink.writeDouble(x)
+            sink.writeDouble(y)
+            sink.writeDouble(z)
+            sink.writeBoolean(onGround)
         }
 
         override val estimatedSize: Int
@@ -68,13 +65,13 @@ sealed interface PacketMovePlayer : Packet {
         var pitch: Float,
         override var onGround: Boolean,
     ) : PacketMovePlayer {
-        override suspend fun write(channel: ByteWriteChannel) {
-            channel.writeDouble(x)
-            channel.writeDouble(y)
-            channel.writeDouble(z)
-            channel.writeFloat(yaw)
-            channel.writeFloat(pitch)
-            channel.writeBoolean(onGround)
+        override fun write(sink: Sink) {
+            sink.writeDouble(x)
+            sink.writeDouble(y)
+            sink.writeDouble(z)
+            sink.writeFloat(yaw)
+            sink.writeFloat(pitch)
+            sink.writeBoolean(onGround)
         }
 
         override val estimatedSize: Int
@@ -101,10 +98,10 @@ sealed interface PacketMovePlayer : Packet {
         var pitch: Float,
         override var onGround: Boolean,
     ) : PacketMovePlayer {
-        override suspend fun write(channel: ByteWriteChannel) {
-            channel.writeFloat(yaw)
-            channel.writeFloat(pitch)
-            channel.writeBoolean(onGround)
+        override fun write(sink: Sink) {
+            sink.writeFloat(yaw)
+            sink.writeFloat(pitch)
+            sink.writeBoolean(onGround)
         }
 
         override val estimatedSize: Int

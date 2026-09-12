@@ -2,14 +2,14 @@ package dev.apollointhehouse.network.packet.entity
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketSetPaintingArt(
     val motive: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(motive)
+    override fun write(sink: Sink) {
+        sink.writeInt(motive)
     }
 
     override val estimatedSize: Int

@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.world
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketWeatherEffect(
@@ -12,12 +12,12 @@ data class PacketWeatherEffect(
     val z: Int = 0,
     val effectId: Byte = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(id)
-        channel.writeByte(effectId)
-        channel.writeInt(x)
-        channel.writeInt(y)
-        channel.writeInt(z)
+    override fun write(sink: Sink) {
+        sink.writeInt(id)
+        sink.writeByte(effectId)
+        sink.writeInt(x)
+        sink.writeInt(y)
+        sink.writeInt(z)
     }
 
     override val estimatedSize: Int

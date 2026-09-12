@@ -7,6 +7,7 @@ import dev.apollointhehouse.network.extensions.writeUUID
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import java.util.*
 
 data class PacketLogin(
@@ -19,15 +20,15 @@ data class PacketLogin(
     val packetDelay: Byte = 0,
     var publicKey: String
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(playerEntityIdAndProtocolVersion)
-        channel.writeJavaStringUTF8(username)
-        channel.writeUUID(uuid)
-        channel.writeJavaStringUTF8(publicKey)
-        channel.writeLong(worldSeed)
-        channel.writeInt(dimensionId)
-        channel.writeInt(worldTypeId)
-        channel.writeByte(packetDelay)
+    override fun write(sink: Sink) {
+        sink.writeInt(playerEntityIdAndProtocolVersion)
+        sink.writeJavaStringUTF8(username)
+        sink.writeUUID(uuid)
+        sink.writeJavaStringUTF8(publicKey)
+        sink.writeLong(worldSeed)
+        sink.writeInt(dimensionId)
+        sink.writeInt(worldTypeId)
+        sink.writeByte(packetDelay)
     }
 
     override val estimatedSize: Int
@@ -44,7 +45,16 @@ data class PacketLogin(
             val worldTypeId = channel.readInt()
             val packetDelay = channel.readByte()
 
-            return PacketLogin(playerEntityIdAndProtocolVersion, username, uuid, worldSeed, dimensionId, worldTypeId, packetDelay, publicKey)
+            return PacketLogin(
+                playerEntityIdAndProtocolVersion,
+                username,
+                uuid,
+                worldSeed,
+                dimensionId,
+                worldTypeId,
+                packetDelay,
+                publicKey
+            )
         }
     }
 }

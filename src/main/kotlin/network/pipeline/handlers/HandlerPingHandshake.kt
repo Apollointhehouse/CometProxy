@@ -14,7 +14,7 @@ class HandlerPingHandshake(private val config: ProxyConfig) : PacketHandler<Pack
         log.info { "Client Ping!" }
 
         val con = context.connection
-        con.sendToClient(PacketDisconnect(reason = "§1\u000032769\u0000${config.btaVersion}\u0000${config.motd}\u00000\u0000100\u0000\u0000"))
+        con.sendToClientImmediately(PacketDisconnect(reason = "§1\u000032769\u0000${config.btaVersion}\u0000${config.motd}\u00000\u0000100\u0000\u0000"))
 
         return null
     }

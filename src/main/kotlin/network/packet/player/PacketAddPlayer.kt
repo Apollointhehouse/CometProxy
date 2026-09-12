@@ -5,6 +5,7 @@ import dev.apollointhehouse.network.extensions.*
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import java.util.*
 
 data class PacketAddPlayer(
@@ -23,29 +24,29 @@ data class PacketAddPlayer(
     val gamemode: String,
     val heldObjectTag: CompoundTag? = null
 ) : Packet {
-    
 
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeJavaStringUTF8(name)
-        channel.writeUUID(uuid)
-        channel.writeInt(xPosition)
-        channel.writeInt(yPosition)
-        channel.writeInt(zPosition)
-        channel.writeByte(rotation)
-        channel.writeByte(pitch)
-        channel.writeShort(currentItem)
-        channel.writeJavaStringUTF16BE(nickname)
-        channel.writeByte(chatColor)
-        channel.writeShort(playerConfig)
-        channel.writeJavaStringUTF16BE(gamemode)
+
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeJavaStringUTF8(name)
+        sink.writeUUID(uuid)
+        sink.writeInt(xPosition)
+        sink.writeInt(yPosition)
+        sink.writeInt(zPosition)
+        sink.writeByte(rotation)
+        sink.writeByte(pitch)
+        sink.writeShort(currentItem)
+        sink.writeJavaStringUTF16BE(nickname)
+        sink.writeByte(chatColor)
+        sink.writeShort(playerConfig)
+        sink.writeJavaStringUTF16BE(gamemode)
 
         val heldObjectTag = heldObjectTag
         if (heldObjectTag != null) {
-            channel.writeByte(1)
-            channel.writeCompressedCompoundTag(heldObjectTag)
+            sink.writeByte(1)
+            sink.writeCompressedCompoundTag(heldObjectTag)
         } else {
-            channel.writeByte(0)
+            sink.writeByte(0)
         }
     }
 
@@ -53,7 +54,7 @@ data class PacketAddPlayer(
         get() = 29
 
     companion object : StreamingPacketFactory<PacketAddPlayer> {
-		override suspend fun create(channel: ByteReadChannel): PacketAddPlayer {
+        override suspend fun create(channel: ByteReadChannel): PacketAddPlayer {
             val entityId = channel.readInt()
             val name = channel.readJavaStringUTF8(16)
             val uuid = channel.readUUID()
@@ -74,7 +75,22 @@ data class PacketAddPlayer(
                 null
             }
 
-            return PacketAddPlayer(entityId, name, uuid, xPosition, yPosition, zPosition, rotation, pitch, currentItem, nickname, chatColor, playerConfig, gamemode, heldObjectTag)
+            return PacketAddPlayer(
+                entityId,
+                name,
+                uuid,
+                xPosition,
+                yPosition,
+                zPosition,
+                rotation,
+                pitch,
+                currentItem,
+                nickname,
+                chatColor,
+                playerConfig,
+                gamemode,
+                heldObjectTag
+            )
         }
 
     }

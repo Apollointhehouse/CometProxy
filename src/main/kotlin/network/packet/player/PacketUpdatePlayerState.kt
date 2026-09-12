@@ -2,14 +2,14 @@ package dev.apollointhehouse.network.packet.player
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketUpdatePlayerState(
     val state: Byte = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(state)
+    override fun write(sink: Sink) {
+        sink.writeByte(state)
     }
 
     override val estimatedSize: Int

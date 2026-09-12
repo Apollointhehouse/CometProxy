@@ -1,6 +1,7 @@
 package dev.apollointhehouse.model
 
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 class MapWaypoint(
     val mapX: Byte = 0,
@@ -10,15 +11,15 @@ class MapWaypoint(
     val zPos: Int = 0,
     val colors: ByteArray = ByteArray(9)
 ) {
-    suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(mapX)
-        channel.writeByte(mapZ)
-        channel.writeInt(xPos)
-        channel.writeInt(yPos)
-        channel.writeInt(zPos)
+    fun write(sink: Sink) {
+        sink.writeByte(mapX)
+        sink.writeByte(mapZ)
+        sink.writeInt(xPos)
+        sink.writeInt(yPos)
+        sink.writeInt(zPos)
 
         for (color in colors) {
-            channel.writeByte(color)
+            sink.writeByte(color)
         }
     }
 

@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.world
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketSetSpawnPosition(
@@ -10,10 +10,10 @@ data class PacketSetSpawnPosition(
     val y: Int = 0,
     val z: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(x)
-        channel.writeInt(y)
-        channel.writeInt(z)
+    override fun write(sink: Sink) {
+        sink.writeInt(x)
+        sink.writeInt(y)
+        sink.writeInt(z)
     }
 
     override val estimatedSize: Int

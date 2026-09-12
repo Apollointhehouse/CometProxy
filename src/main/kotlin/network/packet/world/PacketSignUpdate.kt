@@ -5,6 +5,7 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketSignUpdate(
     var xPosition: Int = 0,
@@ -14,24 +15,24 @@ data class PacketSignUpdate(
     var picture: Int = 0,
     var color: Int = 0
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(xPosition)
-        channel.writeShort(yPosition)
-        channel.writeInt(zPosition)
+    override fun write(sink: Sink) {
+        sink.writeInt(xPosition)
+        sink.writeShort(yPosition)
+        sink.writeInt(zPosition)
 
         for (i in 0..<4) {
-            channel.writeJavaStringUTF16BE(signLines[i]!!)
+            sink.writeJavaStringUTF16BE(signLines[i]!!)
         }
 
-        channel.writeInt(picture)
-        channel.writeInt(color)
+        sink.writeInt(picture)
+        sink.writeInt(color)
     }
 
     override val estimatedSize: Int
-        get() = signLines.size*16 + 4
+        get() = signLines.size * 16 + 4
 
     companion object : StreamingPacketFactory<PacketSignUpdate> {
-		override suspend fun create(channel: ByteReadChannel): PacketSignUpdate {
+        override suspend fun create(channel: ByteReadChannel): PacketSignUpdate {
             val xPosition = channel.readInt()
             val yPosition = channel.readShort()
             val zPosition = channel.readInt()

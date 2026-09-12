@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.player
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketSleep(
@@ -12,12 +12,12 @@ data class PacketSleep(
     val z: Int = 0,
     val wtf: Byte = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityID)
-        channel.writeByte(wtf)
-        channel.writeInt(x)
-        channel.writeInt(y)
-        channel.writeInt(z)
+    override fun write(sink: Sink) {
+        sink.writeInt(entityID)
+        sink.writeByte(wtf)
+        sink.writeInt(x)
+        sink.writeInt(y)
+        sink.writeInt(z)
     }
 
     override val estimatedSize: Int

@@ -4,7 +4,7 @@ import dev.apollointhehouse.network.extensions.readBoolean
 import dev.apollointhehouse.network.extensions.writeBoolean
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketChunkVisibility(
@@ -12,10 +12,10 @@ data class PacketChunkVisibility(
     val chunkZ: Int = 0,
     val playerAdded: Boolean = false,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(chunkX)
-        channel.writeInt(chunkZ)
-        channel.writeBoolean(playerAdded)
+    override fun write(sink: Sink) {
+        sink.writeInt(chunkX)
+        sink.writeInt(chunkZ)
+        sink.writeBoolean(playerAdded)
     }
 
     override val estimatedSize: Int

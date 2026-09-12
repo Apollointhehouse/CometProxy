@@ -6,6 +6,7 @@ import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketAddItemEntity(
     val entityId: Int = 0,
@@ -20,25 +21,25 @@ data class PacketAddItemEntity(
     val itemDamage: Short = 0,
     val tag: CompoundTag? = null,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeShort(itemID)
-        channel.writeByte(count)
-        channel.writeShort(itemDamage)
-        channel.writeCompressedCompoundTag(this.tag!!)
-        channel.writeInt(xPosition)
-        channel.writeInt(yPosition)
-        channel.writeInt(zPosition)
-        channel.writeByte(xd)
-        channel.writeByte(yd)
-        channel.writeByte(zd)
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeShort(itemID)
+        sink.writeByte(count)
+        sink.writeShort(itemDamage)
+        sink.writeCompressedCompoundTag(this.tag!!)
+        sink.writeInt(xPosition)
+        sink.writeInt(yPosition)
+        sink.writeInt(zPosition)
+        sink.writeByte(xd)
+        sink.writeByte(yd)
+        sink.writeByte(zd)
     }
 
     override val estimatedSize: Int
         get() = 24
 
     companion object : StreamingPacketFactory<PacketAddItemEntity> {
-		override suspend fun create(channel: ByteReadChannel): PacketAddItemEntity {
+        override suspend fun create(channel: ByteReadChannel): PacketAddItemEntity {
             val entityId = channel.readInt()
             val itemID = channel.readShort()
             val count = channel.readByte()
@@ -51,7 +52,19 @@ data class PacketAddItemEntity(
             val yd = channel.readByte()
             val zd = channel.readByte()
 
-            return PacketAddItemEntity(entityId = entityId, xPosition = xPosition, yPosition = yPosition, zPosition = zPosition, xd = xd, yd = yd, zd = zd, itemID = itemID, count = count, itemDamage = itemDamage, tag = tag)
+            return PacketAddItemEntity(
+                entityId = entityId,
+                xPosition = xPosition,
+                yPosition = yPosition,
+                zPosition = zPosition,
+                xd = xd,
+                yd = yd,
+                zd = zd,
+                itemID = itemID,
+                count = count,
+                itemDamage = itemDamage,
+                tag = tag
+            )
         }
     }
 }

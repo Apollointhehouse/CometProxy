@@ -6,23 +6,24 @@ import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketEntityTagData(
     val entityId: Int = 0,
     val tag: CompoundTag? = null,
 ) : Packet {
-    
 
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeCompressedCompoundTag(tag!!)
+
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeCompressedCompoundTag(tag!!)
     }
 
     override val estimatedSize: Int
         get() = 0
 
     companion object : StreamingPacketFactory<PacketEntityTagData> {
-		override suspend fun create(channel: ByteReadChannel): PacketEntityTagData {
+        override suspend fun create(channel: ByteReadChannel): PacketEntityTagData {
             val entityId = channel.readInt()
             val tag = channel.readCompressedCompoundTag()
 

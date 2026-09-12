@@ -5,21 +5,22 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketStatistic(
     val statID: String = "",
     val valueChange: Byte = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeJavaStringUTF8(statID)
-        channel.writeByte(valueChange)
+    override fun write(sink: Sink) {
+        sink.writeJavaStringUTF8(statID)
+        sink.writeByte(valueChange)
     }
 
     override val estimatedSize: Int
         get() = 6
 
     companion object : StreamingPacketFactory<PacketStatistic> {
-		override suspend fun create(channel: ByteReadChannel): PacketStatistic {
+        override suspend fun create(channel: ByteReadChannel): PacketStatistic {
             val statID = channel.readJavaStringUTF8(Integer.MAX_VALUE)
             val valueChange = channel.readByte()
 

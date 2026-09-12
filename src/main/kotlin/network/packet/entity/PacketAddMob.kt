@@ -7,6 +7,7 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketAddMob(
     val id: Int = 0,
@@ -20,24 +21,24 @@ data class PacketAddMob(
     val chatColor: Byte = 0,
     val unpackedData: List<EntityDataItem<*>>? = listOf(),
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(id)
-        channel.writeShort(type)
-        channel.writeInt(x)
-        channel.writeInt(y)
-        channel.writeInt(z)
-        channel.writeByte(yaw)
-        channel.writeByte(pitch)
-        SyncedEntityData.pack(unpackedData, channel)
-        channel.writeJavaStringUTF16BE(nickname)
-        channel.writeByte(chatColor)
+    override fun write(sink: Sink) {
+        sink.writeInt(id)
+        sink.writeShort(type)
+        sink.writeInt(x)
+        sink.writeInt(y)
+        sink.writeInt(z)
+        sink.writeByte(yaw)
+        sink.writeByte(pitch)
+        SyncedEntityData.pack(unpackedData, sink)
+        sink.writeJavaStringUTF16BE(nickname)
+        sink.writeByte(chatColor)
     }
 
     override val estimatedSize: Int
         get() = 21
 
     companion object : StreamingPacketFactory<PacketAddMob> {
-		override suspend fun create(channel: ByteReadChannel): PacketAddMob {
+        override suspend fun create(channel: ByteReadChannel): PacketAddMob {
             val id = channel.readInt()
             val type = channel.readShort()
             val x = channel.readInt()
@@ -49,7 +50,18 @@ data class PacketAddMob(
             val nickname = channel.readJavaStringUTF16BE(256)
             val chatColor = channel.readByte()
 
-            return PacketAddMob(id = id, type = type, x = x, y = y, z = z, yaw = yaw, pitch = pitch, nickname = nickname, chatColor = chatColor, unpackedData = unpackedData)
+            return PacketAddMob(
+                id = id,
+                type = type,
+                x = x,
+                y = y,
+                z = z,
+                yaw = yaw,
+                pitch = pitch,
+                nickname = nickname,
+                chatColor = chatColor,
+                unpackedData = unpackedData
+            )
         }
     }
 }

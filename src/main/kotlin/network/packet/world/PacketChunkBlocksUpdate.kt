@@ -3,6 +3,8 @@ package dev.apollointhehouse.network.packet.world
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
+import kotlinx.io.Sink
 import kotlin.experimental.and
 
 data class PacketChunkBlocksUpdate(
@@ -13,27 +15,27 @@ data class PacketChunkBlocksUpdate(
     val metadataArray: ByteArray = byteArrayOf(),
     val size: Short = 0
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(xChunk)
-        channel.writeInt(zChunk)
-        channel.writeShort(size)
+    override fun write(sink: Sink) {
+        sink.writeInt(xChunk)
+        sink.writeInt(zChunk)
+        sink.writeShort(size)
 
         for (i in 0..<size) {
-           channel.writeInt(coordinateArray[i])
+            sink.writeInt(coordinateArray[i])
         }
 
         for (i in 0..<size) {
-           channel.writeShort(typeArray[i])
+            sink.writeShort(typeArray[i])
         }
 
-        channel.writeFully(metadataArray)
+        sink.writeFully(metadataArray)
     }
 
     override val estimatedSize: Int
         get() = 10 + size * 4
 
     companion object : StreamingPacketFactory<PacketChunkBlocksUpdate> {
-		override suspend fun create(channel: ByteReadChannel): PacketChunkBlocksUpdate {
+        override suspend fun create(channel: ByteReadChannel): PacketChunkBlocksUpdate {
             val xChunk = channel.readInt()
             val zChunk = channel.readInt()
             val size = channel.readShort() and '\uffff'.code.toShort()

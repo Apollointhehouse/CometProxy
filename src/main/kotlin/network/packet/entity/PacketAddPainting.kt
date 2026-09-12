@@ -5,6 +5,7 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketAddPainting(
     val entityId: Int = 0,
@@ -16,24 +17,24 @@ data class PacketAddPainting(
     val itemID: Int = 0,
     val meta: Int = 0,
 ) : Packet {
-    
 
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeJavaStringUTF8(key)
-        channel.writeInt(xPosition)
-        channel.writeInt(yPosition)
-        channel.writeInt(zPosition)
-        channel.writeInt(direction)
-        channel.writeInt(itemID)
-        channel.writeInt(meta)
+
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeJavaStringUTF8(key)
+        sink.writeInt(xPosition)
+        sink.writeInt(yPosition)
+        sink.writeInt(zPosition)
+        sink.writeInt(direction)
+        sink.writeInt(itemID)
+        sink.writeInt(meta)
     }
 
     override val estimatedSize: Int
         get() = 24
 
     companion object : StreamingPacketFactory<PacketAddPainting> {
-		override suspend fun create(channel: ByteReadChannel): PacketAddPainting {
+        override suspend fun create(channel: ByteReadChannel): PacketAddPainting {
             val entityId = channel.readInt()
             val key = channel.readJavaStringUTF8(30)
             val xPosition = channel.readInt()
@@ -43,7 +44,16 @@ data class PacketAddPainting(
             val itemID = channel.readInt()
             val meta = channel.readInt()
 
-            return PacketAddPainting(entityId = entityId, xPosition = xPosition, yPosition = yPosition, zPosition = zPosition, direction = direction, key = key, itemID = itemID, meta = meta)
+            return PacketAddPainting(
+                entityId = entityId,
+                xPosition = xPosition,
+                yPosition = yPosition,
+                zPosition = zPosition,
+                direction = direction,
+                key = key,
+                itemID = itemID,
+                meta = meta
+            )
         }
     }
 }

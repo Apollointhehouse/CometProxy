@@ -5,6 +5,7 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketEntityNickname(
     var entityId: Int = 0,
@@ -14,14 +15,14 @@ data class PacketEntityNickname(
     override val estimatedSize: Int
         get() = 6 + nickname.length * 2 + 1
 
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeJavaStringUTF16BE(nickname)
-        channel.writeByte(chatColor)
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeJavaStringUTF16BE(nickname)
+        sink.writeByte(chatColor)
     }
 
     companion object : StreamingPacketFactory<PacketEntityNickname> {
-        
+
         override suspend fun create(channel: ByteReadChannel): PacketEntityNickname {
             val entityId = channel.readInt()
             val nickname = channel.readJavaStringUTF16BE(256)

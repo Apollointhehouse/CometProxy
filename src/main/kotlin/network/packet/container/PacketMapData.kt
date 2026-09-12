@@ -4,6 +4,8 @@ import dev.apollointhehouse.model.MapWaypoint
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
+import kotlinx.io.Sink
 import kotlin.experimental.and
 
 data class PacketMapData(
@@ -14,18 +16,18 @@ data class PacketMapData(
 ) : Packet {
     val waypoints: MutableList<MapWaypoint> = mutableListOf()
 
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeShort(itemId)
-        channel.writeShort(meta)
-        channel.writeByte(scale)
-        channel.writeByte(waypoints.size.toByte())
+    override fun write(sink: Sink) {
+        sink.writeShort(itemId)
+        sink.writeShort(meta)
+        sink.writeByte(scale)
+        sink.writeByte(waypoints.size.toByte())
 
         for (i in waypoints.indices) {
-            waypoints[i].write(channel)
+            waypoints[i].write(sink)
         }
 
-        channel.writeByte(mapData.size.toByte())
-        channel.writeFully(mapData)
+        sink.writeByte(mapData.size.toByte())
+        sink.writeFully(mapData)
     }
 
     override val estimatedSize: Int

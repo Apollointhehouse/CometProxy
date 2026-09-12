@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.entity
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketTeleportEntity(
@@ -13,13 +13,13 @@ data class PacketTeleportEntity(
     val yaw: Int = 0,
     val pitch: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(id)
-        channel.writeInt(x)
-        channel.writeInt(y)
-        channel.writeInt(z)
-        channel.writeByte(yaw.toByte())
-        channel.writeByte(pitch.toByte())
+    override fun write(sink: Sink) {
+        sink.writeInt(id)
+        sink.writeInt(x)
+        sink.writeInt(y)
+        sink.writeInt(z)
+        sink.writeByte(yaw.toByte())
+        sink.writeByte(pitch.toByte())
     }
 
     override val estimatedSize: Int

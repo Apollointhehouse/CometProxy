@@ -4,6 +4,7 @@ import dev.apollointhehouse.network.extensions.*
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import java.util.*
 
 data class PacketUpdatePlayerProfile(
@@ -15,21 +16,21 @@ data class PacketUpdatePlayerProfile(
     val isOnline: Boolean = false,
     val isOperator: Boolean = false,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeJavaStringUTF8(username)
-        channel.writeJavaStringUTF16BE(nickname)
-        channel.writeUUID(uuid)
-        channel.writeInt(score)
-        channel.writeByte(chatColor)
-        channel.writeBoolean(isOnline)
-        channel.writeBoolean(isOperator)
+    override fun write(sink: Sink) {
+        sink.writeJavaStringUTF8(username)
+        sink.writeJavaStringUTF16BE(nickname)
+        sink.writeUUID(uuid)
+        sink.writeInt(score)
+        sink.writeByte(chatColor)
+        sink.writeBoolean(isOnline)
+        sink.writeBoolean(isOperator)
     }
 
     override val estimatedSize: Int
         get() = 10 + this.username.length + 4
 
     companion object : StreamingPacketFactory<PacketUpdatePlayerProfile> {
-		override suspend fun create(channel: ByteReadChannel): PacketUpdatePlayerProfile {
+        override suspend fun create(channel: ByteReadChannel): PacketUpdatePlayerProfile {
             val username = channel.readJavaStringUTF8(16)
             val nickname = channel.readJavaStringUTF16BE(256)
             val uuid = channel.readUUID()

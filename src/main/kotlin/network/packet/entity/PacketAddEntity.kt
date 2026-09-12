@@ -8,6 +8,8 @@ import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
+import kotlinx.io.writeFloat
 
 data class PacketAddEntity(
     val entityId: Int = 0,
@@ -26,33 +28,33 @@ data class PacketAddEntity(
     val metaData: Int = 0,
     val tag: CompoundTag? = null
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeShort(type)
-        channel.writeInt(xPosition)
-        channel.writeInt(yPosition)
-        channel.writeInt(zPosition)
-        channel.writeFloat(pitch)
-        channel.writeFloat(yaw)
-        SyncedEntityData.pack(unpackedData, channel)
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeShort(type)
+        sink.writeInt(xPosition)
+        sink.writeInt(yPosition)
+        sink.writeInt(zPosition)
+        sink.writeFloat(pitch)
+        sink.writeFloat(yaw)
+        SyncedEntityData.pack(unpackedData, sink)
         val optionals = makeOptionalsByte(this.hasVelocity, this.ownerId >= 0, this.metaData >= 0, this.tag != null)
-        channel.writeByte(optionals)
+        sink.writeByte(optionals)
         if (hasVelocity(optionals)) {
-           channel.writeShort(xVelocity)
-           channel.writeShort(yVelocity)
-           channel.writeShort(zVelocity)
+            sink.writeShort(xVelocity)
+            sink.writeShort(yVelocity)
+            sink.writeShort(zVelocity)
         }
 
         if (hasOwner(optionals)) {
-           channel.writeInt(ownerId)
+            sink.writeInt(ownerId)
         }
 
         if (hasMeta(optionals)) {
-           channel.writeInt(metaData)
+            sink.writeInt(metaData)
         }
 
         if (hasTag(optionals)) {
-            channel.writeCompressedCompoundTag(tag!!)
+            sink.writeCompressedCompoundTag(tag!!)
         }
     }
 

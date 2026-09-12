@@ -6,6 +6,9 @@ import dev.apollointhehouse.network.extensions.writeBoolean
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
+import kotlinx.io.writeDouble
+import kotlinx.io.writeFloat
 
 data class PacketExplosion(
     val explosionX: Double = 0.0,
@@ -15,30 +18,30 @@ data class PacketExplosion(
     val isCannonball: Boolean = false,
     val destroyedBlockPositions: MutableSet<TilePos> = mutableSetOf()
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeDouble(explosionX)
-        channel.writeDouble(explosionY)
-        channel.writeDouble(explosionZ)
-        channel.writeFloat(explosionSize)
-        channel.writeInt(destroyedBlockPositions.size)
+    override fun write(sink: Sink) {
+        sink.writeDouble(explosionX)
+        sink.writeDouble(explosionY)
+        sink.writeDouble(explosionZ)
+        sink.writeFloat(explosionSize)
+        sink.writeInt(destroyedBlockPositions.size)
         val i = this.explosionX.toInt()
         val j = this.explosionY.toInt()
         val k = this.explosionZ.toInt()
 
         for ((x, y, z) in destroyedBlockPositions) {
-           channel.writeByte((x - i).toByte())
-           channel.writeByte((y - j).toByte())
-           channel.writeByte((z - k).toByte())
+            sink.writeByte((x - i).toByte())
+            sink.writeByte((y - j).toByte())
+            sink.writeByte((z - k).toByte())
         }
 
-        channel.writeBoolean(isCannonball)
+        sink.writeBoolean(isCannonball)
     }
 
     override val estimatedSize: Int
         get() = 32 + this.destroyedBlockPositions.size * 3 + 1
 
     companion object : StreamingPacketFactory<PacketExplosion> {
-		override suspend fun create(channel: ByteReadChannel): PacketExplosion {
+        override suspend fun create(channel: ByteReadChannel): PacketExplosion {
             val explosionX = channel.readDouble()
             val explosionY = channel.readDouble()
             val explosionZ = channel.readDouble()
@@ -59,7 +62,14 @@ data class PacketExplosion(
 
             val isCannonball = channel.readBoolean()
 
-            return PacketExplosion(explosionX, explosionY, explosionZ, explosionSize, isCannonball, destroyedBlockPositions)
+            return PacketExplosion(
+                explosionX,
+                explosionY,
+                explosionZ,
+                explosionSize,
+                isCannonball,
+                destroyedBlockPositions
+            )
         }
     }
 }

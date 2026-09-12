@@ -2,9 +2,10 @@ package dev.apollointhehouse.network.packet.entity
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 import kotlinx.io.readFloat
+import kotlinx.io.writeFloat
 
 data class PacketEntityFling(
     val entityId: Int = 0,
@@ -14,13 +15,13 @@ data class PacketEntityFling(
     val pushTime: Float = 0f,
     val pushesTick: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(entityId)
-        channel.writeFloat(xd.toFloat())
-        channel.writeFloat(yd.toFloat())
-        channel.writeFloat(zd.toFloat())
-        channel.writeFloat(pushTime)
-        channel.writeByte(pushesTick.toByte())
+    override fun write(sink: Sink) {
+        sink.writeInt(entityId)
+        sink.writeFloat(xd.toFloat())
+        sink.writeFloat(yd.toFloat())
+        sink.writeFloat(zd.toFloat())
+        sink.writeFloat(pushTime)
+        sink.writeByte(pushesTick.toByte())
     }
 
     override val estimatedSize: Int

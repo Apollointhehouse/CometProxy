@@ -3,6 +3,7 @@ package dev.apollointhehouse.network.packet.world
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketPlaySound(
     val soundID: Int = 0,
@@ -11,19 +12,19 @@ data class PacketPlaySound(
     val y: Int = 0,
     val z: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(soundID)
-        channel.writeInt(x)
-        channel.writeInt(y)
-        channel.writeInt(z)
-        channel.writeInt(data)
+    override fun write(sink: Sink) {
+        sink.writeInt(soundID)
+        sink.writeInt(x)
+        sink.writeInt(y)
+        sink.writeInt(z)
+        sink.writeInt(data)
     }
 
     override val estimatedSize: Int
         get() = 20
 
     companion object : StreamingPacketFactory<PacketPlaySound> {
-		override suspend fun create(channel: ByteReadChannel): PacketPlaySound {
+        override suspend fun create(channel: ByteReadChannel): PacketPlaySound {
             val soundID = channel.readInt()
             val x = channel.readInt()
             val y = channel.readInt()

@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.entity
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketEntityInteract(
@@ -10,10 +10,10 @@ data class PacketEntityInteract(
     val targetEntityID: Int = 0,
     val action: Byte = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(sourceEntityID)
-        channel.writeInt(targetEntityID)
-        channel.writeByte(action)
+    override fun write(sink: Sink) {
+        sink.writeInt(sourceEntityID)
+        sink.writeInt(targetEntityID)
+        sink.writeByte(action)
     }
 
     override val estimatedSize: Int

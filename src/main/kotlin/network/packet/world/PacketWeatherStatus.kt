@@ -2,9 +2,10 @@ package dev.apollointhehouse.network.packet.world
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 import kotlinx.io.readFloat
+import kotlinx.io.writeFloat
 
 data class PacketWeatherStatus(
     val dimId: Int = 0,
@@ -14,13 +15,13 @@ data class PacketWeatherStatus(
     val intensity: Float = 0f,
     val power: Float = 0f,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(dimId)
-        channel.writeInt(id)
-        channel.writeInt(newId)
-        channel.writeLong(duration)
-        channel.writeFloat(intensity)
-        channel.writeFloat(power)
+    override fun write(sink: Sink) {
+        sink.writeInt(dimId)
+        sink.writeInt(id)
+        sink.writeInt(newId)
+        sink.writeLong(duration)
+        sink.writeFloat(intensity)
+        sink.writeFloat(power)
     }
 
     override val estimatedSize: Int

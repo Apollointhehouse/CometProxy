@@ -7,6 +7,7 @@ import dev.apollointhehouse.network.extensions.writeCompressedCompoundTag
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketContainerSetSlot(
     var windowId: Byte = 0,
@@ -14,19 +15,19 @@ data class PacketContainerSetSlot(
     var itemSlot: Short = 0,
     var myItemStack: ItemStack? = null
 ) : Packet {
-    
 
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(windowId)
-        channel.writeInt(stateId)
-        channel.writeShort(itemSlot)
+
+    override fun write(sink: Sink) {
+        sink.writeByte(windowId)
+        sink.writeInt(stateId)
+        sink.writeShort(itemSlot)
         if (this.myItemStack == null) {
-            channel.writeShort(-1)
+            sink.writeShort(-1)
         } else {
-            channel.writeShort(myItemStack!!.itemID)
-            channel.writeByte(myItemStack!!.size)
-            channel.writeShort(myItemStack!!.meta)
-            channel.writeCompressedCompoundTag(this.myItemStack!!.tag!!)
+            sink.writeShort(myItemStack!!.itemID)
+            sink.writeByte(myItemStack!!.size)
+            sink.writeShort(myItemStack!!.meta)
+            sink.writeCompressedCompoundTag(this.myItemStack!!.tag!!)
         }
     }
 
@@ -34,7 +35,7 @@ data class PacketContainerSetSlot(
         get() = 12
 
     companion object : StreamingPacketFactory<PacketContainerSetSlot> {
-		override suspend fun create(channel: ByteReadChannel): PacketContainerSetSlot {
+        override suspend fun create(channel: ByteReadChannel): PacketContainerSetSlot {
             val windowId = channel.readByte()
             val stateId = channel.readInt()
             val itemSlot = channel.readShort()

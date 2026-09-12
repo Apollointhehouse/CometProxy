@@ -7,6 +7,7 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlin.experimental.or
 
 data class PacketMessage(
@@ -15,14 +16,14 @@ data class PacketMessage(
     val type: Byte = 0,
     val encrypted: Boolean = false,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(type or (if (format.toInt() != 0) (-128).toByte() else 0.toByte()))
-        channel.writeBoolean(encrypted)
+    override fun write(sink: Sink) {
+        sink.writeByte(type or (if (format.toInt() != 0) (-128).toByte() else 0.toByte()))
+        sink.writeBoolean(encrypted)
         if (format.toInt() != 0) {
-            channel.writeShort(format)
+            sink.writeShort(format)
         }
 
-        channel.writeJavaStringUTF8(message)
+        sink.writeJavaStringUTF8(message)
     }
 
     override val estimatedSize: Int

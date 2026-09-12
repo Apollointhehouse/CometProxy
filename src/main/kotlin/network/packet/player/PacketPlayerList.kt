@@ -5,18 +5,19 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF16BE
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
 
 data class PacketPlayerList(
     val players: Array<String> = arrayOf(),
     val scores: Array<String> = arrayOf(),
     val count: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeInt(count)
+    override fun write(sink: Sink) {
+        sink.writeInt(count)
 
         for (i in 0..<this.count) {
-            channel.writeJavaStringUTF16BE(players[i])
-            channel.writeJavaStringUTF16BE(scores[i])
+            sink.writeJavaStringUTF16BE(players[i])
+            sink.writeJavaStringUTF16BE(scores[i])
         }
     }
 
@@ -36,7 +37,7 @@ data class PacketPlayerList(
         }
 
     companion object : StreamingPacketFactory<PacketPlayerList> {
-		override suspend fun create(channel: ByteReadChannel): PacketPlayerList {
+        override suspend fun create(channel: ByteReadChannel): PacketPlayerList {
             val count = channel.readInt()
 
             val [players, scores] = (0..<count)

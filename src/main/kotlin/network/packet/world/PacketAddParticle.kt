@@ -7,6 +7,9 @@ import dev.apollointhehouse.network.extensions.writeJavaStringUTF8
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.StreamingPacketFactory
 import io.ktor.utils.io.*
+import kotlinx.io.Sink
+import kotlinx.io.writeDouble
+import kotlinx.io.writeFloat
 
 data class PacketAddParticle(
     var particleKey: String,
@@ -27,25 +30,25 @@ data class PacketAddParticle(
     var randMotionZ: Float = 0f,
     var isGroup: Boolean = false
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeJavaStringUTF8(particleKey)
-        channel.writeDouble(x)
-        channel.writeDouble(y)
-        channel.writeDouble(z)
-        channel.writeDouble(motionX)
-        channel.writeDouble(motionY)
-        channel.writeDouble(motionZ)
-        channel.writeInt(data)
-        channel.writeDouble(maxDistance)
-        channel.writeBoolean(isGroup)
+    override fun write(sink: Sink) {
+        sink.writeJavaStringUTF8(particleKey)
+        sink.writeDouble(x)
+        sink.writeDouble(y)
+        sink.writeDouble(z)
+        sink.writeDouble(motionX)
+        sink.writeDouble(motionY)
+        sink.writeDouble(motionZ)
+        sink.writeInt(data)
+        sink.writeDouble(maxDistance)
+        sink.writeBoolean(isGroup)
         if (isGroup) {
-           channel.writeByte(amount)
-           channel.writeFloat(randOffX)
-           channel.writeFloat(randOffY)
-           channel.writeFloat(randOffZ)
-           channel.writeFloat(randMotionX)
-           channel.writeFloat(randMotionY)
-           channel.writeFloat(randMotionZ)
+            sink.writeByte(amount)
+            sink.writeFloat(randOffX)
+            sink.writeFloat(randOffY)
+            sink.writeFloat(randOffZ)
+            sink.writeFloat(randMotionX)
+            sink.writeFloat(randMotionY)
+            sink.writeFloat(randMotionZ)
         }
     }
 
@@ -53,7 +56,7 @@ data class PacketAddParticle(
         get() = 40
 
     companion object : StreamingPacketFactory<PacketAddParticle> {
-		override suspend fun create(channel: ByteReadChannel): PacketAddParticle {
+        override suspend fun create(channel: ByteReadChannel): PacketAddParticle {
             val particleKey = channel.readJavaStringUTF8(100)
             val x = channel.readDouble()
             val y = channel.readDouble()
@@ -86,7 +89,25 @@ data class PacketAddParticle(
                 isGroup = false
             }
 
-            return PacketAddParticle(particleKey, x, y, z, motionX, motionY, motionZ, data, maxDistance, amount, randOffX, randOffY, randOffZ, randMotionX, randMotionY, randMotionZ, isGroup)
+            return PacketAddParticle(
+                particleKey,
+                x,
+                y,
+                z,
+                motionX,
+                motionY,
+                motionZ,
+                data,
+                maxDistance,
+                amount,
+                randOffX,
+                randOffY,
+                randOffZ,
+                randMotionX,
+                randMotionY,
+                randMotionZ,
+                isGroup
+            )
         }
 
     }

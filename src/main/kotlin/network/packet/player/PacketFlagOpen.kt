@@ -2,7 +2,7 @@ package dev.apollointhehouse.network.packet.player
 
 import dev.apollointhehouse.network.packet.BufferedPacketFactory
 import dev.apollointhehouse.network.packet.Packet
-import io.ktor.utils.io.*
+import kotlinx.io.Sink
 import kotlinx.io.Source
 
 data class PacketFlagOpen(
@@ -11,11 +11,11 @@ data class PacketFlagOpen(
     val y: Short = 0,
     val z: Int = 0,
 ) : Packet {
-    override suspend fun write(channel: ByteWriteChannel) {
-        channel.writeByte(windowId)
-        channel.writeInt(x)
-        channel.writeShort(y)
-        channel.writeInt(z)
+    override fun write(sink: Sink) {
+        sink.writeByte(windowId)
+        sink.writeInt(x)
+        sink.writeShort(y)
+        sink.writeInt(z)
     }
 
     override val estimatedSize: Int
