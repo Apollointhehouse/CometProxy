@@ -43,12 +43,10 @@ data class ConnectionContext(
 
     suspend fun sendToClientImmediately(packet: Packet) {
         Packet.writePacket(clientConn.output, packet)
-        clientConn.output.flush()
     }
 
     suspend fun sendToServerImmediately(packet: Packet) {
         Packet.writePacket(serverConn.output, packet)
-        serverConn.output.flush()
     }
 
     private suspend fun writerLoop(channel: ByteWriteChannel, queue: Channel<Packet>, target: String) {
