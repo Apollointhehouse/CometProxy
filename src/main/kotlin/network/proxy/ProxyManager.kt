@@ -9,11 +9,11 @@ class ProxyManager {
     private var proxyJob: Job? = null
     private val log = logger()
 
-    fun start(host: String, port: Int) {
+    fun start(proxyConfig: ProxyConfig) {
         if (proxyJob?.isActive == true) return
         proxyJob = scope.launch {
             try {
-                val proxy = Proxy(ProxyConfig(targetServer = host, targetPort = port, motd = "Proxy Server"))
+                val proxy = Proxy(proxyConfig)
 
                 proxy.start()
             } catch (e: CancellationException) {

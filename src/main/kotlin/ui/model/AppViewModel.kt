@@ -5,29 +5,33 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.text.input.TextFieldValue
 import dev.apollointhehouse.network.API
 import dev.apollointhehouse.network.packet.chat.PacketMessage
-import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
 import dev.apollointhehouse.network.proxy.ProxyManager
+import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.network.proxy.connection.ConnectionContext
+import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
+import dev.apollointhehouse.ui.state.ProxyUIState
+import dev.apollointhehouse.ui.state.toProxyConfig
+import dev.apollointhehouse.ui.state.toProxyUIState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.kotlin.logger
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.uuid.Uuid
 
-class AppViewModel(private val scope: CoroutineScope) {
+class AppViewModel(config: ProxyConfig, private val scope: CoroutineScope) {
     private val proxyManager = ProxyManager()
     private val log = logger()
 
     val connections: StateFlow<List<ConnectionContext>> = ConnectionRegistry.connections
 
+    val proxyState: StateFlow<ProxyUIState>
+        field = MutableStateFlow(config.toProxyUIState())
+
     var running: Boolean by mutableStateOf(false)
-        private set
-    var targetHost: TextFieldValue by mutableStateOf(TextFieldValue("example.com"))
-    var targetPort: TextFieldValue by mutableStateOf(TextFieldValue("25565"))
         private set
 
     var selectedConnection by mutableStateOf<ConnectionContext?>(null)
@@ -42,25 +46,14 @@ class AppViewModel(private val scope: CoroutineScope) {
     }
 
     fun startProxy() {
-        val host = targetHost.text
-        val port = targetPort.text.toIntOrNull() ?: 25565
-
-        if (host.isNotBlank() && targetPort.text.isNotBlank()) {
-            running = true
-            proxyManager.start(host, port)
-        }
+        running = true
+        proxyManager.start(proxyState.value.toProxyConfig())
     }
 
     fun stopProxy() {
         scope.launch {
             proxyManager.stop()
             running = false
-        }
-    }
-
-    fun updatePort(newValue: TextFieldValue) {
-        if (newValue.text.all { it.isDigit() }) {
-            targetPort = newValue
         }
     }
 

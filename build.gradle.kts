@@ -36,6 +36,7 @@ compose.desktop {
 }
 
 dependencies {
+    // Ktor
     implementation(ktorLibs.serialization.kotlinx.json)
     implementation(ktorLibs.server.config.yaml)
     implementation(ktorLibs.server.contentNegotiation)
@@ -44,21 +45,26 @@ dependencies {
     implementation(ktorLibs.client.core)
     implementation(ktorLibs.client.contentNegotiation)
     implementation(ktorLibs.client.cio)
-    implementation(libs.logback.classic)
 
+    // Logging
     implementation("org.apache.logging.log4j:log4j-api:2.26.1")
+    implementation(libs.logback.classic)
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.5.0")
     implementation("org.apache.logging.log4j:log4j-to-slf4j:2.26.1")
 
 
+    // UI
     implementation(compose.desktop.currentOs) {
         exclude(group = "org.jetbrains.compose.material")
     }
+    implementation(compose.desktop.currentOs)
 
+    // Jewel Theme
     implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.35.0-261.23567.198")
     implementation("org.jetbrains.jewel:jewel-ui:0.35.0-261.23567.198")
 
-    implementation(compose.desktop.currentOs)
+    // Arg parsing
+    implementation("com.github.ajalt.clikt:clikt:5.0.1")
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)

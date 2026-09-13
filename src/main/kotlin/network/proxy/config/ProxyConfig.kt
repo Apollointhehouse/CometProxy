@@ -3,7 +3,7 @@ package dev.apollointhehouse.network.proxy.config
 import dev.apollointhehouse.network.crypto.RSA
 import java.security.KeyPair
 
-class ProxyConfig(
+data class ProxyConfig(
     val targetServer: String,
     val targetPort: Int = 25565,
     val hostPort: Int = 25565,

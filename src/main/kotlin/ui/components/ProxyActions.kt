@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,10 +19,12 @@ fun ProxyActions(
     viewModel: AppViewModel,
     logLines: SnapshotStateList<String>
 ) {
+    val proxyState by viewModel.proxyState.collectAsState()
+
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         DefaultButton(
             onClick = { viewModel.startProxy() },
-            enabled = !viewModel.running && viewModel.targetHost.text.isNotBlank() && viewModel.targetPort.text.isNotBlank(),
+            enabled = !viewModel.running && proxyState.targetServer.text.isNotBlank() && proxyState.targetPort.text.isNotBlank(),
         ) {
             Text("Start Proxy")
         }

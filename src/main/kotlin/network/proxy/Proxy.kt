@@ -5,6 +5,7 @@ import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.network.proxy.connection.ConnectionManager
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
+import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +55,8 @@ class Proxy(private val config: ProxyConfig) {
 
             try {
                 bridge.run()
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 log.error("Error bridging connection", e)
             } finally {
