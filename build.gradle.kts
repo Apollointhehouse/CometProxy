@@ -1,37 +1,39 @@
+import dev.nucleusframework.desktop.application.dsl.TargetFormat
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
 
     id("org.jetbrains.compose") version "1.12.0"
     id("org.jetbrains.kotlin.plugin.compose") version "2.4.0"
+    id("dev.nucleusframework") version "2.5.15"
 }
 
 group = "dev.apollointhehouse"
 version = "1.0.0-SNAPSHOT"
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 
     compilerOptions {
         freeCompilerArgs.addAll("-Xcollection-literals", "-Xname-based-destructuring=complete")
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "dev.apollointhehouse.MainKt"
+nucleus.application {
+    mainClass = "dev.apollointhehouse.MainKt"
 
-        nativeDistributions {
-            includeAllModules = true
+    nativeDistributions {
+        includeAllModules = true
 
-            targetFormats(
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe,
-                org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
-            )
-            packageName = "CometProxy"
-            packageVersion = "1.0.0"
-        }
+        targetFormats(
+            TargetFormat.Dmg,
+            TargetFormat.Exe,
+            TargetFormat.Deb
+        )
+        packageName = "CometProxy"
+        packageVersion = "1.0.0"
+        homepage = "https://github.com/Apollointhehouse/CometProxy"
     }
 }
 
@@ -57,11 +59,20 @@ dependencies {
     implementation(compose.desktop.currentOs) {
         exclude(group = "org.jetbrains.compose.material")
     }
-    implementation(compose.desktop.currentOs)
+
+    implementation("dev.nucleusframework:nucleus.core-runtime:2.5.15")
+    implementation("dev.nucleusframework:nucleus.taskbar-progress:2.5.15")
+
+    implementation("dev.nucleusframework:nucleus.nucleus-application:2.5.15")
+    implementation("dev.nucleusframework:nucleus.decorated-window-core:2.5.15")
+    implementation("dev.nucleusframework:nucleus.decorated-window-tao:2.5.15")
+    implementation("dev.nucleusframework:nucleus.decorated-window-jewel:2.5.15")
+    implementation("dev.nucleusframework:nucleus.decorated-window-awt:2.5.15")
 
     // Jewel Theme
     implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.35.0-261.23567.198")
     implementation("org.jetbrains.jewel:jewel-ui:0.35.0-261.23567.198")
+    implementation("org.jetbrains.jewel:jewel-decorated-window:0.35.0-261.23567.198")
 
     // Arg parsing
     implementation("com.github.ajalt.clikt:clikt:5.0.1")
