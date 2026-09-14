@@ -24,14 +24,14 @@ fun ProxyActions(
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         DefaultButton(
             onClick = { viewModel.startProxy() },
-            enabled = !viewModel.running && proxyState.targetServer.text.isNotBlank() && proxyState.targetPort.text.isNotBlank(),
+            enabled = !proxyState.isRunning && proxyState.targetServer.text.isNotBlank() && proxyState.targetPort.text.isNotBlank(),
         ) {
             Text("Start Proxy")
         }
 
         OutlinedButton(
             onClick = { viewModel.stopProxy() },
-            enabled = viewModel.running,
+            enabled = proxyState.isRunning,
         ) {
             Text("Stop")
         }

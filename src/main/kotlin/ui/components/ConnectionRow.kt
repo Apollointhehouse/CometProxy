@@ -28,7 +28,7 @@ fun ConnectionRow(
     val session = ctx.session ?: return
     val name = session.username
     val uuid = session.uuid
-    val headImg = viewModel.getHead(uuid)
+    val headImg = viewModel.fetchPlayerHead(uuid)
 
     PopoverAnchor(
         expanded = isSelected,

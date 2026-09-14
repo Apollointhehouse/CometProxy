@@ -18,7 +18,12 @@ class GuiAppender : AppenderBase<ILoggingEvent>() {
 
     override fun append(event: ILoggingEvent) {
         val formatted = layout.doLayout(event).trimEnd('\n')
-        GuiLogBus.publish(formatted)
+
+        dispatchLog(formatted)
+    }
+
+    private fun dispatchLog(message: String) {
+        GuiLogBus.publish(message)
     }
 
     override fun stop() {

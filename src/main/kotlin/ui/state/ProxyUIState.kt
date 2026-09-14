@@ -8,6 +8,7 @@ data class ProxyUIState(
     val targetPort: TextFieldState,
     val hostPort: TextFieldState,
     val motd: TextFieldState,
+    val isRunning: Boolean
 )
 
 fun ProxyUIState.toProxyConfig() = ProxyConfig(
@@ -22,4 +23,5 @@ fun ProxyConfig.toProxyUIState() = ProxyUIState(
     targetPort = TextFieldState(targetPort.toString()),
     hostPort = TextFieldState(hostPort.toString()),
     motd = TextFieldState(motd),
+    isRunning = false
 )

@@ -47,8 +47,8 @@ fun Home(viewModel: AppViewModel) {
             viewModel = viewModel,
             connections = connections,
             selected = viewModel.selectedConnection,
-            onDismissRequest = { viewModel.selectConnection(null) },
-            onSelect = { viewModel.selectConnection(it) },
+            onDismissRequest = { viewModel.selectedConnection = null },
+            onSelect = { viewModel.selectedConnection = it },
         )
 
         Spacer(Modifier.height(20.dp))

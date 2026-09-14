@@ -17,6 +17,7 @@ import dev.apollointhehouse.ui.state.toProxyUIState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.kotlin.logger
 import java.util.concurrent.ConcurrentHashMap
@@ -24,36 +25,25 @@ import kotlin.uuid.Uuid
 
 class AppViewModel(config: ProxyConfig, private val scope: CoroutineScope) {
     private val proxyManager = ProxyManager()
+    private val loadingUuids = ConcurrentHashMap.newKeySet<Uuid>()
+    private val heads = mutableStateMapOf<Uuid, ImageBitmap>()
     private val log = logger()
-
-    val connections: StateFlow<List<ConnectionContext>> = ConnectionRegistry.connections
 
     val proxyState: StateFlow<ProxyUIState>
         field = MutableStateFlow(config.toProxyUIState())
 
-    var running: Boolean by mutableStateOf(false)
-        private set
-
+    val connections: StateFlow<Set<ConnectionContext>> = ConnectionRegistry.connections
     var selectedConnection by mutableStateOf<ConnectionContext?>(null)
-        private set
-
-    val heads = mutableStateMapOf<Uuid, ImageBitmap>()
-
-    private val loadingUuids = ConcurrentHashMap.newKeySet<Uuid>()
-
-    fun selectConnection(connection: ConnectionContext?) {
-        selectedConnection = connection
-    }
 
     fun startProxy() {
-        running = true
+        proxyState.update { it.copy(isRunning = true) }
         proxyManager.start(proxyState.value.toProxyConfig())
     }
 
     fun stopProxy() {
         scope.launch {
             proxyManager.stop()
-            running = false
+            proxyState.update { it.copy(isRunning = false) }
         }
     }
 
@@ -69,7 +59,7 @@ class AppViewModel(config: ProxyConfig, private val scope: CoroutineScope) {
         ctx.sendToServer(packet)
     }
 
-    fun getHead(uuid: Uuid): ImageBitmap? {
+    fun fetchPlayerHead(uuid: Uuid): ImageBitmap? {
         val cached = heads[uuid]
         if (cached != null) return cached
 

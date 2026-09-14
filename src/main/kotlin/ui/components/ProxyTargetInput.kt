@@ -25,13 +25,13 @@ fun ProxyTargetInput(viewModel: AppViewModel) {
     ) {
         TextField(
             state = proxyState.targetServer,
-            enabled = !viewModel.running,
+            enabled = !proxyState.isRunning,
             placeholder = { Text("Host IP/address") },
             modifier = Modifier.weight(1f),
         )
         TextField(
             state = proxyState.targetPort,
-            enabled = !viewModel.running,
+            enabled = !proxyState.isRunning,
             placeholder = { Text("Port") },
             modifier = Modifier.width(100.dp),
         )

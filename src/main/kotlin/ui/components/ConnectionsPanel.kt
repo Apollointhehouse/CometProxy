@@ -21,7 +21,7 @@ import org.jetbrains.jewel.ui.typography
 @Composable
 fun ConnectionsPanel(
     viewModel: AppViewModel,
-    connections: List<ConnectionContext>,
+    connections: Set<ConnectionContext>,
     selected: ConnectionContext?,
     onDismissRequest: () -> Unit,
     onSelect: (ConnectionContext?) -> Unit,

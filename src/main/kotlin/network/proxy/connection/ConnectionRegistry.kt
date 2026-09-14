@@ -5,13 +5,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 object ConnectionRegistry {
-    val connections: StateFlow<List<ConnectionContext>> field = MutableStateFlow<List<ConnectionContext>>(emptyList())
+    val connections: StateFlow<Set<ConnectionContext>>
+        field = MutableStateFlow<Set<ConnectionContext>>(emptySet())
 
     fun register(ctx: ConnectionContext) {
         connections.update { it + ctx }
     }
 
     fun unregister(ctx: ConnectionContext) {
-        connections.update { list -> list.filterNot { it.id == ctx.id } }
+        connections.update { list -> list.filterNotTo(mutableSetOf()) { it.id == ctx.id } }
     }
 }
