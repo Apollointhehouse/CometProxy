@@ -4,6 +4,7 @@ import dev.apollointhehouse.network.packet.chat.PacketMessage
 import dev.apollointhehouse.network.pipeline.PacketContext
 import dev.apollointhehouse.network.pipeline.PacketHandler
 import dev.apollointhehouse.network.crypto.AES
+import dev.apollointhehouse.network.proxy.session.AuthSession
 import org.apache.logging.log4j.kotlin.logger
 
 class HandlerMessage : PacketHandler<PacketMessage> {
@@ -15,7 +16,10 @@ class HandlerMessage : PacketHandler<PacketMessage> {
         if (!packet.encrypted) {
             msg = packet.message
         } else {
-            val aesKey = context.connection.session?.chat?.sharedAesKey ?: return packet
+            val session = context.connection.session
+            if (session !is AuthSession) return packet
+
+            val aesKey = session.secretKey ?: return packet
             msg = AES.decrypt(packet.message, aesKey)
         }
 

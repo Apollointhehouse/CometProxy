@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.apollointhehouse.network.proxy.connection.ConnectionContext
+import dev.apollointhehouse.network.proxy.session.AuthSession
 import dev.apollointhehouse.ui.model.AppViewModel
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.ui.component.Text
@@ -25,7 +26,7 @@ fun ConnectionRow(
     onDismissRequest: () -> Unit,
     onClick: () -> Unit,
 ) {
-    val session = ctx.session ?: return
+    val session = ctx.session as? AuthSession ?: return
     val name = session.username
     val uuid = session.uuid
     val headImg = viewModel.fetchPlayerHead(uuid)
@@ -80,7 +81,7 @@ fun ConnectionRow(
                     style = JewelTheme.typography.medium,
                 )
                 Text(
-                    text = "Entity ID: ${session.entityId}",
+                    text = "Entity ID: ${session.entityID}",
                     color = if (!isSelected) JewelTheme.globalColors.text.disabled else JewelTheme.globalColors.text.normal,
                     style = JewelTheme.typography.small,
                 )
