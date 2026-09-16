@@ -36,16 +36,12 @@ interface Packet {
         }
 
         suspend fun writePacket(channel: ByteWriteChannel, packet: Packet) {
-            try {
-                val packetData = buildPacket {
-                    writeByte(packet.packetID.toByte())
-                    packet.write(this)
-                }
-                channel.writePacket(packetData)
-                channel.flush()
-            } catch (e: Exception) {
-                throw e
+            val packetData = buildPacket {
+                writeByte(packet.packetID.toByte())
+                packet.write(this)
             }
+            channel.writePacket(packetData)
+            channel.flush()
         }
     }
 }
