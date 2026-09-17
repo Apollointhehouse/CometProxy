@@ -13,8 +13,8 @@ import org.apache.logging.log4j.kotlin.logger
 import kotlin.uuid.Uuid
 
 data class ConnectionContext(
-    val clientConn: Connection,
-    val serverConn: Connection,
+    val client: Connection,
+    val server: Connection,
     var session: PlayerSession? = null,
     val id: Uuid = Uuid.random()
 ) : AutoCloseable {
@@ -25,8 +25,8 @@ data class ConnectionContext(
     private val serverQueue = Channel<Packet>(Channel.UNLIMITED)
 
     init {
-        ioScope.launch { writerLoop(clientConn.output, clientQueue, "client") }
-        ioScope.launch { writerLoop(serverConn.output, serverQueue, "server") }
+        ioScope.launch { writerLoop(client.output, clientQueue, "client") }
+        ioScope.launch { writerLoop(server.output, serverQueue, "server") }
     }
 
     fun sendToClient(packet: Packet) {
@@ -42,11 +42,11 @@ data class ConnectionContext(
     }
 
     suspend fun sendToClientImmediately(packet: Packet) {
-        Packet.writePacket(clientConn.output, packet)
+        Packet.writePacket(client.output, packet)
     }
 
     suspend fun sendToServerImmediately(packet: Packet) {
-        Packet.writePacket(serverConn.output, packet)
+        Packet.writePacket(server.output, packet)
     }
 
     private suspend fun writerLoop(channel: ByteWriteChannel, queue: Channel<Packet>, target: String) {
@@ -73,8 +73,8 @@ data class ConnectionContext(
     override fun close() {
         clientQueue.close()
         serverQueue.close()
-        clientConn.close()
-        serverConn.close()
+        client.close()
+        server.close()
         ioScope.cancel()
     }
 }

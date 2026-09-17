@@ -29,19 +29,38 @@ interface Packet {
 
                 log.debug { "READ id=$id class=${packet::class.simpleName}" }
                 return packet
+            } catch (e: CancellationException) {
+                throw e
             } catch (_: EOFException) {
                 log.debug { "Connection closed while reading packet" }
-                return null
+            } catch (e: IllegalStateException) {
+                log.debug(e) { "Error while reading packet" }
+            } catch (e: IOException) {
+                log.debug(e) { "Error while reading packet" }
             }
+
+            return null
         }
 
         suspend fun writePacket(channel: ByteWriteChannel, packet: Packet) {
-            val packetData = buildPacket {
-                writeByte(packet.packetID.toByte())
-                packet.write(this)
+            try {
+                val packetData = buildPacket {
+                    writeByte(packet.packetID.toByte())
+                    packet.write(this)
+                }
+                channel.writePacket(packetData)
+                channel.flush()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: IOException) {
+                log.debug(e) { "Error while writing packet" }
+            } catch (e: IllegalStateException) {
+                log.debug(e) { "Error while writing packet" }
+            } catch (e: IllegalArgumentException) {
+                log.debug(e) { "Error while writing packet" }
+            } catch (e: IOException) {
+                log.debug(e) { "Error while writing packet" }
             }
-            channel.writePacket(packetData)
-            channel.flush()
         }
     }
 }

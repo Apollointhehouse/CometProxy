@@ -1,11 +1,15 @@
 package dev.apollointhehouse.network.proxy
 
 import dev.apollointhehouse.network.extensions.close
+import dev.apollointhehouse.network.packet.Packet
+import dev.apollointhehouse.network.packet.handshake.PacketDisconnect
+import dev.apollointhehouse.network.packet.handshake.PacketPingHandshake
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
+import dev.apollointhehouse.network.proxy.connection.ConnectionContext
 import dev.apollointhehouse.network.proxy.connection.ConnectionManager
+import dev.apollointhehouse.network.proxy.connection.use
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +28,8 @@ class Proxy(private val config: ProxyConfig) {
 
         val serverConnManager = ConnectionManager(targetAddress, selectorManager)
 
+        testServerConnection(serverConnManager)
+
         val proxySocket = aSocket(selectorManager).tcp().bind(port = config.hostPort) {
             reuseAddress = true
         }
@@ -37,8 +43,28 @@ class Proxy(private val config: ProxyConfig) {
             withContext(NonCancellable) {
                 proxySocket.close()
                 selectorManager.close()
-                log.info("Proxy Stopped")
             }
+        }
+    }
+
+    private suspend fun testServerConnection(conManager: ConnectionManager) {
+        val con = conManager.getConnection() ?: error("Failed to connect to target server")
+
+        con.use {
+            Packet.writePacket(con.output, PacketPingHandshake(
+                payload = 1u,
+                identifier = 0u,
+                pingHostString = "BTAPingHost",
+                protocolVersion = 32769.toUByte(),
+                hostname = "",
+                port = 0,
+            ))
+
+            val pingResponse = Packet.readPacket(con.input)
+                ?: error("Failed to connect to target server")
+
+            if (pingResponse !is PacketDisconnect) error("Server failed to respond to ping")
+            if ("32769" !in pingResponse.reason) error("Server responded incorrectly to ping")
         }
     }
 
@@ -46,23 +72,25 @@ class Proxy(private val config: ProxyConfig) {
         proxySocket: ServerSocket,
         serverConnManager: ConnectionManager
     ) {
-        val clientConn = proxySocket.accept().connection()
-        log.info("Accepted ${clientConn.socket.remoteAddress}")
+        val client = proxySocket.accept().connection()
+        log.info("Accepted ${client.socket.remoteAddress}")
 
-        launch(CoroutineName("session/${clientConn.socket.remoteAddress}")) {
-            val serverConn = serverConnManager.getConnection() ?: return@launch
-            val bridge = Bridge(config, clientConn, serverConn)
+        launch(CoroutineName("session/${client.socket.remoteAddress}")) {
+            val server = serverConnManager.getConnection()
+
+            if (server == null) {
+                client.close()
+                return@launch
+            }
+
+            val ctx = ConnectionContext(client, server)
 
             try {
-                bridge.run()
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                log.error("Error bridging connection", e)
-            } finally {
-                bridge.close()
-                serverConn.close()
-                clientConn.close()
+                Bridge(config, ctx).use {
+                    it.run()
+                }
+            } catch (e: BridgeClosedException) {
+                log.info { "Connection closed due to: ${e.message}" }
             }
         }
     }

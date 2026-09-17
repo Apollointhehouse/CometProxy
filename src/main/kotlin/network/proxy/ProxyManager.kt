@@ -19,7 +19,7 @@ class ProxyManager {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                log.error(e) { "Error starting proxy" }
+                log.error(e) { "Proxy closed" }
             }
         }
     }

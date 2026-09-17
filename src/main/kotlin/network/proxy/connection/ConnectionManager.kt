@@ -1,7 +1,9 @@
 package dev.apollointhehouse.network.proxy.connection
 
+import dev.apollointhehouse.network.extensions.close
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
+import kotlinx.coroutines.CancellationException
 import org.apache.logging.log4j.kotlin.logger
 
 class ConnectionManager(
@@ -16,9 +18,19 @@ class ConnectionManager(
                 keepAlive = true
             }
             return socket.connection()
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             log.error(e) { "Failed to connect to $address" }
             return null
         }
+    }
+}
+
+inline fun <T : Connection?, R> T.use(block: (T) -> R): R {
+    try {
+        return block(this)
+    } finally {
+        this?.close()
     }
 }
