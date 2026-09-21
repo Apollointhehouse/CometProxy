@@ -1,13 +1,10 @@
 package dev.apollointhehouse.network.proxy
 
-import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.pipeline.PacketContext
 import dev.apollointhehouse.network.pipeline.PacketPipeline
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.network.proxy.connection.ConnectionContext
 import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
-import io.ktor.network.sockets.*
-import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
@@ -20,9 +17,6 @@ class Bridge(
 ) : AutoCloseable {
     suspend fun run(): Nothing = withContext(Dispatchers.IO) {
         val (client, server) = ctx
-        val (clientIn = input, _ = output) = client
-        val (serverIn = input, _ = output) = server
-
         val pipeline = PacketPipeline.create(config)
 
         try {
@@ -31,7 +25,7 @@ class Bridge(
 
             val clientToServerJob = launch {
                 while (true) {
-                    val packet = Packet.readPacket(clientIn)
+                    val packet = client.readPacket()
                         ?: throw BridgeClosedException("Client connection closed")
                     val result = pipeline.process(c2sContext, packet)
 
@@ -41,7 +35,7 @@ class Bridge(
 
             val serverToClientJob = launch {
                 while (true) {
-                    val packet = Packet.readPacket(serverIn)
+                    val packet = server.readPacket()
                         ?: throw BridgeClosedException("Server connection closed")
                     val result = pipeline.process(s2cContext, packet)
 

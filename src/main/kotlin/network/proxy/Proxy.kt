@@ -1,13 +1,13 @@
 package dev.apollointhehouse.network.proxy
 
-import dev.apollointhehouse.network.extensions.close
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.handshake.PacketDisconnect
 import dev.apollointhehouse.network.packet.handshake.PacketPingHandshake
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.network.proxy.connection.ConnectionContext
 import dev.apollointhehouse.network.proxy.connection.ConnectionManager
-import dev.apollointhehouse.network.proxy.connection.use
+import dev.apollointhehouse.network.proxy.connection.ProxyConnection
+import dev.apollointhehouse.network.proxy.connection.toProxyConnection
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.CoroutineName
@@ -23,9 +23,7 @@ class Proxy(private val config: ProxyConfig) {
 
     suspend fun start() = withContext(Dispatchers.Default) {
         val targetAddress = InetSocketAddress(config.targetServer, config.targetPort)
-
         val selectorManager = ActorSelectorManager(Dispatchers.IO)
-
         val serverConnManager = ConnectionManager(targetAddress, selectorManager)
 
         testServerConnection(serverConnManager)
@@ -72,26 +70,36 @@ class Proxy(private val config: ProxyConfig) {
         proxySocket: ServerSocket,
         serverConnManager: ConnectionManager
     ) {
-        val client = proxySocket.accept().connection()
+        val client = proxySocket
+            .accept()
+            .connection()
+            .toProxyConnection()
         log.info("Accepted ${client.socket.remoteAddress}")
 
         launch(CoroutineName("session/${client.socket.remoteAddress}")) {
-            val server = serverConnManager.getConnection()
+            connection(serverConnManager, client)
+        }
+    }
 
-            if (server == null) {
-                client.close()
-                return@launch
+    private suspend fun connection(
+        serverConnManager: ConnectionManager,
+        client: ProxyConnection
+    ) {
+        val server = serverConnManager.getConnection()
+
+        if (server == null) {
+            client.close()
+            return
+        }
+
+        val ctx = ConnectionContext(client, server)
+
+        try {
+            Bridge(config, ctx).use {
+                it.run()
             }
-
-            val ctx = ConnectionContext(client, server)
-
-            try {
-                Bridge(config, ctx).use {
-                    it.run()
-                }
-            } catch (e: BridgeClosedException) {
-                log.info { "Connection closed due to: ${e.message}" }
-            }
+        } catch (e: BridgeClosedException) {
+            log.info { "Connection closed due to: ${e.message}" }
         }
     }
 }

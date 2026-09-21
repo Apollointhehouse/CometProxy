@@ -1,9 +1,7 @@
 package dev.apollointhehouse.network.proxy.connection
 
-import dev.apollointhehouse.network.extensions.close
 import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.proxy.session.PlayerSession
-import io.ktor.network.sockets.Connection
 import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -13,8 +11,8 @@ import org.apache.logging.log4j.kotlin.logger
 import kotlin.uuid.Uuid
 
 data class ConnectionContext(
-    val client: Connection,
-    val server: Connection,
+    val client: ProxyConnection,
+    val server: ProxyConnection,
     var session: PlayerSession? = null,
     val id: Uuid = Uuid.random()
 ) : AutoCloseable {
@@ -25,8 +23,8 @@ data class ConnectionContext(
     private val serverQueue = Channel<Packet>(Channel.UNLIMITED)
 
     init {
-        ioScope.launch { writerLoop(client.output, clientQueue, "client") }
-        ioScope.launch { writerLoop(server.output, serverQueue, "server") }
+        ioScope.launch { writerLoop(client, clientQueue, "client") }
+        ioScope.launch { writerLoop(server, serverQueue, "server") }
     }
 
     fun sendToClient(packet: Packet) {
@@ -42,21 +40,20 @@ data class ConnectionContext(
     }
 
     suspend fun sendToClientImmediately(packet: Packet) {
-        Packet.writePacket(client.output, packet)
+        client.writePacket(packet)
     }
 
     suspend fun sendToServerImmediately(packet: Packet) {
-        Packet.writePacket(server.output, packet)
+        server.writePacket(packet)
     }
 
-    private suspend fun writerLoop(channel: ByteWriteChannel, queue: Channel<Packet>, target: String) {
+    private suspend fun writerLoop(connection: ProxyConnection, queue: Channel<Packet>, target: String) {
         try {
             while (ioScope.isActive) {
-                val firstPacket = queue.receiveCatching().getOrNull() ?: break
+                val packet = queue.receiveCatching().getOrNull() ?: break
 
                 try {
-                    Packet.writePacket(channel, firstPacket)
-                    channel.flush()
+                    connection.writePacket(packet)
                 } catch (_: ClosedWriteChannelException) {
                     log.debug { "Dropped packet stream: $target channel already closed" }
                     break

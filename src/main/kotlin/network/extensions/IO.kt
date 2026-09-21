@@ -2,7 +2,6 @@ package dev.apollointhehouse.network.extensions
 
 import dev.apollointhehouse.nbt.NbtIO
 import dev.apollointhehouse.nbt.tags.CompoundTag
-import io.ktor.network.sockets.Connection
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.writeFully
 import kotlinx.io.Sink
@@ -12,7 +11,6 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.*
-import kotlin.text.String
 import kotlin.text.toByteArray
 
 fun Sink.writeJavaStringUTF8(string: String) {
@@ -108,8 +106,4 @@ suspend fun ByteReadChannel.readBoolean(): Boolean {
 
 fun Source.readBoolean(): Boolean {
     return readByte() != 0.toByte()
-}
-
-fun Connection.close() {
-    socket.close()
 }

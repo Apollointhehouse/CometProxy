@@ -1,6 +1,5 @@
 package dev.apollointhehouse.network.proxy.connection
 
-import dev.apollointhehouse.network.extensions.close
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.CancellationException
@@ -12,25 +11,17 @@ class ConnectionManager(
 ) {
     private val log = logger()
 
-    suspend fun getConnection(): Connection? {
+    suspend fun getConnection(): ProxyConnection? {
         try {
             val socket = aSocket(selectorManager).tcp().connect(address) {
                 keepAlive = true
             }
-            return socket.connection()
+            return socket.connection().toProxyConnection()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             log.error(e) { "Failed to connect to $address" }
             return null
         }
-    }
-}
-
-inline fun <T : Connection?, R> T.use(block: (T) -> R): R {
-    try {
-        return block(this)
-    } finally {
-        this?.close()
     }
 }

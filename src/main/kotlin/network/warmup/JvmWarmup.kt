@@ -14,7 +14,7 @@ import dev.apollointhehouse.network.pipeline.PacketContext
 import dev.apollointhehouse.network.pipeline.PacketPipeline
 import dev.apollointhehouse.network.crypto.AES
 import dev.apollointhehouse.network.crypto.RSA
-import dev.apollointhehouse.network.extensions.close
+import dev.apollointhehouse.network.proxy.connection.ProxyConnection
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
@@ -62,8 +62,8 @@ object JvmWarmup {
             }
 
             val dummySocket = DummySocket()
-            val dummyOut1 = Connection(dummySocket, ByteChannel(), ByteChannel())
-            val dummyOut2 = Connection(dummySocket, ByteChannel(), ByteChannel())
+            val dummyOut1 = ProxyConnection(dummySocket, ByteChannel(), ByteChannel())
+            val dummyOut2 = ProxyConnection(dummySocket, ByteChannel(), ByteChannel())
             val connCtx = ConnectionContext(dummyOut1, dummyOut2)
             val c2sContext = PacketContext(PacketContext.Direction.CLIENT_TO_SERVER, connCtx)
             val s2cContext = PacketContext(PacketContext.Direction.SERVER_TO_CLIENT, connCtx)
