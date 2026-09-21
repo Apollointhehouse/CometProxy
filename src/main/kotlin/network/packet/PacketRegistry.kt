@@ -15,7 +15,7 @@ import dev.apollointhehouse.network.packet.world.*
 
 object PacketRegistry {
     private val packetIDToFactory: MutableMap<Int, PacketFactory<*>> = mutableMapOf()
-    val classToPacketID: Map<Class<out Packet>, Int> field = mutableMapOf<Class<out Packet>, Int>()
+    private val classToPacketID: MutableMap<Class<out Packet>, Int> = mutableMapOf()
 
     init {
         register(0, PacketKeepAlive)
@@ -118,4 +118,7 @@ object PacketRegistry {
     }
 
     fun getPacketFactory(id: Int): PacketFactory<*>? = packetIDToFactory[id]
+    fun getPacketID(clazz: Class<out Packet>): Int? = classToPacketID[clazz]
+    fun getPacketID(packet: Packet): Int? = getPacketID(packet::class.java)
+    inline fun <reified T : Packet> getPacketID(): Int? = getPacketID(T::class.java)
 }

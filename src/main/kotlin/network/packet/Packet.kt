@@ -8,7 +8,7 @@ import org.apache.logging.log4j.kotlin.logger
 import java.io.IOException
 
 interface Packet {
-    val packetID: Int get() = PacketRegistry.classToPacketID.getValue(this::class.java)
+    val packetID: Int get() = PacketRegistry.getPacketID(this) ?: error("Packet $this not registered")
     val estimatedSize: Int
 
     fun write(sink: Sink)
