@@ -1,6 +1,5 @@
 package dev.apollointhehouse.network.proxy
 
-import dev.apollointhehouse.network.packet.Packet
 import dev.apollointhehouse.network.packet.handshake.PacketDisconnect
 import dev.apollointhehouse.network.packet.handshake.PacketPingHandshake
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
@@ -10,12 +9,7 @@ import dev.apollointhehouse.network.proxy.connection.ProxyConnection
 import dev.apollointhehouse.network.proxy.connection.toProxyConnection
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.logger
 
 class Proxy(private val config: ProxyConfig) {
@@ -49,7 +43,7 @@ class Proxy(private val config: ProxyConfig) {
         val con = conManager.getConnection() ?: error("Failed to connect to target server")
 
         con.use {
-            Packet.writePacket(con.output, PacketPingHandshake(
+            con.writePacket(PacketPingHandshake(
                 payload = 1u,
                 identifier = 0u,
                 pingHostString = "BTAPingHost",
@@ -58,7 +52,7 @@ class Proxy(private val config: ProxyConfig) {
                 port = 0,
             ))
 
-            val pingResponse = Packet.readPacket(con.input)
+            val pingResponse = con.receivePacket()
                 ?: error("Failed to connect to target server")
 
             if (pingResponse !is PacketDisconnect) error("Server failed to respond to ping")
@@ -74,9 +68,9 @@ class Proxy(private val config: ProxyConfig) {
             .accept()
             .connection()
             .toProxyConnection()
-        log.info("Accepted ${client.socket.remoteAddress}")
+        log.info("Accepted $client")
 
-        launch(CoroutineName("session/${client.socket.remoteAddress}")) {
+        launch(CoroutineName("connection/$client")) {
             connection(serverConnManager, client)
         }
     }

@@ -1,6 +1,8 @@
 package dev.apollointhehouse.network.proxy.connection
 
 import dev.apollointhehouse.network.packet.Packet
+import dev.apollointhehouse.network.packet.PacketSink
+import dev.apollointhehouse.network.packet.PacketSource
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineScope
@@ -13,10 +15,10 @@ import kotlinx.io.IOException
 import org.apache.logging.log4j.kotlin.logger
 
 class ProxyConnection(
-    val socket: Socket,
-    val input: ByteReadChannel,
-    val output: ByteWriteChannel
-) : AutoCloseable {
+    private val socket: Socket,
+    private val input: ByteReadChannel,
+    private val output: ByteWriteChannel
+) : AutoCloseable, PacketSource, PacketSink {
     private val writerQueue = Channel<Packet>(Channel.UNLIMITED)
     private val ioScope = CoroutineScope(Dispatchers.Default)
     private val log = logger()
@@ -29,14 +31,14 @@ class ProxyConnection(
         Packet.writePacket(output, packet)
     }
 
-    suspend fun readPacket(): Packet? =
-        Packet.readPacket(input)
-
-    fun queuePacket(packet: Packet) {
+    override fun sendPacket(packet: Packet) {
         writerQueue.trySend(packet).onFailure {
             log.warn { "Failed to enqueue ${packet::class.simpleName}" }
         }
     }
+
+    override suspend fun receivePacket(): Packet? =
+        Packet.readPacket(input)
 
     private suspend fun writerLoop() = use {
         while (ioScope.isActive) {
@@ -56,6 +58,9 @@ class ProxyConnection(
     override fun close() {
         socket.close()
     }
+
+    override fun toString(): String =
+        socket.remoteAddress.toString()
 }
 
 fun Connection.toProxyConnection(): ProxyConnection =

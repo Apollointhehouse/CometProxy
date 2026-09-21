@@ -1,11 +1,12 @@
 package dev.apollointhehouse.network.proxy
 
+import dev.apollointhehouse.network.packet.PacketSink
+import dev.apollointhehouse.network.packet.PacketSource
 import dev.apollointhehouse.network.pipeline.PacketContext
 import dev.apollointhehouse.network.pipeline.PacketPipeline
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.network.proxy.connection.ConnectionContext
 import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
-import dev.apollointhehouse.network.proxy.connection.ProxyConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
@@ -44,17 +45,17 @@ class Bridge(
     }
 
     private suspend fun forwardingJob(
-        source: ProxyConnection,
-        sink: ProxyConnection,
+        source: PacketSource,
+        sink: PacketSink,
         pipeline: PacketPipeline,
         context: PacketContext
     ) {
         while (true) {
-            val packet = source.readPacket()
+            val packet = source.receivePacket()
                 ?: throw BridgeClosedException("${context.direction} connection closed")
             val result = pipeline.process(context, packet)
 
-            if (result != null) sink.queuePacket(result)
+            if (result != null) sink.sendPacket(result)
         }
     }
 
