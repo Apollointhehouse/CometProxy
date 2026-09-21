@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.check
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
@@ -22,15 +23,17 @@ class AppArgs : CliktCommand() {
 
     val debug: Boolean by option(help = "Debug mode").flag()
     val headless: Boolean by option(help = "Run without GUI").flag()
-    val targetServer: String? by option(help = "Target Server")
-    val targetPort: Int? by option(help = "Target Port")
+    val targetServer: String by option(help = "Target Server").default("example.com")
+    val targetPort: Int by option(help = "Target Port")
         .int()
+        .default(25565)
         .check("Port must be in range 1024..65535") { it in 1024..65535 }
 
-    val hostPort: Int? by option(help = "Host Port")
+    val hostPort: Int by option(help = "Host Port")
         .int()
+        .default(25565)
         .check("Port must be in range 1024..65535") { it in 1024..65535 }
-    val motd: String? by option(help = "Message of the day")
+    val motd: String by option(help = "Message of the day").default("Proxy Server")
 
     override fun run()  {
         val isDebugging = ManagementFactory.getRuntimeMXBean()
@@ -46,10 +49,10 @@ class AppArgs : CliktCommand() {
         JvmWarmup.warmup()
 
         val proxyConfig = ProxyConfig(
-            targetServer = targetServer ?: "example.com",
-            targetPort = targetPort ?: 25565,
-            hostPort = hostPort ?: 25565,
-            motd = motd ?: "Proxy Server",
+            targetServer = targetServer,
+            targetPort = targetPort,
+            hostPort = hostPort,
+            motd = motd,
         )
 
         if (headless) {
