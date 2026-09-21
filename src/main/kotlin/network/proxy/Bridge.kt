@@ -5,6 +5,7 @@ import dev.apollointhehouse.network.pipeline.PacketPipeline
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.network.proxy.connection.ConnectionContext
 import dev.apollointhehouse.network.proxy.connection.ConnectionRegistry
+import dev.apollointhehouse.network.proxy.connection.ProxyConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
@@ -15,7 +16,7 @@ class Bridge(
     private val config: ProxyConfig,
     private val ctx: ConnectionContext,
 ) : AutoCloseable {
-    suspend fun run(): Nothing = withContext(Dispatchers.IO) {
+    suspend fun run(): Nothing = withContext(Dispatchers.Default) {
         val (client, server) = ctx
         val pipeline = PacketPipeline.create(config)
 
@@ -24,23 +25,11 @@ class Bridge(
             val s2cContext = PacketContext(PacketContext.Direction.SERVER_TO_CLIENT, ctx)
 
             val clientToServerJob = launch {
-                while (true) {
-                    val packet = client.readPacket()
-                        ?: throw BridgeClosedException("Client connection closed")
-                    val result = pipeline.process(c2sContext, packet)
-
-                    if (result != null) ctx.sendToServer(result)
-                }
+                forwardingJob(client, server, pipeline, c2sContext)
             }
 
             val serverToClientJob = launch {
-                while (true) {
-                    val packet = server.readPacket()
-                        ?: throw BridgeClosedException("Server connection closed")
-                    val result = pipeline.process(s2cContext, packet)
-
-                    if (result != null) ctx.sendToClient(result)
-                }
+                forwardingJob(server, client, pipeline, s2cContext)
             }
 
             select {
@@ -51,6 +40,21 @@ class Bridge(
             awaitCancellation()
         } finally {
             ConnectionRegistry.unregister(ctx)
+        }
+    }
+
+    private suspend fun forwardingJob(
+        source: ProxyConnection,
+        sink: ProxyConnection,
+        pipeline: PacketPipeline,
+        context: PacketContext
+    ) {
+        while (true) {
+            val packet = source.readPacket()
+                ?: throw BridgeClosedException("${context.direction} connection closed")
+            val result = pipeline.process(context, packet)
+
+            if (result != null) sink.queuePacket(result)
         }
     }
 

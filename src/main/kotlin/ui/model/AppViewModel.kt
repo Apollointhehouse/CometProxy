@@ -50,13 +50,13 @@ class AppViewModel(config: ProxyConfig, private val scope: CoroutineScope) {
     fun sendMessageToClient(ctx: ConnectionContext, message: String) {
         val packet = PacketMessage(message = message)
 
-        ctx.sendToClient(packet)
+        ctx.client.queuePacket(packet)
     }
 
     fun sendMessageToServer(ctx: ConnectionContext, message: String) {
         val packet = PacketMessage(message = message)
 
-        ctx.sendToServer(packet)
+        ctx.server.queuePacket(packet)
     }
 
     fun fetchPlayerHead(uuid: Uuid): ImageBitmap? {
