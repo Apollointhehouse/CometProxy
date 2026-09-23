@@ -18,10 +18,9 @@ object API {
             json()
         }
     }
+    private val playerHeads: ConcurrentHashMap<Uuid, ImageBitmap> = ConcurrentHashMap()
 
-    private val heads: ConcurrentHashMap<Uuid, ImageBitmap> = ConcurrentHashMap()
-
-    suspend fun fetchHead(uuid: Uuid): ImageBitmap = heads.getOrPut(uuid) {
+    suspend fun fetchPlayerHead(uuid: Uuid): ImageBitmap = playerHeads.getOrPut(uuid) {
         val imgBytes = client.get("https://mc-heads.net/avatar/${uuid.toHexString()}").body<ByteArray>()
         val img = Image.makeFromEncoded(imgBytes).toComposeImageBitmap()
 

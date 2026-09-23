@@ -22,9 +22,10 @@ class Proxy(private val config: ProxyConfig) {
 
         testServerConnection(serverConnManager)
 
-        val proxySocket = aSocket(selectorManager).tcp().bind(port = config.hostPort) {
-            reuseAddress = true
-        }
+        val proxySocket = aSocket(selectorManager)
+            .tcp()
+            .bind(port = config.hostPort) { reuseAddress = true }
+
         log.info("Comet-Proxy listening at ${proxySocket.localAddress}")
 
         try {
@@ -68,6 +69,7 @@ class Proxy(private val config: ProxyConfig) {
             .accept()
             .connection()
             .toProxyConnection()
+
         log.info("Accepted $client")
 
         launch(CoroutineName("connection/$client")) {

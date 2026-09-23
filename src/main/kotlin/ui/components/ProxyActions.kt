@@ -19,7 +19,7 @@ fun ProxyActions(
     viewModel: AppViewModel,
     logLines: SnapshotStateList<String>
 ) {
-    val proxyState by viewModel.proxyState.collectAsState()
+    val proxyState by viewModel.state.collectAsState()
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         DefaultButton(

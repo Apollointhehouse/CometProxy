@@ -10,8 +10,11 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberWindowState
+import dev.apollointhehouse.network.proxy.ProxyManager
 import dev.apollointhehouse.network.proxy.config.ProxyConfig
 import dev.apollointhehouse.ui.model.AppViewModel
+import dev.apollointhehouse.ui.repo.PlayerHeadRepository
+import dev.apollointhehouse.ui.state.toProxyUIState
 import dev.nucleusframework.application.nucleusApplication
 import dev.nucleusframework.window.jewel.JewelDecoratedWindow
 import dev.nucleusframework.window.jewel.JewelTitleBar
@@ -47,7 +50,13 @@ fun UI(proxyConfig: ProxyConfig) = nucleusApplication {
             minimumSize = DpSize(640.dp, 480.dp),
         ) {
             val coroutineScope = rememberCoroutineScope()
-            val viewModel = remember { AppViewModel(proxyConfig, coroutineScope) }
+            val viewModel = remember {
+                AppViewModel(
+                    initialState = proxyConfig.toProxyUIState(),
+                    playerHeadRepo = PlayerHeadRepository(coroutineScope),
+                    proxyManager = ProxyManager(),
+                )
+            }
 
             JewelTitleBar {
                 Row(

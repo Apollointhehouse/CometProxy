@@ -11,8 +11,8 @@ import kotlinx.io.Sink
 import kotlin.experimental.or
 
 data class PacketMessage(
-    val format: Short = 0,
     var message: String = "",
+    val format: Short = 0,
     val type: Byte = 0,
     val encrypted: Boolean = false,
 ) : Packet {

@@ -17,7 +17,7 @@ fun ProxyTargetInput(viewModel: AppViewModel) {
     GroupHeader("Target Server")
     Spacer(Modifier.height(8.dp))
 
-    val proxyState by viewModel.proxyState.collectAsState()
+    val proxyState by viewModel.state.collectAsState()
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

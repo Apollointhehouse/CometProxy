@@ -5,7 +5,7 @@ import kotlinx.coroutines.*
 import org.apache.logging.log4j.kotlin.logger
 
 class ProxyManager {
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val scope = CoroutineScope(Dispatchers.Default)
     private var proxyJob: Job? = null
     private val log = logger()
 
@@ -24,8 +24,8 @@ class ProxyManager {
         }
     }
 
-    suspend fun stop() {
-        proxyJob?.cancelAndJoin()
+    fun stop() {
+        proxyJob?.cancel()
         proxyJob = null
     }
 }

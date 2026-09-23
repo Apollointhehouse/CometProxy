@@ -19,6 +19,7 @@ import org.jetbrains.jewel.ui.component.Divider
 fun Home(viewModel: AppViewModel) {
     val connections by viewModel.connections.collectAsState()
     val logLines = remember { mutableStateListOf<String>() }
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         GuiLogBus.events.collect { line ->
@@ -46,9 +47,9 @@ fun Home(viewModel: AppViewModel) {
         ConnectionsPanel(
             viewModel = viewModel,
             connections = connections,
-            selected = viewModel.selectedConnection,
-            onDismissRequest = { viewModel.selectedConnection = null },
-            onSelect = { viewModel.selectedConnection = it },
+            selected = state.selectedConnection,
+            onDismissRequest = { viewModel.selectConnection(null) },
+            onSelect = { viewModel.selectConnection(it) },
         )
 
         Spacer(Modifier.height(20.dp))

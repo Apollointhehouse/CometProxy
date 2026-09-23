@@ -29,7 +29,7 @@ fun ConnectionRow(
     val session = ctx.session as? AuthSession ?: return
     val name = session.username
     val uuid = session.uuid
-    val headImg = viewModel.fetchPlayerHead(uuid)
+    val playerHead = viewModel.playerHeads[uuid]
 
     PopoverAnchor(
         expanded = isSelected,
@@ -61,9 +61,11 @@ fun ConnectionRow(
                     .background(avatarColor(name)),
                 contentAlignment = Alignment.Center,
             ) {
-                if (headImg != null) {
-                    Image(bitmap = headImg, contentDescription = null)
+                if (playerHead != null) {
+                    Image(bitmap = playerHead, contentDescription = null)
                 } else {
+                    viewModel.loadPlayerHead(uuid)
+
                     Text(
                         text = name.firstOrNull()?.uppercase() ?: "?",
                         color = Color.White,
